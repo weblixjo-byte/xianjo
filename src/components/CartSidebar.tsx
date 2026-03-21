@@ -1,7 +1,7 @@
 'use client';
 import { useCart } from '@/store/useCart';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Phone, MapPin, User, CheckCircle2, Trash2, ArrowRight, AlertCircle, ShoppingCart, Clock, Store, Zap } from 'lucide-react';
+import { X, Phone, MapPin, User, CheckCircle2, Trash2, ArrowRight, AlertCircle, ShoppingCart, Clock, Store, Zap, Locate } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -18,6 +18,7 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
   const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'CLIQ'>('CASH');
   const [mounted, setMounted] = useState(false);
   const [lastOrderId, setLastOrderId] = useState('');
+  const [isDetecting, setIsDetecting] = useState(false);
 
   // Promo Code State
   const [couponCode, setCouponCode] = useState('');
@@ -74,6 +75,47 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
       setForm(prev => ({ ...prev, name: session.user?.name || '' }));
     }
   }, [session, form.name]);
+
+  const handleDetectLocation = () => {
+    if (!navigator.geolocation) {
+      setErrorMsg("Geolocation is not supported by your browser");
+      return;
+    }
+
+    setIsDetecting(true);
+    setErrorMsg('');
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&accept-language=en,ar`);
+          const data = await res.json();
+          
+          if (data && data.display_name) {
+            setForm(prev => ({ ...prev, address: data.display_name }));
+          } else {
+            setForm(prev => ({ ...prev, address: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}` }));
+          }
+        } catch (err) {
+          console.error("Location error:", err);
+          setErrorMsg("Could not detect address, please enter it manually.");
+        } finally {
+          setIsDetecting(false);
+        }
+      },
+      (error) => {
+        console.error("Geolocation error:", error);
+        setIsDetecting(false);
+        if (error.code === 1) {
+          setErrorMsg("Please enable location permissions in your browser.");
+        } else {
+          setErrorMsg("Failed to detect location.");
+        }
+      },
+      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+    );
+  };
 
   const handleOrder = async () => {
     if (!session) {
@@ -341,15 +383,29 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
   
                           {orderType === 'DELIVERY' ? (
                             <>
-                              <div className="relative">
-                                <MapPin className="absolute right-5 top-1/2 -translate-y-1/2 text-brand-black/20" size={18} />
-                                <input 
-                                  placeholder="Address (Area, Street, Building)" 
-                                  className="w-full bg-brand-cream/50 pr-12 pl-6 py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px]"
-                                  value={form.address}
-                                  onChange={(e) => setForm({...form, address: e.target.value})}
-                                />
-                              </div>
+                                <div className="relative group">
+                                  <MapPin className="absolute right-5 top-1/2 -translate-y-1/2 text-brand-black/20" size={18} />
+                                  <input 
+                                    placeholder="Address (Area, Street, Building)" 
+                                    className="w-full bg-brand-cream/50 pr-12 pl-14 py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px]"
+                                    value={form.address}
+                                    onChange={(e) => setForm({...form, address: e.target.value})}
+                                  />
+                                  <button 
+                                    type="button"
+                                    onClick={handleDetectLocation}
+                                    disabled={isDetecting}
+                                    className={`absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-lg transition-all flex items-center gap-1.5 ${isDetecting ? 'bg-brand-red text-white' : 'text-brand-black/40 hover:text-brand-red hover:bg-brand-cream/80'}`}
+                                    title="Detect my location"
+                                  >
+                                    <Locate size={16} className={isDetecting ? 'animate-pulse' : ''} />
+                                    {isDetecting ? (
+                                      <span className="text-[10px] font-black uppercase tracking-tighter">Locating...</span>
+                                    ) : (
+                                      <span className="text-[10px] font-black uppercase tracking-tighter hidden group-hover:block transition-all">Detect</span>
+                                    )}
+                                  </button>
+                                </div>
                             </>
                           ) : (
                             <div className="relative">
