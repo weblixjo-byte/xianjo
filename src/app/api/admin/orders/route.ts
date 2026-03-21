@@ -3,7 +3,7 @@ import { prisma } from "../../../../db";
 import { NextResponse } from "next/server";
 
 // هذا السطر يمنع التخزين المؤقت لضمان رؤية الطلبات الجديدة فوراً
-export const runtime = 'edge';
+export const runtime = 'experimental-edge';
 export const dynamic = 'force-dynamic'; 
 
 export async function GET() {

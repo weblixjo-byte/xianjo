@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+export const runtime = 'experimental-edge';
 import { prisma } from "@/db";
 import { NextResponse, NextRequest } from "next/server";
 
