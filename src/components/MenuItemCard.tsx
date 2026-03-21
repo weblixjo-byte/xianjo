@@ -48,7 +48,7 @@ export default function MenuItemCard({ item, priority = false }: { item: Product
       <div className="relative w-full aspect-[4/3] rounded-[2rem] overflow-hidden bg-white border border-gray-100/50 shadow-sm transition-all duration-500 group-hover:shadow-xl group-hover:border-brand-red/10 flex items-center justify-center">
         <Image 
           src={item.imageUrl || `https://placehold.co/800x600/FFFFFF/1A1A1A.png?text=${item.nameAr}`} 
-          alt={item.nameEn || item.nameAr}
+          alt={`${item.nameEn || item.nameAr} - Xian Restaurant (مطعم شيان) - Asian Food Jordan`}
           fill 
           sizes="(max-width: 640px) 100vw, (max-width: 1014px) 50vw, 300px"
           className="object-contain transition-all duration-1000 group-hover:scale-105"

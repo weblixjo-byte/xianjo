@@ -93,9 +93,15 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
           const data = await res.json();
           
           if (data && data.display_name) {
-            setForm(prev => ({ ...prev, address: data.display_name }));
+            setForm(prev => ({ 
+              ...prev, 
+              address: `${data.display_name} (Maps: https://www.google.com/maps?q=${latitude},${longitude})` 
+            }));
           } else {
-            setForm(prev => ({ ...prev, address: `${latitude.toFixed(4)}, ${longitude.toFixed(4)}` }));
+            setForm(prev => ({ 
+              ...prev, 
+              address: `Precision Coordinates: ${latitude.toFixed(6)}, ${longitude.toFixed(6)} (Maps: https://www.google.com/maps?q=${latitude},${longitude})` 
+            }));
           }
         } catch (err) {
           console.error("Location error:", err);
@@ -383,27 +389,28 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
   
                           {orderType === 'DELIVERY' ? (
                             <>
-                                <div className="relative group">
-                                  <MapPin className="absolute right-5 top-1/2 -translate-y-1/2 text-brand-black/20" size={18} />
-                                  <input 
-                                    placeholder="Address (Area, Street, Building)" 
-                                    className="w-full bg-brand-cream/50 pr-12 pl-14 py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px]"
-                                    value={form.address}
-                                    onChange={(e) => setForm({...form, address: e.target.value})}
-                                  />
+                                <div className="space-y-3">
+                                  <div className="relative">
+                                    <MapPin className="absolute right-5 top-1/2 -translate-y-1/2 text-brand-black/20" size={18} />
+                                    <input 
+                                      placeholder="Address (Area, Street, Building)" 
+                                      className="w-full bg-brand-cream/50 pr-12 pl-6 py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px]"
+                                      value={form.address}
+                                      onChange={(e) => setForm({...form, address: e.target.value})}
+                                    />
+                                  </div>
+                                  
                                   <button 
                                     type="button"
                                     onClick={handleDetectLocation}
                                     disabled={isDetecting}
-                                    className={`absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-lg transition-all flex items-center gap-1.5 ${isDetecting ? 'bg-brand-red text-white' : 'text-brand-black/40 hover:text-brand-red hover:bg-brand-cream/80'}`}
-                                    title="Detect my location"
+                                    className={`w-full py-4 rounded-xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 transition-all border-2 
+                                      ${isDetecting 
+                                        ? 'bg-brand-red text-white border-brand-red animate-pulse' 
+                                        : 'bg-white text-brand-red border-brand-red/20 hover:border-brand-red hover:bg-brand-red/5'}`}
                                   >
-                                    <Locate size={16} className={isDetecting ? 'animate-pulse' : ''} />
-                                    {isDetecting ? (
-                                      <span className="text-[10px] font-black uppercase tracking-tighter">Locating...</span>
-                                    ) : (
-                                      <span className="text-[10px] font-black uppercase tracking-tighter hidden group-hover:block transition-all">Detect</span>
-                                    )}
+                                    <Locate size={18} />
+                                    <span>{isDetecting ? 'جاري تحديد موقعك...' : 'تحديد موقعي التلقائي (توصيل أدق)'}</span>
                                   </button>
                                 </div>
                             </>
