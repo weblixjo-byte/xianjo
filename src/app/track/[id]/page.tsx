@@ -69,7 +69,7 @@ export default async function OrderStatusPage({ params }: { params: Promise<{ id
             <div className="pt-4">
               <h3 className="font-black text-xl mb-6 text-brand-black">فاتورة الأصناف</h3>
               <div className="bg-brand-cream border border-brand-gray rounded-2xl p-5 space-y-4">
-                {order.items.map(item => (
+                {order.items.map((item: any) => (
                   <div key={item.id} className="flex justify-between items-center bg-white p-3 rounded-xl shadow-sm border border-gray-50">
                     <span className="font-bold text-gray-700 flex items-center gap-3">
                       <span className="bg-brand-gray text-brand-black px-2 py-1 border border-gray-200 rounded-lg text-xs leading-none">x{item.quantity}</span> 
