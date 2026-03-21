@@ -56,21 +56,21 @@ export async function POST(request: Request) {
       where: { id: { in: productIds } }
     });
     
-    const realPriceMap = new Map(dbProducts.map(p => [p.id, p.price]));
+    const realPriceMap = new Map(dbProducts.map((p: any) => [p.id, p.price]));
     
     let calculatedTotal = 0;
     const itemsToCreate = [];
 
     for (const item of data.items) {
       const dbPrice = realPriceMap.get(item.productId);
-      if (dbPrice === undefined) {
+      if (dbPrice === undefined || dbPrice === null) {
         return NextResponse.json({ success: false, error: `المنتج غير موجود: ${item.name}` }, { status: 400 });
       }
-      calculatedTotal += dbPrice * item.quantity;
+      calculatedTotal += Number(dbPrice) * item.quantity;
       itemsToCreate.push({
         productId: item.productId,
         name: item.name,
-        price: dbPrice,
+        price: Number(dbPrice),
         quantity: item.quantity
       });
     }
