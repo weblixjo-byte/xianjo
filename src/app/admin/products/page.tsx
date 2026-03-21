@@ -4,7 +4,7 @@ import {
   Plus, Edit2, Trash2, Camera, Tag, DollarSign, Package, 
   Check, X, ArrowRight, Save, LayoutGrid, AlertCircle, 
   Layers, Search, MoreVertical, ChevronLeft, ArrowLeft,
-  Link2
+  Link2, Folder, ChevronRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast, { Toaster } from 'react-hot-toast';
@@ -30,6 +30,7 @@ export default function ProductsDashboard() {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -44,7 +45,7 @@ export default function ProductsDashboard() {
   
   const existingCategories = Array.from(new Set(
     products.flatMap(p => p.category ? p.category.split(',').map((c: string) => c.trim()).filter(Boolean) : [])
-  ));
+  )).sort();
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -108,7 +109,7 @@ export default function ProductsDashboard() {
       if (res.ok) {
         setIsPanelOpen(false);
         setEditingProduct(null);
-        setFormData({ nameEn: '', nameAr: '', price: '', category: 'Sushi', imageUrl: '', descriptionAr: '', descriptionEn: '' });
+        setFormData({ nameEn: '', nameAr: '', price: '', category: selectedCategory || existingCategories[0] || 'Sushi', imageUrl: '', descriptionAr: '', descriptionEn: '' });
         fetchProducts();
         toast.success(editingProduct ? 'تم التعديل بنجاح' : 'تمت الإضافة بنجاح', {
             style: { borderRadius: '20px', background: '#922724', color: '#fff' }
@@ -133,10 +134,19 @@ export default function ProductsDashboard() {
     setIsPanelOpen(true);
   };
 
-  const filteredProducts = products.filter(p => 
-    p.nameAr.includes(searchQuery) || 
-    p.nameEn.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredProducts = products.filter(p => {
+    const matchesSearch = p.nameAr.includes(searchQuery) || 
+      p.nameEn.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // If a category is selected, filter by it. A product can have multiple categories (csv)
+    const matchesCategory = !selectedCategory || selectedCategory === 'الكل' || (p.category && p.category.split(',').map(c => c.trim()).includes(selectedCategory));
+    
+    return matchesSearch && matchesCategory;
+  });
+
+  const getProductCountByCategory = (category: string) => {
+    return products.filter(p => p.category && p.category.split(',').map(c => c.trim()).includes(category)).length;
+  };
 
   const stats = {
     total: products.length,
@@ -150,16 +160,16 @@ export default function ProductsDashboard() {
       <div className="max-w-7xl mx-auto">
         
         <AdminHeader 
-          title="إدارة قائمة الطعام" 
-          subtitle="Boutique Inventory Suite • Live Sync" 
-          icon={<LayoutGrid size={40} strokeWidth={1.5} />}
+          title="إدارة القائمة" 
+          subtitle={(selectedCategory && selectedCategory !== 'الكل') ? `قسم: ${selectedCategory}` : "Boutique Inventory Suite • Live Sync"} 
+          icon={(selectedCategory && selectedCategory !== 'الكل') ? <Folder size={40} className="text-brand-red" strokeWidth={1} /> : <LayoutGrid size={40} strokeWidth={1.5} />}
           actions={
             <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
               <Link href="/admin" className="inline-flex items-center gap-2 text-brand-black/30 hover:text-brand-red transition-colors text-xs font-bold uppercase tracking-widest bg-white h-[68px] px-8 rounded-full border border-brand-gray">
                  <ArrowRight size={14} /> الإدارة
               </Link>
               <button 
-                onClick={() => { setEditingProduct(null); setFormData({ nameEn: '', nameAr: '', price: '', category: 'Sushi', imageUrl: '', descriptionAr: '', descriptionEn: '' }); setIsPanelOpen(true); }}
+                onClick={() => { setEditingProduct(null); setFormData({ nameEn: '', nameAr: '', price: '', category: selectedCategory === 'الكل' ? (existingCategories[0] || 'Sushi') : (selectedCategory || existingCategories[0] || 'Sushi'), imageUrl: '', descriptionAr: '', descriptionEn: '' }); setIsPanelOpen(true); }}
                 className="bg-[#1A1A1A] text-white px-8 py-5 rounded-full font-black flex items-center gap-3 shadow-2xl transition-all hover:scale-[1.02] active:scale-95 group w-full md:w-auto justify-center"
               >
                 <div className="bg-white/10 p-1.5 rounded-lg group-hover:bg-white/20 transition-colors">
@@ -171,158 +181,232 @@ export default function ProductsDashboard() {
           }
         />
 
-        {/* Stats Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {[
-            { label: 'إجمالي المنتجات', value: stats.total, icon: Layers, color: 'text-brand-black' },
-            { label: 'غير متوفر حالياً', value: stats.outOfStock, icon: AlertCircle, color: 'text-brand-red' },
-            { label: 'تصنيفات نشطة', value: stats.categories, icon: LayoutGrid, color: 'text-brand-black' },
-          ].map((stat, i) => (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
-              key={stat.label} 
-              className="bg-white p-8 rounded-[2.5rem] border border-brand-gray/40 shadow-sm flex items-center justify-between"
-            >
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-brand-black/30 mb-2">{stat.label}</p>
-                <p className={`text-4xl font-black font-serif ${stat.color}`}>{stat.value}</p>
-              </div>
-              <div className="bg-[#F9F7F2] p-4 rounded-3xl">
-                <stat.icon size={26} className={stat.color} strokeWidth={1.5} />
-              </div>
-            </motion.div>
-          ))}
+        {/* Stats and Navigation */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-12">
+            <div className="flex items-center gap-4">
+               {selectedCategory && (
+                 <button 
+                    onClick={() => { setSelectedCategory(null); setSearchQuery(''); }}
+                    className="flex items-center gap-3 bg-white p-4 rounded-3xl border border-brand-gray/50 text-brand-black/40 hover:text-brand-red transition-all shadow-sm group font-bold text-sm"
+                 >
+                    <ArrowLeft size={18} className="rotate-180 group-hover:-translate-x-1 transition-transform" />
+                    <span>الرجوع للمجلدات</span>
+                 </button>
+               )}
+               {selectedCategory && (
+                 <div className="hidden md:flex items-center gap-4 text-brand-black/20 text-xs font-black uppercase tracking-[0.2em]">
+                    <span>القائمة</span>
+                    <ChevronRight size={14} className="rotate-180" />
+                    <span className="text-brand-red">{selectedCategory}</span>
+                 </div>
+               )}
+            </div>
+
+            {/* Compact Stats Grid */}
+            <div className="flex gap-4">
+                {[
+                    { label: 'الكل', value: stats.total, color: 'text-brand-black' },
+                    { label: 'نواقص', value: stats.outOfStock, color: 'text-brand-red' },
+                ].map((s) => (
+                    <div key={s.label} className="bg-white px-6 py-4 rounded-2xl border border-brand-gray/40 shadow-sm flex items-center gap-4">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-brand-black/20">{s.label}</span>
+                        <span className={`text-xl font-black font-serif ${s.color}`}>{s.value}</span>
+                    </div>
+                ))}
+            </div>
         </div>
 
-        {/* Search Bar */}
+        {/* Search Bar (Only shows when in a category or search is used) */}
         <div className="relative mb-10 max-w-md">
           <Search size={18} className="absolute right-6 top-1/2 -translate-y-1/2 text-brand-black/20" />
           <input 
             type="text" 
-            placeholder="البحث عن منتج بالاسم..." 
+            placeholder={(selectedCategory && selectedCategory !== 'الكل') ? `البحث في ${selectedCategory}...` : "البحث في جميع المنتجات..."} 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-white border border-brand-gray/50 rounded-2xl py-4 pr-14 pl-6 outline-none focus:border-brand-red/30 transition-all font-bold text-sm"
           />
         </div>
 
-        {/* Modern List/Card Hybrid */}
+        {/* Dynamic Content View */}
         {loading ? (
           <div className="flex justify-center py-40">
              <div className="w-10 h-10 border-2 border-brand-red/10 border-t-brand-red rounded-full animate-spin"></div>
           </div>
         ) : (
-          <div className="space-y-4">
-             <div className="hidden lg:grid grid-cols-12 px-10 py-4 text-[10px] font-black uppercase tracking-[0.25em] text-brand-black/20">
-                <div className="col-span-5">المنتج والتصنيف</div>
-                <div className="col-span-2 text-center">السعر</div>
-                <div className="col-span-3 text-center">الحالة</div>
-                <div className="col-span-2 text-left">الإجراءات</div>
-             </div>
-
-             <div className="space-y-4">
-               <AnimatePresence mode="popLayout">
-                {filteredProducts.map((product) => (
-                  <motion.div
-                    key={product.id}
-                    layoutId={product.id}
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className={`bg-white rounded-[2rem] p-4 lg:p-6 border border-brand-gray/40 shadow-sm transition-all duration-300 hover:border-brand-red/10 group
-                      ${!product.isAvailable ? 'bg-brand-cream/40 px-6 blur-[0.3px]' : ''}`}
-                  >
-                    <div className="grid grid-cols-1 lg:grid-cols-12 items-center gap-6 lg:gap-4 text-right lg:text-right">
-                      
-                      {/* Thumbnail & Info */}
-                      <div className="col-span-1 lg:col-span-5 flex items-center gap-6">
-                        <div className="relative w-20 h-20 flex-shrink-0 rounded-2xl overflow-hidden border border-brand-gray/50 shadow-inner bg-[#F9F7F2]">
-                          <Image 
-                            src={product.imageUrl || 'https://placehold.co/100x100/F9F7F2/1A1A1A.png?text=Xian'} 
-                            alt={product.nameAr}
-                            fill
-                            className={`object-cover transition-transform duration-700 group-hover:scale-110 ${!product.isAvailable ? 'grayscale opacity-60' : ''}`}
-                          />
-                        </div>
-                        <div>
-                          <h4 className="font-black text-lg text-brand-black mb-1 group-hover:text-brand-red transition-colors">{product.nameAr}</h4>
-                          <p className="text-[10px] font-bold text-brand-black/20 uppercase tracking-widest">{product.nameEn}</p>
-                          <div className="lg:hidden mt-2 flex items-center gap-2 flex-wrap">
-                             <span className="bg-brand-cream px-2 py-0.5 rounded text-[8px] font-black text-brand-black/40 tracking-widest">{product.category ? product.category.split(',').map((c: string) => c.trim()).join(' • ') : 'بدون تصنيف'}</span>
-                             {!product.isAvailable && <span className="bg-brand-red/10 text-brand-red px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest leading-none pt-[1px]">Out of Stock</span>}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="hidden lg:col-span-2 flex justify-center items-center">
-                         <span className="bg-brand-cream border border-brand-gray/40 px-4 py-1.5 rounded-full text-[9px] font-black text-brand-black/30 tracking-[0.15em] text-center">
-                           {product.category ? product.category.split(',').map((c: string) => c.trim()).join(' • ') : 'بدون تصنيف'}
-                         </span>
-                      </div>
-
-                      {/* Price */}
-                      <div className="col-span-1 lg:col-span-2 text-right lg:text-center">
-                        <div className="text-xl font-black text-brand-red font-serif">
-                          {product.price.toFixed(2)} <span className="text-[9px] text-brand-black/20 font-sans tracking-normal uppercase">JOD</span>
-                        </div>
-                      </div>
-
-                      {/* Availability Toggle */}
-                      <div className="col-span-1 lg:col-span-3 flex lg:justify-center items-center gap-4">
-                         {/* Sleek Toggle Switch */}
-                         <button 
-                            onClick={() => handleToggleAvailability(product.id, product.isAvailable)}
-                            className="flex items-center gap-4 group/toggle cursor-pointer bg-transparent border-none p-0 outline-none"
-                         >
-                            <span className={`text-[10px] font-black uppercase tracking-widest transition-colors
-                               ${product.isAvailable ? 'text-green-600' : 'text-brand-black/20'}`}>
-                               {product.isAvailable ? 'نشط' : 'معطل'}
-                            </span>
-                            <div className={`w-12 h-6 rounded-full relative transition-all duration-500 flex items-center px-1
-                               ${product.isAvailable ? 'bg-green-600' : 'bg-brand-black/10'}`}>
-                               <motion.div 
-                                  layout
-                                  className="w-4 h-4 bg-white rounded-full shadow-sm"
-                                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                                  initial={false}
-                                  animate={{ x: product.isAvailable ? 23 : 0 }}
-                               />
+          <AnimatePresence mode="wait">
+            {!selectedCategory && !searchQuery ? (
+                // Category Folders View
+                <motion.div 
+                    key="categories"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+                >
+                    {existingCategories.map((cat, i) => (
+                        <motion.button
+                            key={cat}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: i * 0.05 }}
+                            onClick={() => setSelectedCategory(cat)}
+                            className="bg-white group p-8 rounded-[2.5rem] border border-brand-gray/40 shadow-sm hover:border-brand-red/20 hover:shadow-xl transition-all text-right flex flex-col justify-between h-56 relative overflow-hidden"
+                        >
+                            <div className="absolute top-0 right-0 p-8 text-brand-red/5 -mr-4 -mt-4">
+                                <Folder size={120} strokeWidth={1} />
                             </div>
-                         </button>
-                      </div>
 
-                      {/* Actions */}
-                      <div className="col-span-1 lg:col-span-2 flex justify-start lg:justify-end items-center gap-1 border-t lg:border-none pt-6 lg:pt-0">
-                         <button 
-                            onClick={() => openEditPanel(product)}
-                            className="p-3 text-brand-black/20 hover:text-brand-red transition-all"
-                         >
-                            <Edit2 size={18} strokeWidth={1.5} />
-                         </button>
-                         <button 
-                            onClick={() => handleDelete(product.id)}
-                            className="p-3 text-brand-black/20 hover:text-brand-red transition-all"
-                         >
-                            <Trash2 size={18} strokeWidth={1.5} />
-                         </button>
-                         <button className="p-3 text-brand-black/10 hidden lg:block">
-                            <MoreVertical size={18} strokeWidth={1.5} />
-                         </button>
-                      </div>
+                            <div className="relative z-10 w-14 h-14 bg-brand-cream rounded-2xl flex items-center justify-center text-brand-red group-hover:bg-brand-red group-hover:text-white transition-all duration-500">
+                                <Folder size={24} strokeWidth={1.5} />
+                            </div>
+                            
+                            <div className="relative z-10">
+                                <h3 className="text-2xl font-black text-brand-black mb-1 font-serif group-hover:text-brand-red transition-colors">{cat}</h3>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-brand-black/20">
+                                    {getProductCountByCategory(cat)} {getProductCountByCategory(cat) === 1 ? 'صنف' : 'أصناف'}
+                                </p>
+                            </div>
+                        </motion.button>
+                    ))}
 
+                    {/* All Products Folder */}
+                    <motion.button
+                        onClick={() => setSelectedCategory('الكل')}
+                        className="bg-brand-black group p-8 rounded-[2.5rem] border border-transparent shadow-xl hover:scale-[1.02] transition-all text-right flex flex-col justify-between h-56 relative overflow-hidden"
+                    >
+                         <div className="absolute top-0 right-0 p-8 text-white/5 -mr-4 -mt-4">
+                            <Layers size={120} strokeWidth={1} />
+                        </div>
+                        <div className="relative z-10 w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center text-white">
+                            <Layers size={24} strokeWidth={1.5} />
+                        </div>
+                        <div className="relative z-10">
+                            <h3 className="text-2xl font-black text-white mb-1 font-serif">جميع الأصناف</h3>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-white/30">مشاهدة القائمة كاملة</p>
+                        </div>
+                    </motion.button>
+                </motion.div>
+            ) : (
+                // Products List View (Categorized or Searched)
+                <motion.div 
+                    key="products"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="space-y-4"
+                >
+                    <div className="hidden lg:grid grid-cols-12 px-10 py-4 text-[10px] font-black uppercase tracking-[0.25em] text-brand-black/20">
+                        <div className="col-span-5">المنتج والتصنيف</div>
+                        <div className="col-span-2 text-center">السعر</div>
+                        <div className="col-span-3 text-center">الحالة</div>
+                        <div className="col-span-2 text-left">الإجراءات</div>
                     </div>
-                  </motion.div>
-                ))}
-               </AnimatePresence>
-               
-               {filteredProducts.length === 0 && (
-                 <div className="py-32 text-center bg-white rounded-[3rem] border border-brand-gray/40">
-                    <Package size={60} className="mx-auto text-brand-black/10 mb-6" strokeWidth={1} />
-                    <h3 className="text-xl font-serif text-brand-black/30">لم يتم العثور على منتجات</h3>
-                 </div>
-               )}
-             </div>
-          </div>
+
+                    <div className="space-y-4">
+                        <AnimatePresence mode="popLayout">
+                            {filteredProducts.map((product) => (
+                                <motion.div
+                                    key={product.id}
+                                    layoutId={product.id}
+                                    initial={{ opacity: 0, scale: 0.98 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.95 }}
+                                    className={`bg-white rounded-[2rem] p-4 lg:p-6 border border-brand-gray/40 shadow-sm transition-all duration-300 hover:border-brand-red/10 group
+                                    ${!product.isAvailable ? 'bg-brand-cream/40 px-6 blur-[0.3px]' : ''}`}
+                                >
+                                    <div className="grid grid-cols-1 lg:grid-cols-12 items-center gap-6 lg:gap-4 text-right">
+                                        
+                                        {/* Thumbnail & Info */}
+                                        <div className="col-span-1 lg:col-span-5 flex items-center gap-6">
+                                            <div className="relative w-20 h-20 flex-shrink-0 rounded-2xl overflow-hidden border border-brand-gray/50 shadow-inner bg-[#F9F7F2]">
+                                                <Image 
+                                                    src={product.imageUrl || 'https://placehold.co/100x100/F9F7F2/1A1A1A.png?text=Xian'} 
+                                                    alt={product.nameAr}
+                                                    fill
+                                                    className={`object-cover transition-transform duration-700 group-hover:scale-110 ${!product.isAvailable ? 'grayscale opacity-60' : ''}`}
+                                                />
+                                            </div>
+                                            <div>
+                                                <h4 className="font-black text-lg text-brand-black mb-1 group-hover:text-brand-red transition-colors">{product.nameAr}</h4>
+                                                <p className="text-[10px] font-bold text-brand-black/20 uppercase tracking-widest">{product.nameEn}</p>
+                                                <div className="lg:hidden mt-2 flex items-center gap-2 flex-wrap">
+                                                    <span className="bg-brand-cream px-2 py-0.5 rounded text-[8px] font-black text-brand-black/40 tracking-widest">{product.category ? product.category.split(',').map((c: string) => c.trim()).join(' • ') : 'بدون تصنيف'}</span>
+                                                    {!product.isAvailable && <span className="bg-brand-red/10 text-brand-red px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest leading-none pt-[1px]">Out of Stock</span>}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="hidden lg:col-span-2 flex justify-center items-center">
+                                            <span className="bg-brand-cream border border-brand-gray/40 px-4 py-1.5 rounded-full text-[9px] font-black text-brand-black/30 tracking-[0.15em] text-center">
+                                                {product.category ? product.category.split(',').map((c: string) => c.trim()).join(' • ') : 'بدون تصنيف'}
+                                            </span>
+                                        </div>
+
+                                        {/* Price */}
+                                        <div className="col-span-1 lg:col-span-2 text-right lg:text-center">
+                                            <div className="text-xl font-black text-brand-red font-serif">
+                                                {product.price.toFixed(2)} <span className="text-[9px] text-brand-black/20 font-sans tracking-normal uppercase">JOD</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Availability Toggle */}
+                                        <div className="col-span-1 lg:col-span-3 flex lg:justify-center items-center gap-4">
+                                            <button 
+                                                onClick={() => handleToggleAvailability(product.id, product.isAvailable)}
+                                                className="flex items-center gap-4 group/toggle cursor-pointer bg-transparent border-none p-0 outline-none"
+                                            >
+                                                <span className={`text-[10px] font-black uppercase tracking-widest transition-colors
+                                                    ${product.isAvailable ? 'text-green-600' : 'text-brand-black/20'}`}>
+                                                    {product.isAvailable ? 'نشط' : 'معطل'}
+                                                </span>
+                                                <div className={`w-12 h-6 rounded-full relative transition-all duration-500 flex items-center px-1
+                                                    ${product.isAvailable ? 'bg-green-600' : 'bg-brand-black/10'}`}>
+                                                    <motion.div 
+                                                        layout
+                                                        className="w-4 h-4 bg-white rounded-full shadow-sm"
+                                                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                                                        initial={false}
+                                                        animate={{ x: product.isAvailable ? 23 : 0 }}
+                                                    />
+                                                </div>
+                                            </button>
+                                        </div>
+
+                                        {/* Actions */}
+                                        <div className="col-span-1 lg:col-span-2 flex justify-start lg:justify-end items-center gap-1 border-t lg:border-none pt-6 lg:pt-0">
+                                            <button 
+                                                onClick={() => openEditPanel(product)}
+                                                className="p-3 text-brand-black/20 hover:text-brand-red transition-all"
+                                            >
+                                                <Edit2 size={18} strokeWidth={1.5} />
+                                            </button>
+                                            <button 
+                                                onClick={() => handleDelete(product.id)}
+                                                className="p-3 text-brand-black/20 hover:text-brand-red transition-all"
+                                            >
+                                                <Trash2 size={18} strokeWidth={1.5} />
+                                            </button>
+                                            <button className="p-3 text-brand-black/10 hidden lg:block">
+                                                <MoreVertical size={18} strokeWidth={1.5} />
+                                            </button>
+                                        </div>
+
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
+                        
+                        {filteredProducts.length === 0 && (
+                            <div className="py-32 text-center bg-white rounded-[3rem] border border-brand-gray/40">
+                                <Package size={60} className="mx-auto text-brand-black/10 mb-6" strokeWidth={1} />
+                                <h3 className="text-xl font-serif text-brand-black/30">لا توجد أصناف في هذا القسم</h3>
+                            </div>
+                        )}
+                    </div>
+                </motion.div>
+            )}
+          </AnimatePresence>
         )}
       </div>
 
@@ -385,7 +469,7 @@ export default function ProductsDashboard() {
                         </div>
                         <div className="space-y-3 col-span-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-brand-black/40">
-                               تصنيفات المنتج (يمكن اختيار أكثر من واحد)
+                                تصنيفات المنتج (يمكن اختيار أكثر من واحد)
                             </label>
                             <div className="flex flex-wrap gap-2 mb-3">
                                {existingCategories.map((cat: string) => {
@@ -408,7 +492,6 @@ export default function ProductsDashboard() {
                                      </button>
                                   );
                                })}
-                               {existingCategories.length === 0 && <span className="text-xs text-brand-black/40">لا توجد تصنيفات سابقة</span>}
                             </div>
 
                             <div className="relative flex items-center gap-2">
@@ -418,9 +501,8 @@ export default function ProductsDashboard() {
                                   onChange={e => setFormData({...formData, category: e.target.value})}
                                   className="w-full bg-[#F9F7F2] border border-brand-gray/50 rounded-2xl p-4 outline-none focus:border-brand-red/30 font-bold transition-all text-sm"
                                   dir="ltr"
-                               />
+                                />
                             </div>
-                            <p className="text-[10px] text-brand-black/40 font-bold leading-relaxed">يمكنك المراجعة والتعديل اليدوي للتصنيفات في الحقل أعلاه، يجب أن تفصل بين التصنيفات بفاصلة ( , )</p>
                          </div>
                       </div>
  
