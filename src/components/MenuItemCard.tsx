@@ -45,14 +45,15 @@ export default function MenuItemCard({ item, priority = false }: { item: Product
       className="flex flex-col gap-3 group"
     >
       {/* IMAGE CONTAINER */}
-      <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-gray-50 border border-gray-100">
+      <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-[#F9F7F2] border border-gray-100 shadow-sm">
         <Image 
-          src={item.imageUrl || `https://placehold.co/600x600/FFFFFF/000000.png?text=${item.nameAr}`} 
+          src={item.imageUrl || `https://placehold.co/800x600/F9F7F2/000000.png?text=${item.nameAr}`} 
           alt={item.nameEn || item.nameAr}
           fill 
-          sizes="(max-width: 768px) 50vw, 25vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className="object-cover transition-all duration-700 group-hover:scale-110"
           priority={priority}
+          quality={90}
         />
         
         {/* CIRCULAR ADD BUTTON - MATCHING IMAGE EXACTLY */}
