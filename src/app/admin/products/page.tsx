@@ -78,7 +78,7 @@ export default function ProductsDashboard() {
         body: JSON.stringify({ ids: selectedIds, category: bulkCategory })
       });
       if (res.ok) {
-        toast.success(`تم نقل ${selectedIds.length} منتجات إلى قسم ${bulkCategory}`);
+        toast.success(`تمت إضافة ${selectedIds.length} منتجات إلى قسم ${bulkCategory}`);
         setSelectedIds([]);
         setIsBulkMoveModalOpen(false);
         fetchProducts();
@@ -550,7 +550,7 @@ export default function ProductsDashboard() {
                   className="flex items-center gap-3 text-sm font-black hover:text-brand-red transition-colors group"
                >
                  <MoveRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                 <span>نقل إلى قسم آخر</span>
+                 <span>إضافة إلى قسم</span>
                </button>
                <button 
                   onClick={() => setSelectedIds([])}
@@ -819,7 +819,7 @@ export default function ProductsDashboard() {
             >
               <div className="p-10">
                 <div className="flex justify-between items-center mb-8">
-                  <h2 className="text-2xl font-black text-brand-red font-serif">نقل المنتجات ({selectedIds.length})</h2>
+                  <h2 className="text-2xl font-black text-brand-red font-serif">إضافة إلى قسم ({selectedIds.length})</h2>
                   <button onClick={() => setIsBulkMoveModalOpen(false)} className="bg-[#F9F7F2] p-2 rounded-xl text-brand-black/20 hover:text-brand-red">
                     <X size={20} />
                   </button>
@@ -862,7 +862,7 @@ export default function ProductsDashboard() {
                       ) : (
                         <>
                           <Check size={18} />
-                          <span>تطبيق النقل الجماعي</span>
+                          <span>تطبيق الإضافة الجماعية</span>
                         </>
                       )}
                    </button>
