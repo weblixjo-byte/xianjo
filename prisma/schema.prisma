@@ -1,0 +1,124 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Order {
+  id           String      @id @default(uuid())
+  customerName String
+  phoneNumber  String
+  address      String?     // Optional for Pickup
+  deliveryArea String?
+  pickupTime   String?     // For Pickup orders
+  orderType    String      @default("DELIVERY") // DELIVERY or PICKUP
+  notes        String?
+  totalPrice   Float
+  status       String      @default("PENDING") // PENDING, PREPARING, READY, SHIPPED, CANCELLED
+  couponCode   String?     // Null if no coupon applied
+  paymentMethod String     @default("CASH")    // CASH or CLIQ
+  paymentStatus String     @default("PENDING") // PENDING, COMPLETED
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  userId       String?     // Link to User
+  user         User?       @relation(fields: [userId], references: [id])
+
+  // Relation to the items inside the cart for this order
+  items        OrderItem[]
+}
+
+// NextAuth Models
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image                  String?
+  hasUsedWelcomeDiscount Boolean   @default(false)
+  accounts               Account[]
+  sessions               Session[]
+  orders                 Order[]   // Back-relation to Order
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  productId String   // (Optional) ID from your frontend menu data
+  name      String   // Item Name (e.g., "California Lovers")
+  price     Float    // Price per item
+  quantity  Int      // How many were ordered
+
+  createdAt DateTime @default(now())
+}
+
+model Product {
+  id           String   @id @default(uuid())
+  nameEn       String
+  nameAr       String
+  descriptionEn String?
+  descriptionAr String?
+  price        Float
+  category     String
+  imageUrl     String?
+  isAvailable  Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model StoreSettings {
+  id          Int      @id @default(1)
+  isStoreOpen Boolean  @default(true)
+  updatedAt   DateTime @updatedAt
+}
+
+model Coupon {
+  id              String   @id @default(cuid())
+  code            String   @unique
+  discountPercent Int
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+}
