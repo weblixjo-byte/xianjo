@@ -42,47 +42,49 @@ export default function MenuItemCard({ item, priority = false }: { item: Product
       initial={{ opacity: 0, y: 10 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="flex flex-col gap-3 group"
+      className="flex flex-col gap-4 group h-full"
     >
       {/* IMAGE CONTAINER */}
-      <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden bg-[#F9F7F2] border border-gray-100 shadow-sm">
+      <div className="relative w-full aspect-square rounded-[2rem] overflow-hidden bg-[#F9F7F2] border border-gray-100/50 shadow-sm transition-all duration-500 group-hover:shadow-xl group-hover:border-brand-red/10">
         <Image 
-          src={item.imageUrl || `https://placehold.co/800x600/F9F7F2/000000.png?text=${item.nameAr}`} 
+          src={item.imageUrl || `https://placehold.co/800x800/F9F7F2/1A1A1A.png?text=${item.nameAr}`} 
           alt={item.nameEn || item.nameAr}
           fill 
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover transition-all duration-700 group-hover:scale-110"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 300px"
+          className="object-cover transition-all duration-1000 group-hover:scale-110"
           priority={priority}
-          quality={90}
+          quality={100}
         />
         
-        {/* CIRCULAR ADD BUTTON - MATCHING IMAGE EXACTLY */}
+        {/* CIRCULAR ADD BUTTON - ELEVATED DESIGN */}
         <button 
           disabled={!isAvailable}
           onClick={(e) => {
             e.stopPropagation();
             handleAddToCart();
           }}
-          className="absolute bottom-3 right-3 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-all border border-gray-100 group/btn"
+          className="absolute bottom-4 right-4 w-12 h-12 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-xl active:scale-90 transition-all border border-white/50 group/btn z-10 hover:bg-brand-red hover:text-white"
         >
-          <Plus size={20} className="text-[#E67E22] stroke-[3px]" />
+          <Plus size={24} className="group-hover/btn:rotate-90 transition-transform duration-300" />
         </button>
 
         {!isAvailable && (
-          <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] flex items-center justify-center">
-            <span className="bg-black text-white px-4 py-1.5 rounded-full text-[10px] font-bold">Out of Stock</span>
+          <div className="absolute inset-0 bg-white/70 backdrop-blur-[2px] flex items-center justify-center z-20">
+            <span className="bg-brand-black text-white px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em]">Sold Out</span>
           </div>
         )}
       </div>
 
-      {/* TEXT SECTION */}
-      <div className="flex flex-col gap-1 px-1">
-        <h3 className="text-sm md:text-base font-bold text-black line-clamp-2 leading-snug">
-          {item.nameEn || item.nameAr}
-        </h3>
-        <div className="flex items-center gap-1.5">
-          <span className="text-xs font-bold text-gray-500">JOD</span>
-          <span className="text-sm font-bold text-black">{item.price.toFixed(2)}</span>
+      {/* TEXT SECTION - FIXED ALIGNMENT */}
+      <div className="flex flex-col gap-2 flex-1 px-1">
+        <div className="min-h-[2.5rem] flex flex-col justify-center">
+            <h3 className="text-sm md:text-base font-black text-brand-black line-clamp-2 leading-tight uppercase tracking-tight">
+              {item.nameEn || item.nameAr}
+            </h3>
+        </div>
+        <div className="flex items-center gap-2 mt-auto pt-1">
+          <span className="text-[10px] font-black text-brand-black/20 uppercase tracking-widest">JOD</span>
+          <span className="text-lg font-black text-brand-red font-serif">{item.price.toFixed(2)}</span>
         </div>
       </div>
     </motion.div>
