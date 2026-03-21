@@ -323,7 +323,7 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                             <User className="absolute right-5 top-1/2 -translate-y-1/2 text-brand-black/20" size={18} />
                             <input 
                               placeholder="Full Name" 
-                              className="w-full bg-brand-cream/50 pr-12 pl-6 py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-sm"
+                              className="w-full bg-brand-cream/50 pr-12 pl-6 py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px]"
                               value={form.name}
                               onChange={(e) => setForm({...form, name: e.target.value})}
                             />
@@ -332,7 +332,7 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                             <Phone className="absolute right-5 top-1/2 -translate-y-1/2 text-brand-black/20" size={18} />
                             <input 
                               placeholder="Phone Number" 
-                              className="w-full bg-brand-cream/50 pr-12 pl-6 py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-sm"
+                              className="w-full bg-brand-cream/50 pr-12 pl-6 py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px]"
                               dir="ltr"
                               value={form.phone}
                               onChange={(e) => setForm({...form, phone: e.target.value})}
@@ -345,7 +345,7 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                                 <MapPin className="absolute right-5 top-1/2 -translate-y-1/2 text-brand-black/20" size={18} />
                                 <input 
                                   placeholder="Address (Area, Street, Building)" 
-                                  className="w-full bg-brand-cream/50 pr-12 pl-6 py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-sm"
+                                  className="w-full bg-brand-cream/50 pr-12 pl-6 py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px]"
                                   value={form.address}
                                   onChange={(e) => setForm({...form, address: e.target.value})}
                                 />
@@ -357,7 +357,7 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                               <input 
                                 type="time"
                                 placeholder="Pickup Time" 
-                                className="w-full bg-brand-cream/50 pr-12 pl-6 py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-sm"
+                                className="w-full bg-brand-cream/50 pr-12 pl-6 py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px]"
                                 value={form.pickupTime}
                                 onChange={(e) => setForm({...form, pickupTime: e.target.value})}
                               />
@@ -366,7 +366,7 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
   
                           <textarea 
                             placeholder="Additional Notes (Optional)..." 
-                            className="w-full bg-brand-cream/50 px-6 py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-sm min-h-[80px] resize-none"
+                            className="w-full bg-brand-cream/50 px-6 py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px] min-h-[80px] resize-none"
                             value={form.notes}
                             onChange={(e) => setForm({...form, notes: e.target.value})}
                           />
@@ -378,7 +378,7 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                           <div className="flex gap-2 relative">
                             <input 
                               placeholder="Enter promo code (WELCOME30)" 
-                              className="w-full bg-brand-cream/50 pl-4 pr-4 py-3 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-sm uppercase"
+                              className="w-full bg-brand-cream/50 pl-4 pr-4 py-3 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px] uppercase"
                               value={couponCode}
                               onChange={(e) => {
                                 const val = e.target.value.toUpperCase();
