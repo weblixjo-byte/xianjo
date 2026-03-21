@@ -520,14 +520,14 @@ export default function ProductsDashboard() {
                            
                            {/* Elegant Preview Box */}
                            <div className="relative group">
-                              <div className="w-full aspect-square rounded-[2rem] border-2 border-dashed border-brand-gray/50 bg-[#F9F7F2] flex flex-col items-center justify-center overflow-hidden relative group-hover:border-brand-red/20 transition-all">
+                              <div className="w-full aspect-[4/3] rounded-[2rem] border-2 border-dashed border-brand-gray/50 bg-[#F9F7F2] flex flex-col items-center justify-center overflow-hidden relative group-hover:border-brand-red/20 transition-all">
                                  {formData.imageUrl ? (
-                                   <div className="relative w-full h-full p-6">
+                                   <div className="relative w-full h-full">
                                       <Image 
                                          src={formData.imageUrl} 
                                          alt="Preview" 
                                          fill 
-                                         className="object-contain p-6" 
+                                         className="object-contain" 
                                          onError={(e) => {
                                            (e.target as any).src = 'https://placehold.co/400x400/F9F7F2/922724.png?text=رابط+غير+صالح';
                                          }}
