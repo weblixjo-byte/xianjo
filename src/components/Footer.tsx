@@ -43,15 +43,15 @@ export default function Footer() {
             <div className="flex flex-col gap-6 text-brand-offwhite/60">
               <div className="flex items-center gap-4">
                 <Phone size={20} className="text-brand-red" />
-                <span>07XX XXX XXX</span>
+                <span>+962 7 7999 0504</span>
               </div>
               <div className="flex items-center gap-4">
                 <MapPin size={20} className="text-brand-red" />
                 <span>Amman, Jordan</span>
               </div>
               <div className="flex gap-6 pt-4">
-                <Link href="#" className="hover:text-brand-red transition-all"><Instagram size={24} /></Link>
-                <Link href="#" className="hover:text-brand-red transition-all"><Facebook size={24} /></Link>
+                <Link href="https://www.instagram.com/xianjordan" target="_blank" rel="noopener noreferrer" className="hover:text-brand-red transition-all"><Instagram size={24} /></Link>
+                <Link href="https://facebook.com/xianrestaura" target="_blank" rel="noopener noreferrer" className="hover:text-brand-red transition-all"><Facebook size={24} /></Link>
               </div>
             </div>
           </div>
@@ -64,8 +64,7 @@ export default function Footer() {
             All Rights Reserved © {currentYear} Xian Restaurant
           </p>
           <div className="flex gap-8 text-xs font-bold text-brand-offwhite/20 uppercase tracking-widest">
-             <Link href="#" className="hover:text-brand-offwhite/50 transition-all">Privacy Policy</Link>
-             <Link href="#" className="hover:text-brand-offwhite/50 transition-all">Terms & Conditions</Link>
+            {/* Links removed as per user request */}
           </div>
         </div>
       </div>
