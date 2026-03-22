@@ -282,44 +282,54 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                 
                 {/* SCROLLABLE VIEWPORT FOR ITEMS AND FORM */}
                 <div className="flex-1 overflow-y-auto flex flex-col w-full">
-                  {/* ITEMS */}
-                  <div className="p-8 space-y-6 flex-shrink-0">
+                  {/* ITEMS SECTION */}
+                  <div className="p-4 md:p-8 space-y-4 flex-shrink-0">
                   {items.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-full text-brand-black/10 space-y-6">
-                      <ShoppingCart size={60} strokeWidth={1} />
-                      <p className="text-xl font-bold">
+                    <div className="flex flex-col items-center justify-center h-full text-brand-black/10 py-20 space-y-6">
+                      <ShoppingCart size={48} strokeWidth={1} />
+                      <p className="text-lg font-bold">
                         {language === 'ar' ? 'سلة المشتريات فارغة..' : 'Your cart is empty..'}
                       </p>
                     </div>
                   ) : (
-                    items.map((item) => (
-                      <div 
-                        key={item.id} 
-                        className="bg-white p-5 rounded-2xl border border-brand-gray/50 flex gap-4 items-center group relative shadow-sm"
-                      >
-                        <div className="h-20 w-20 bg-brand-cream rounded-xl overflow-hidden flex-shrink-0 relative">
-                          <Image 
-                            src={item.imageUrl || `https://placehold.co/200x200/F9F7F2/1A1A1A.png?text=Xian`} 
-                            alt={item.name} 
-                            fill 
-                            className="object-cover" 
-                          />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-black text-brand-black text-lg">{item.name}</h4>
-                          <div className="flex items-center gap-4 mt-1">
-                            <span className="text-brand-red font-black">{item.price.toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
-                            <span className="text-brand-black/30 font-bold text-xs">{language === 'ar' ? 'الكمية' : 'Qty'}: {item.quantity}</span>
-                          </div>
-                        </div>
-                        <button 
-                          onClick={() => removeItem(item.id)}
-                          className="p-2 text-brand-black/10 hover:text-brand-red transition-all"
-                        >
-                          <Trash2 size={18} />
-                        </button>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-brand-black/30">
+                          {language === 'ar' ? 'محتويات السلة' : 'Review Items'}
+                        </span>
+                        <span className="bg-brand-gray/20 px-2 py-0.5 rounded text-[10px] font-black">
+                          {items.length} {language === 'ar' ? 'أصناف' : 'Items'}
+                        </span>
                       </div>
-                    ))
+                      {items.map((item) => (
+                        <div 
+                          key={item.id} 
+                          className="bg-white p-3 md:p-5 rounded-2xl border border-brand-gray/50 flex gap-3 md:gap-4 items-center group relative shadow-sm"
+                        >
+                          <div className="h-14 w-14 md:h-20 md:w-20 bg-brand-cream rounded-xl overflow-hidden flex-shrink-0 relative">
+                            <Image 
+                              src={item.imageUrl || `https://placehold.co/200x200/F9F7F2/1A1A1A.png?text=Xian`} 
+                              alt={item.name} 
+                              fill 
+                              className="object-cover" 
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-black text-brand-black text-sm md:text-lg truncate">{item.name}</h4>
+                            <div className="flex items-center gap-3 mt-0.5">
+                              <span className="text-brand-red font-black text-xs md:text-base">{item.price.toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
+                              <span className="text-brand-black/30 font-bold text-[10px] md:text-xs">{language === 'ar' ? 'الكمية' : 'Qty'}: {item.quantity}</span>
+                            </div>
+                          </div>
+                          <button 
+                            onClick={() => removeItem(item.id)}
+                            className="p-2 text-brand-black/10 hover:text-brand-red transition-all"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   )}
                   </div>
                 
@@ -360,185 +370,207 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                       </div>
                     ) : (
                       <div className="space-y-6">
-                        <div className="flex items-center justify-between gap-4 mb-2">
-                            <h3 className="font-black text-xl text-brand-black">
-                              {language === 'ar' ? 'خيارات الطلب' : 'Order Options'}
-                            </h3>
+                        {/* STEP 1: CONTACT DETAILS */}
+                        <div className="bg-brand-cream/10 p-4 md:p-6 rounded-[2rem] border border-brand-gray/30 space-y-4">
+                          <div className="flex items-center gap-3 mb-2">
+                             <div className="w-6 h-6 rounded-full bg-brand-black text-white text-[10px] font-black flex items-center justify-center">1</div>
+                             <h3 className="font-black text-lg text-brand-black">
+                               {language === 'ar' ? 'تفاصيل التواصل' : 'Contact Details'}
+                             </h3>
+                          </div>
+                          <div className="space-y-3">
+                            <div className="relative group">
+                              <User className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-brand-black/20 group-focus-within:text-brand-red transition-colors`} size={18} />
+                              <input 
+                                placeholder={language === 'ar' ? 'الاسم الكامل' : 'Full Name'} 
+                                className={`w-full bg-white ${language === 'ar' ? 'pr-12 pl-6 text-right' : 'pl-12 pr-6 text-left'} py-4 rounded-xl border border-brand-gray/40 focus:border-brand-red/30 outline-none transition-all font-bold text-[15px]`}
+                                value={form.name}
+                                onChange={(e) => setForm({...form, name: e.target.value})}
+                              />
+                            </div>
+                            <div className="relative group">
+                              <Phone className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-brand-black/20 group-focus-within:text-brand-red transition-colors`} size={18} />
+                              <input 
+                                placeholder={language === 'ar' ? 'رقم الهاتف' : 'Phone Number'} 
+                                className={`w-full bg-white ${language === 'ar' ? 'pr-12 pl-6' : 'pl-12 pr-6'} py-4 rounded-xl border border-brand-gray/40 focus:border-brand-red/30 outline-none transition-all font-bold text-[15px]`}
+                                dir="ltr"
+                                value={form.phone}
+                                onChange={(e) => setForm({...form, phone: e.target.value})}
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* STEP 2: FULFILLMENT */}
+                        <div className="bg-brand-cream/10 p-4 md:p-6 rounded-[2rem] border border-brand-gray/30 space-y-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-3">
+                               <div className="w-6 h-6 rounded-full bg-brand-black text-white text-[10px] font-black flex items-center justify-center">2</div>
+                               <h3 className="font-black text-lg text-brand-black">
+                                 {language === 'ar' ? 'طريقة الاستلام' : 'Fulfillment'}
+                               </h3>
+                            </div>
                             
-                            {/* TOGGLE PICKUP/DELIVERY */}
-                            <div className="flex bg-gray-100 p-1 rounded-xl">
+                            <div className="flex bg-white p-1 rounded-xl border border-brand-gray/30">
                                <button 
                                  onClick={() => setOrderType('DELIVERY')}
-                                 className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${orderType === 'DELIVERY' ? 'bg-black text-white shadow-md' : 'text-gray-400'}`}
+                                 className={`px-3 py-1.5 rounded-lg text-[10px] font-black transition-all ${orderType === 'DELIVERY' ? 'bg-brand-red text-white shadow-md' : 'text-gray-400'}`}
                                >
                                  {language === 'ar' ? 'توصيل' : 'Delivery'}
                                </button>
                                <button 
                                  onClick={() => setOrderType('PICKUP')}
-                                 className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${orderType === 'PICKUP' ? 'bg-black text-white shadow-md' : 'text-gray-400'}`}
+                                 className={`px-3 py-1.5 rounded-lg text-[10px] font-black transition-all ${orderType === 'PICKUP' ? 'bg-brand-red text-white shadow-md' : 'text-gray-400'}`}
                                >
                                  {language === 'ar' ? 'استلام' : 'Pickup'}
                                </button>
                             </div>
-                        </div>
-                        
-                        <div className="space-y-4">
-                          <div className="relative">
-                            <User className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-brand-black/20`} size={18} />
-                            <input 
-                              placeholder={language === 'ar' ? 'الاسم الكامل' : 'Full Name'} 
-                              className={`w-full bg-brand-cream/50 ${language === 'ar' ? 'pr-12 pl-6 text-right' : 'pl-12 pr-6 text-left'} py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px]`}
-                              value={form.name}
-                              onChange={(e) => setForm({...form, name: e.target.value})}
-                            />
                           </div>
-                          <div className="relative">
-                            <Phone className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-brand-black/20`} size={18} />
-                            <input 
-                              placeholder={language === 'ar' ? 'رقم الهاتف' : 'Phone Number'} 
-                              className={`w-full bg-brand-cream/50 ${language === 'ar' ? 'pr-12 pl-6' : 'pl-12 pr-6'} py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px]`}
-                              dir="ltr"
-                              value={form.phone}
-                              onChange={(e) => setForm({...form, phone: e.target.value})}
-                            />
-                          </div>
-  
-                          {orderType === 'DELIVERY' ? (
-                            <>
-                                <div className="space-y-3">
-                                  {/* ZONE SELECTION */}
-                                  <div className="relative group">
-                                    <Bike className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-brand-black/20 group-focus-within:text-brand-red transition-colors`} size={18} />
-                                    <select 
-                                      className={`w-full appearance-none bg-brand-cream/50 ${language === 'ar' ? 'pr-12 pl-10' : 'pl-12 pr-10'} py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px] cursor-pointer`}
-                                      value={selectedZone.id}
-                                      onChange={(e) => {
-                                        const zone = DELIVERY_ZONES.find(z => z.id === e.target.value);
-                                        if (zone) setSelectedZone(zone);
-                                      }}
-                                    >
-                                      {DELIVERY_ZONES.map(zone => (
-                                        <option key={zone.id} value={zone.id}>
-                                          {language === 'ar' ? zone.nameAr : zone.nameEn} (+{zone.fee.toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'})
-                                        </option>
-                                      ))}
-                                    </select>
-                                    <ChevronDown className={`absolute ${language === 'ar' ? 'left-5' : 'right-5'} top-1/2 -translate-y-1/2 text-brand-black/20 pointer-events-none`} size={18} />
-                                  </div>
-
-                                  <div className="relative">
-                                    <MapPin className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-brand-black/20`} size={18} />
-                                    <input 
-                                      placeholder={language === 'ar' ? 'العنوان بالتفصيل (منطقة، شارع، بناية)' : 'Address (Area, Street, Building)'} 
-                                      className={`w-full bg-brand-cream/50 ${language === 'ar' ? 'pr-12 pl-6' : 'pl-12 pr-6'} py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px]`}
-                                      value={form.address}
-                                      onChange={(e) => setForm({...form, address: e.target.value})}
-                                    />
-                                  </div>
-                                  
-                                  <button 
-                                    type="button"
-                                    onClick={handleDetectLocation}
-                                    disabled={isDetecting}
-                                    className={`w-full py-4 rounded-xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 transition-all border-2 
-                                      ${isDetecting 
-                                        ? 'bg-brand-red text-white border-brand-red animate-pulse' 
-                                        : 'bg-white text-brand-red border-brand-red/20 hover:border-brand-red hover:bg-brand-red/5'}`}
+                          
+                          <div className="space-y-3">
+                            {orderType === 'DELIVERY' ? (
+                              <>
+                                {/* ZONE SELECTION */}
+                                <div className="relative group">
+                                  <Bike className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-brand-black/20 group-focus-within:text-brand-red transition-colors`} size={18} />
+                                  <select 
+                                    className={`w-full appearance-none bg-white ${language === 'ar' ? 'pr-12 pl-10' : 'pl-12 pr-10'} py-4 rounded-xl border border-brand-gray/40 focus:border-brand-red/30 outline-none transition-all font-bold text-[15px] cursor-pointer`}
+                                    value={selectedZone.id}
+                                    onChange={(e) => {
+                                      const zone = DELIVERY_ZONES.find(z => z.id === e.target.value);
+                                      if (zone) setSelectedZone(zone);
+                                    }}
                                   >
-                                    <Locate size={18} />
-                                    <span>{isDetecting 
-                                      ? (language === 'ar' ? 'جاري تحديد موقعك...' : 'Detecting your location...') 
-                                      : (language === 'ar' ? 'إرسال موقعي الدقيق للمطعم' : 'Send exact location to restaurant')}</span>
-                                  </button>
+                                    {DELIVERY_ZONES.map(zone => (
+                                      <option key={zone.id} value={zone.id}>
+                                        {language === 'ar' ? zone.nameAr : zone.nameEn} (+{zone.fee.toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'})
+                                      </option>
+                                    ))}
+                                  </select>
+                                  <ChevronDown className={`absolute ${language === 'ar' ? 'left-5' : 'right-5'} top-1/2 -translate-y-1/2 text-brand-black/20 pointer-events-none`} size={18} />
                                 </div>
-                            </>
-                          ) : (
-                            <div className="relative">
-                              <Clock className="absolute right-5 top-1/2 -translate-y-1/2 text-brand-black/20" size={18} />
-                              <input 
-                                type="time"
-                                placeholder="Pickup Time" 
-                                className="w-full bg-brand-cream/50 pr-12 pl-6 py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px]"
-                                value={form.pickupTime}
-                                onChange={(e) => setForm({...form, pickupTime: e.target.value})}
-                              />
-                            </div>
-                          )}
-  
-                          <textarea 
-                            placeholder={language === 'ar' ? 'ملاحظات إضافية (اختياري)...' : 'Additional Notes (Optional)...'} 
-                            className={`w-full bg-brand-cream/50 px-6 py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px] min-h-[80px] resize-none ${language === 'ar' ? 'text-right' : 'text-left'}`}
-                            value={form.notes}
-                            onChange={(e) => setForm({...form, notes: e.target.value})}
-                          />
-                        </div>
-  
-                        {/* PROMO CODE SECTION */}
-                        <div className="pt-4 border-t border-brand-gray/20">
-                          <label className="text-[10px] font-black text-brand-black/40 uppercase tracking-widest mb-2 block">
-                            {language === 'ar' ? 'كود الخصم (اختياري)' : 'Promo Code (Optional)'}
-                          </label>
-                          <div className="flex gap-2 relative">
-                            <input 
-                              placeholder={language === 'ar' ? 'أدخل كود الخصم (مثلاً WELCOME30)' : 'Enter promo code (WELCOME30)'} 
-                              className={`w-full bg-brand-cream/50 px-4 py-3 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px] uppercase ${language === 'ar' ? 'text-right' : 'text-left'}`}
-                              value={couponCode}
-                              onChange={(e) => {
-                                const val = e.target.value.toUpperCase();
-                                setCouponCode(val);
-                                if (val === 'WELCOME30') {
-                                  handleValidateCoupon(val);
-                                } else if (val.length === 0) {
-                                  setDiscountPercent(0);
-                                  setCouponSuccess('');
-                                  setCouponError('');
-                                }
-                              }}
-                              disabled={discountPercent > 0}
-                            />
-                            {discountPercent === 0 && (
-                              <button 
-                                onClick={() => handleValidateCoupon()}
-                                disabled={validatingCoupon || !couponCode.trim()}
-                                className="bg-brand-black text-white px-4 py-3 rounded-xl font-black text-xs hover:bg-brand-red transition-all disabled:opacity-50 min-w-[80px]"
-                              >
-                                {validatingCoupon ? '...' : 'Apply'}
-                              </button>
+
+                                <div className="relative group">
+                                  <MapPin className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-brand-black/20 group-focus-within:text-brand-red transition-colors`} size={18} />
+                                  <input 
+                                    placeholder={language === 'ar' ? 'العنوان بالتفصيل (بناء، شقة)' : 'Detailed Address (Bldg, Apt)'} 
+                                    className={`w-full bg-white ${language === 'ar' ? 'pr-12 pl-6' : 'pl-12 pr-6'} py-4 rounded-xl border border-brand-gray/40 focus:border-brand-red/30 outline-none transition-all font-bold text-[15px]`}
+                                    value={form.address}
+                                    onChange={(e) => setForm({...form, address: e.target.value})}
+                                  />
+                                </div>
+                                
+                                <button 
+                                  type="button"
+                                  onClick={handleDetectLocation}
+                                  disabled={isDetecting}
+                                  className={`w-full py-3 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all border-2 
+                                    ${isDetecting 
+                                      ? 'bg-brand-red text-white border-brand-red animate-pulse' 
+                                      : 'bg-white text-brand-red border-brand-red/20 hover:border-brand-red hover:bg-brand-red/5'}`}
+                                >
+                                  <Locate size={14} />
+                                  <span>{isDetecting 
+                                    ? (language === 'ar' ? 'جاري التحديد...' : 'Detecting...') 
+                                    : (language === 'ar' ? 'تحديد موقعي التلقائي' : 'Auto-detect Location')}</span>
+                                </button>
+                              </>
+                            ) : (
+                              <div className="relative group">
+                                <Clock className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-brand-black/20 group-focus-within:text-brand-red transition-colors`} size={18} />
+                                <input 
+                                  type="time"
+                                  className={`w-full bg-white ${language === 'ar' ? 'pr-12 pl-6' : 'pl-12 pr-6'} py-4 rounded-xl border border-brand-gray/40 focus:border-brand-red/30 outline-none transition-all font-bold text-[15px]`}
+                                  value={form.pickupTime}
+                                  onChange={(e) => setForm({...form, pickupTime: e.target.value})}
+                                />
+                              </div>
                             )}
+
+                            <textarea 
+                              placeholder={language === 'ar' ? 'ملاحظات إضافية (اختياري)...' : 'Additional Notes (Optional)...'} 
+                              className={`w-full bg-white px-6 py-4 rounded-xl border border-brand-gray/40 focus:border-brand-red/30 outline-none transition-all font-bold text-[15px] min-h-[70px] resize-none ${language === 'ar' ? 'text-right' : 'text-left'}`}
+                              value={form.notes}
+                              onChange={(e) => setForm({...form, notes: e.target.value})}
+                            />
                           </div>
-                          {couponError && <p className="text-brand-red text-xs font-bold mt-2">{couponError}</p>}
-                          {couponSuccess && <p className="text-green-600 text-xs font-bold mt-2 flex items-center gap-1"><CheckCircle2 size={14}/> {couponSuccess}</p>}
                         </div>
 
-                        {errorMsg && (
-                          <p className="text-brand-red text-xs font-black text-center animate-pulse pt-2">{errorMsg}</p>
-                        )}
-  
-                        {/* PAYMENT METHOD SELECTION */}
-                        <div className="pt-6 border-t border-brand-gray/20">
-                          <h4 className="font-black text-brand-black mb-3">{language === 'ar' ? 'طريقة الدفع' : 'Payment Method'}</h4>
-                          <div className="grid grid-cols-2 gap-3 pb-2">
+                        {/* STEP 3: PAYMENT & PROMO */}
+                        <div className="bg-brand-cream/10 p-4 md:p-6 rounded-[2rem] border border-brand-gray/30 space-y-5">
+                          <div className="flex items-center gap-3 mb-1">
+                             <div className="w-6 h-6 rounded-full bg-brand-black text-white text-[10px] font-black flex items-center justify-center">3</div>
+                             <h3 className="font-black text-lg text-brand-black">
+                               {language === 'ar' ? 'الدفع والخصومات' : 'Payment & Discounts'}
+                             </h3>
+                          </div>
+
+                          {/* PROMO CODE SECTION */}
+                          <div className="space-y-2">
+                            <div className="flex gap-2 relative">
+                              <input 
+                                placeholder={language === 'ar' ? 'كود الخصم (اختياري)' : 'Promo Code (Optional)'} 
+                                className={`w-full bg-white px-4 py-3 rounded-xl border border-brand-gray/40 focus:border-brand-red/30 outline-none transition-all font-bold text-[14px] uppercase ${language === 'ar' ? 'text-right' : 'text-left'}`}
+                                value={couponCode}
+                                onChange={(e) => {
+                                  const val = e.target.value.toUpperCase();
+                                  setCouponCode(val);
+                                  if (val === 'WELCOME30') {
+                                    handleValidateCoupon(val);
+                                  } else if (val.length === 0) {
+                                    setDiscountPercent(0);
+                                    setCouponSuccess('');
+                                    setCouponError('');
+                                  }
+                                }}
+                                disabled={discountPercent > 0}
+                              />
+                              {discountPercent === 0 && (
+                                <button 
+                                  onClick={() => handleValidateCoupon()}
+                                  disabled={validatingCoupon || !couponCode.trim()}
+                                  className="bg-brand-black text-white px-4 py-3 rounded-xl font-black text-[10px] hover:bg-brand-red transition-all disabled:opacity-50 min-w-[70px]"
+                                >
+                                  {validatingCoupon ? '...' : (language === 'ar' ? 'تطبيق' : 'Apply')}
+                                </button>
+                              )}
+                            </div>
+                            {couponError && <p className="text-brand-red text-[10px] font-bold px-2">{couponError}</p>}
+                            {couponSuccess && <p className="text-green-600 text-[10px] font-bold px-2 flex items-center gap-1"><CheckCircle2 size={12}/> {couponSuccess}</p>}
+                          </div>
+
+                          {/* PAYMENT METHOD */}
+                          <div className="grid grid-cols-2 gap-3">
                              <button 
                                onClick={() => setPaymentMethod('CASH')}
-                               className={`border-2 rounded-xl py-3 font-bold transition-all ${paymentMethod === 'CASH' ? 'border-brand-red bg-red-50 text-brand-red shadow-sm' : 'border-brand-gray/30 text-brand-black/50 hover:border-brand-gray'}`}
+                               className={`border-2 rounded-2xl py-3 px-2 font-black text-[11px] transition-all flex flex-col items-center gap-1 ${paymentMethod === 'CASH' ? 'border-brand-red bg-white text-brand-red shadow-md' : 'border-transparent bg-white/50 text-brand-black/40 hover:border-brand-gray/20'}`}
                              >
-                               {language === 'ar' ? 'الدفع عند الاستلام' : 'Cash on Delivery'}
+                               <Store size={16} />
+                               {language === 'ar' ? 'عند الاستلام' : 'Cash on Delivery'}
                              </button>
                              <button 
                                onClick={() => setPaymentMethod('CLIQ')}
-                               className={`border-2 rounded-xl py-3 font-bold transition-all flex flex-col items-center justify-center gap-1 ${paymentMethod === 'CLIQ' ? 'border-purple-600 bg-purple-50 text-purple-700 shadow-sm' : 'border-brand-gray/30 text-brand-black/50 hover:border-brand-gray'}`}
+                               className={`border-2 rounded-2xl py-3 px-2 font-black text-[11px] transition-all flex flex-col items-center gap-1 ${paymentMethod === 'CLIQ' ? 'border-purple-600 bg-white text-purple-700 shadow-md' : 'border-transparent bg-white/50 text-brand-black/40 hover:border-brand-gray/20'}`}
                              >
-                               <span className="flex items-center gap-1"><Zap size={14} className={paymentMethod === 'CLIQ' ? 'text-purple-600' : 'text-gray-400'}/> {language === 'ar' ? 'كليك' : 'CliQ'}</span>
+                               <Zap size={16} className={paymentMethod === 'CLIQ' ? 'text-purple-600' : 'text-gray-400'}/>
+                               {language === 'ar' ? 'دفع عبر كليك' : 'Pay via CliQ'}
                              </button>
                           </div>
+
                           {paymentMethod === 'CLIQ' && (
-                             <div className="bg-purple-100/50 p-4 rounded-xl border border-purple-200 text-center mb-2 animate-fade-in text-sm mt-3">
-                               <p className="text-xs font-black text-brand-red uppercase tracking-widest bg-brand-red/5 p-3 rounded-xl border border-brand-red/10">
-              {language === 'ar' ? 'يرجى التحويل إلى الاسم المستعار التالي:' : 'Please transfer to the following Alias:'}
-              <span className="block text-2xl mt-1 select-all font-serif">XIAN99</span>
-            </p>
-                               <p className="text-purple-600/80 font-bold mt-1 text-xs px-2 leading-relaxed">{language === 'ar' ? 'سنقوم بالتحقق من التحويل والموافقة على طلبك في الوقت الفعلي.' : 'We will verify the transfer and approve your order in real-time.'}</p>
-                             </div>
+                             <motion.div 
+                               initial={{ opacity: 0, y: -10 }}
+                               animate={{ opacity: 1, y: 0 }}
+                               className="bg-purple-600 text-white p-4 rounded-2xl text-center space-y-2"
+                             >
+                               <p className="text-[10px] font-black uppercase tracking-tighter opacity-80">
+                                 {language === 'ar' ? 'حوّل إلى الاسم المستعار:' : 'Transfer to Alias:'}
+                               </p>
+                               <span className="block text-2xl font-black tracking-widest select-all">XIAN99</span>
+                               <p className="text-[9px] font-bold opacity-70 leading-tight">
+                                 {language === 'ar' ? 'سنقوم بتأكيد طلبك فور استلام الإشعار.' : 'We will confirm your order upon receiving notification.'}
+                               </p>
+                             </motion.div>
                           )}
                         </div>
 
