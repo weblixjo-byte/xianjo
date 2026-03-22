@@ -370,10 +370,10 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                       </div>
                     ) : (
                       <div className="space-y-6">
-                        {/* STEP 1: CONTACT DETAILS - WHITE CARD */}
-                        <div className="bg-white p-5 md:p-6 rounded-[2rem] border-2 border-brand-gray/10 shadow-sm space-y-4">
+                        {/* STEP 1: CONTACT DETAILS */}
+                        <div className="bg-white p-5 md:p-6 rounded-3xl border border-brand-gray/30 shadow-sm space-y-4">
                           <div className="flex items-center gap-3 mb-2">
-                             <div className="w-6 h-6 rounded-full bg-brand-black text-white text-[10px] font-black flex items-center justify-center">1</div>
+                             <div className="w-6 h-6 rounded-full bg-brand-red text-white text-[10px] font-black flex items-center justify-center">1</div>
                              <h3 className="font-black text-lg text-brand-black">
                                {language === 'ar' ? 'تفاصيل التواصل' : 'Contact Details'}
                              </h3>
@@ -383,7 +383,7 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                               <User className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-brand-black/20 group-focus-within:text-brand-red transition-colors`} size={18} />
                               <input 
                                 placeholder={language === 'ar' ? 'الاسم الكامل' : 'Full Name'} 
-                                className={`w-full bg-brand-cream/5 text-brand-black ${language === 'ar' ? 'pr-12 pl-6 text-right' : 'pl-12 pr-6 text-left'} py-4 rounded-xl border border-brand-gray/40 focus:border-brand-red/30 outline-none transition-all font-bold text-[15px] placeholder:text-brand-black/30`}
+                                className={`w-full bg-brand-gray/5 text-brand-black ${language === 'ar' ? 'pr-12 pl-6 text-right' : 'pl-12 pr-6 text-left'} py-4 rounded-xl border border-brand-gray/20 focus:border-brand-red/30 focus:bg-white outline-none transition-all font-bold text-[15px] placeholder:text-brand-black/30`}
                                 value={form.name}
                                 onChange={(e) => setForm({...form, name: e.target.value})}
                               />
@@ -392,7 +392,7 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                               <Phone className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-brand-black/20 group-focus-within:text-brand-red transition-colors`} size={18} />
                               <input 
                                 placeholder={language === 'ar' ? 'رقم الهاتف' : 'Phone Number'} 
-                                className={`w-full bg-brand-cream/5 text-brand-black ${language === 'ar' ? 'pr-12 pl-6' : 'pl-12 pr-6'} py-4 rounded-xl border border-brand-gray/40 focus:border-brand-red/30 outline-none transition-all font-bold text-[15px] placeholder:text-brand-black/30`}
+                                className={`w-full bg-brand-gray/5 text-brand-black ${language === 'ar' ? 'pr-12 pl-6' : 'pl-12 pr-6'} py-4 rounded-xl border border-brand-gray/20 focus:border-brand-red/30 focus:bg-white outline-none transition-all font-bold text-[15px] placeholder:text-brand-black/30`}
                                 dir="ltr"
                                 value={form.phone}
                                 onChange={(e) => setForm({...form, phone: e.target.value})}
@@ -401,26 +401,26 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                           </div>
                         </div>
 
-                        {/* STEP 2: FULFILLMENT - BLACK CARD */}
-                        <div className="bg-brand-black p-5 md:p-6 rounded-[2rem] border-2 border-white/5 shadow-2xl space-y-4">
+                        {/* STEP 2: FULFILLMENT */}
+                        <div className="bg-white p-5 md:p-6 rounded-3xl border border-brand-gray/30 shadow-sm space-y-4">
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-3">
-                               <div className="w-6 h-6 rounded-full bg-white text-brand-black text-[10px] font-black flex items-center justify-center">2</div>
-                               <h3 className="font-black text-lg text-white">
+                               <div className="w-6 h-6 rounded-full bg-brand-red text-white text-[10px] font-black flex items-center justify-center">2</div>
+                               <h3 className="font-black text-lg text-brand-black">
                                  {language === 'ar' ? 'طريقة الاستلام' : 'Fulfillment'}
                                </h3>
                             </div>
                             
-                            <div className="flex bg-white/10 p-1 rounded-xl border border-white/20">
+                            <div className="flex bg-brand-gray/10 p-1 rounded-xl">
                                <button 
                                  onClick={() => setOrderType('DELIVERY')}
-                                 className={`px-3 py-1.5 rounded-lg text-[10px] font-black transition-all ${orderType === 'DELIVERY' ? 'bg-white text-brand-black shadow-md' : 'text-white/40'}`}
+                                 className={`px-3 py-1.5 rounded-lg text-[10px] font-black transition-all ${orderType === 'DELIVERY' ? 'bg-white text-brand-black shadow-sm' : 'text-brand-black/30'}`}
                                >
                                  {language === 'ar' ? 'توصيل' : 'Delivery'}
                                </button>
                                <button 
                                  onClick={() => setOrderType('PICKUP')}
-                                 className={`px-3 py-1.5 rounded-lg text-[10px] font-black transition-all ${orderType === 'PICKUP' ? 'bg-white text-brand-black shadow-md' : 'text-white/40'}`}
+                                 className={`px-3 py-1.5 rounded-lg text-[10px] font-black transition-all ${orderType === 'PICKUP' ? 'bg-white text-brand-black shadow-sm' : 'text-brand-black/30'}`}
                                >
                                  {language === 'ar' ? 'استلام' : 'Pickup'}
                                </button>
@@ -432,9 +432,9 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                               <>
                                 {/* ZONE SELECTION */}
                                 <div className="relative group">
-                                  <Bike className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-white transition-colors`} size={18} />
+                                  <Bike className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-brand-black/20 group-focus-within:text-brand-red transition-colors`} size={18} />
                                   <select 
-                                    className={`w-full appearance-none bg-white/10 text-white ${language === 'ar' ? 'pr-12 pl-10' : 'pl-12 pr-10'} py-4 rounded-xl border border-white/20 focus:border-white/40 outline-none transition-all font-bold text-[15px] cursor-pointer`}
+                                    className={`w-full appearance-none bg-brand-gray/5 text-brand-black ${language === 'ar' ? 'pr-12 pl-10' : 'pl-12 pr-10'} py-4 rounded-xl border border-brand-gray/20 focus:border-brand-red/30 focus:bg-white outline-none transition-all font-bold text-[15px] cursor-pointer`}
                                     value={selectedZone.id}
                                     onChange={(e) => {
                                       const zone = DELIVERY_ZONES.find(z => z.id === e.target.value);
@@ -442,19 +442,19 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                                     }}
                                   >
                                     {DELIVERY_ZONES.map(zone => (
-                                      <option key={zone.id} value={zone.id} className="text-brand-black">
+                                      <option key={zone.id} value={zone.id}>
                                         {language === 'ar' ? zone.nameAr : zone.nameEn} (+{zone.fee.toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'})
                                       </option>
                                     ))}
                                   </select>
-                                  <ChevronDown className={`absolute ${language === 'ar' ? 'left-5' : 'right-5'} top-1/2 -translate-y-1/2 text-white/40 pointer-events-none`} size={18} />
+                                  <ChevronDown className={`absolute ${language === 'ar' ? 'left-5' : 'right-5'} top-1/2 -translate-y-1/2 text-brand-black/20 pointer-events-none`} size={18} />
                                 </div>
 
                                 <div className="relative group">
-                                  <MapPin className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-white transition-colors`} size={18} />
+                                  <MapPin className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-brand-black/20 group-focus-within:text-brand-red transition-colors`} size={18} />
                                   <input 
                                     placeholder={language === 'ar' ? 'العنوان بالتفصيل (بناء، شقة)' : 'Detailed Address (Bldg, Apt)'} 
-                                    className={`w-full bg-white/10 text-white ${language === 'ar' ? 'pr-12 pl-6' : 'pl-12 pr-6'} py-4 rounded-xl border border-white/20 focus:border-white/40 outline-none transition-all font-bold text-[15px] placeholder:text-white/50`}
+                                    className={`w-full bg-brand-gray/5 text-brand-black ${language === 'ar' ? 'pr-12 pl-6' : 'pl-12 pr-6'} py-4 rounded-xl border border-brand-gray/20 focus:border-brand-red/30 focus:bg-white outline-none transition-all font-bold text-[15px] placeholder:text-brand-black/30`}
                                     value={form.address}
                                     onChange={(e) => setForm({...form, address: e.target.value})}
                                   />
@@ -466,8 +466,8 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                                   disabled={isDetecting}
                                   className={`w-full py-3 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 transition-all border-2 
                                     ${isDetecting 
-                                      ? 'bg-white text-brand-black border-white animate-pulse' 
-                                      : 'bg-transparent text-white border-white/20 hover:border-white hover:bg-white/5'}`}
+                                      ? 'bg-brand-red text-white border-brand-red animate-pulse' 
+                                      : 'bg-white text-brand-red border-brand-red/10 hover:border-brand-red hover:bg-brand-red/5'}`}
                                 >
                                   <Locate size={14} />
                                   <span>{isDetecting 
@@ -477,10 +477,10 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                               </>
                             ) : (
                               <div className="relative group">
-                                <Clock className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-white transition-colors`} size={18} />
+                                <Clock className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-brand-black/20 group-focus-within:text-brand-red transition-colors`} size={18} />
                                 <input 
                                   type="time"
-                                  className={`w-full bg-white/10 text-white ${language === 'ar' ? 'pr-12 pl-6' : 'pl-12 pr-6'} py-4 rounded-xl border border-white/20 focus:border-white/40 outline-none transition-all font-bold text-[15px]`}
+                                  className={`w-full bg-brand-gray/5 text-brand-black ${language === 'ar' ? 'pr-12 pl-6' : 'pl-12 pr-6'} py-4 rounded-xl border border-brand-gray/20 focus:border-brand-red/30 focus:bg-white outline-none transition-all font-bold text-[15px]`}
                                   value={form.pickupTime}
                                   onChange={(e) => setForm({...form, pickupTime: e.target.value})}
                                 />
@@ -489,17 +489,17 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
 
                             <textarea 
                               placeholder={language === 'ar' ? 'ملاحظات إضافية (اختياري)...' : 'Additional Notes (Optional)...'} 
-                              className={`w-full bg-white/10 text-white px-6 py-4 rounded-xl border border-white/20 focus:border-white/40 outline-none transition-all font-bold text-[15px] min-h-[70px] resize-none ${language === 'ar' ? 'text-right' : 'text-left'} placeholder:text-white/50`}
+                              className={`w-full bg-brand-gray/5 text-brand-black px-6 py-4 rounded-xl border border-brand-gray/20 focus:border-brand-red/30 focus:bg-white outline-none transition-all font-bold text-[15px] min-h-[70px] resize-none ${language === 'ar' ? 'text-right' : 'text-left'} placeholder:text-brand-black/30`}
                               value={form.notes}
                               onChange={(e) => setForm({...form, notes: e.target.value})}
                             />
                           </div>
                         </div>
 
-                        {/* STEP 3: PAYMENT & PROMO - WHITE CARD */}
-                        <div className="bg-white p-5 md:p-6 rounded-[2rem] border-2 border-brand-gray/10 shadow-sm space-y-5">
+                        {/* STEP 3: PAYMENT & PROMO */}
+                        <div className="bg-white p-5 md:p-6 rounded-3xl border border-brand-gray/30 shadow-sm space-y-5">
                           <div className="flex items-center gap-3 mb-1">
-                             <div className="w-6 h-6 rounded-full bg-brand-black text-white text-[10px] font-black flex items-center justify-center">3</div>
+                             <div className="w-6 h-6 rounded-full bg-brand-red text-white text-[10px] font-black flex items-center justify-center">3</div>
                              <h3 className="font-black text-lg text-brand-black">
                                {language === 'ar' ? 'الدفع والخصومات' : 'Payment & Discounts'}
                              </h3>
@@ -510,7 +510,7 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                             <div className="flex gap-2 relative">
                               <input 
                                 placeholder={language === 'ar' ? 'كود الخصم (اختياري)' : 'Promo Code (Optional)'} 
-                                className={`w-full bg-brand-cream/5 text-brand-black px-4 py-3 rounded-xl border border-brand-gray/40 focus:border-brand-red/30 outline-none transition-all font-bold text-[14px] uppercase ${language === 'ar' ? 'text-right' : 'text-left'} placeholder:text-brand-black/30`}
+                                className={`w-full bg-brand-gray/5 text-brand-black px-4 py-3 rounded-xl border border-brand-gray/20 focus:border-brand-red/30 focus:bg-white outline-none transition-all font-bold text-[14px] uppercase ${language === 'ar' ? 'text-right' : 'text-left'} placeholder:text-brand-black/30`}
                                 value={couponCode}
                                 onChange={(e) => {
                                   const val = e.target.value.toUpperCase();
@@ -543,14 +543,14 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                           <div className="grid grid-cols-2 gap-3">
                              <button 
                                onClick={() => setPaymentMethod('CASH')}
-                               className={`border-2 rounded-2xl py-3 px-2 font-black text-[11px] transition-all flex flex-col items-center gap-1 ${paymentMethod === 'CASH' ? 'border-brand-red bg-white text-brand-red shadow-md' : 'border-transparent bg-white/50 text-brand-black/40 hover:border-brand-gray/20'}`}
+                               className={`border-2 rounded-2xl py-3 px-2 font-black text-[11px] transition-all flex flex-col items-center gap-1 ${paymentMethod === 'CASH' ? 'border-brand-red bg-brand-red/5 text-brand-red shadow-sm' : 'border-brand-gray/20 bg-white text-brand-black/30 hover:border-brand-gray/40'}`}
                              >
                                <Store size={16} />
                                {language === 'ar' ? 'عند الاستلام' : 'Cash on Delivery'}
                              </button>
                              <button 
                                onClick={() => setPaymentMethod('CLIQ')}
-                               className={`border-2 rounded-2xl py-3 px-2 font-black text-[11px] transition-all flex flex-col items-center gap-1 ${paymentMethod === 'CLIQ' ? 'border-purple-600 bg-white text-purple-700 shadow-md' : 'border-transparent bg-white/50 text-brand-black/40 hover:border-brand-gray/20'}`}
+                               className={`border-2 rounded-2xl py-3 px-2 font-black text-[11px] transition-all flex flex-col items-center gap-1 ${paymentMethod === 'CLIQ' ? 'border-purple-600 bg-purple-50 text-purple-700 shadow-sm' : 'border-brand-gray/20 bg-white text-brand-black/30 hover:border-brand-gray/40'}`}
                              >
                                <Zap size={16} className={paymentMethod === 'CLIQ' ? 'text-purple-600' : 'text-gray-400'}/>
                                {language === 'ar' ? 'دفع عبر كليك' : 'Pay via CliQ'}
@@ -561,7 +561,7 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                              <motion.div 
                                initial={{ opacity: 0, y: -10 }}
                                animate={{ opacity: 1, y: 0 }}
-                               className="bg-purple-600 text-white p-4 rounded-2xl text-center space-y-2 border border-white/10"
+                               className="bg-purple-600 text-white p-4 rounded-2xl text-center space-y-2"
                              >
                                <p className="text-[10px] font-black uppercase tracking-tighter opacity-80">
                                  {language === 'ar' ? 'حوّل إلى الاسم المستعار:' : 'Transfer to Alias:'}
