@@ -470,10 +470,10 @@ export default function AdminDashboard() {
                             e.stopPropagation();
                             handlePrint(order);
                           }}
-                          className="p-2 bg-white text-brand-black border border-brand-gray rounded-xl hover:bg-brand-red hover:text-white transition-all shadow-sm"
-                          title="طباعة الفاتورة"
+                          className="flex items-center gap-2 px-4 py-2 bg-white text-brand-black border-2 border-brand-gray rounded-2xl hover:bg-brand-black hover:text-white transition-all shadow-sm active:scale-95 group/print"
                         >
-                          <Printer size={18} />
+                          <Printer size={16} className="text-brand-red group-hover/print:text-white" />
+                          <span className="text-[10px] font-black uppercase tracking-widest">طباعة الفاتورة</span>
                         </button>
                       </div>
                     </div>
