@@ -184,8 +184,8 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
             className={`fixed inset-0 md:inset-y-0 ${language === 'ar' ? 'md:left-0 md:right-auto' : 'md:right-0 md:left-auto'} w-full md:w-[500px] bg-white z-[200] shadow-2xl flex flex-col h-[100dvh] md:h-screen`}
             dir={language === 'ar' ? 'rtl' : 'ltr'}
           >
-            {/* HEADER */}
-            <div className="p-6 md:p-8 flex items-center justify-between border-b border-brand-gray/20 bg-white sticky top-0 z-10">
+            {/* HEADER - STICKY TOP */}
+            <div className="p-6 md:p-8 flex items-center justify-between border-b border-brand-gray/20 bg-white sticky top-0 z-40">
               <div className="flex items-center gap-4">
                 <button 
                   onClick={onClose}
@@ -212,11 +212,11 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
               )}
             </div>
 
-            {/* MAIN CONTENT AREA */}
-            <div className="flex-1 flex flex-col overflow-hidden relative">
+            {/* MAIN CONTENT - SINGLE SCROLLBAR */}
+            <div className="flex-1 overflow-y-auto scroll-smooth">
               {isOrdered ? (
                 // SUCCESS STATE
-                <div className="flex-1 flex flex-col items-center justify-center text-center p-12 space-y-10">
+                <div className="flex flex-col items-center justify-center text-center p-12 space-y-10 min-h-full">
                   <div className="bg-white p-10 rounded-full shadow-lg border border-brand-gray/50">
                     <CheckCircle2 size={80} className="text-brand-red" strokeWidth={1.5} />
                   </div>
@@ -273,7 +273,7 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                 </div>
               ) : items.length === 0 ? (
                 // EMPTY STATE
-                <div className="flex-1 flex flex-col items-center justify-center text-brand-black/10 py-20 space-y-6">
+                <div className="flex flex-col items-center justify-center text-brand-black/10 py-20 space-y-6 min-h-full">
                   <ShoppingCart size={48} strokeWidth={1} />
                   <p className="text-lg font-bold">
                     {language === 'ar' ? 'سلة المشتريات فارغة..' : 'Your cart is empty..'}
@@ -281,10 +281,10 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                   <button onClick={onClose} className="bg-brand-black text-white px-8 py-4 rounded-xl font-black">{language === 'ar' ? 'تصفح المنيو الآن' : 'Browse Menu Now'}</button>
                 </div>
               ) : (
-                // ACTIVE CART STATE
-                <div className="flex-1 flex flex-col overflow-hidden relative">
-                  {/* ITEMS LIST (SCROLLABLE) */}
-                  <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scroll-smooth">
+                // ACTIVE CART FLOW - EVERYTHING IN ONE BODY
+                <div className="flex flex-col">
+                  {/* ITEMS SUMMARY */}
+                  <div className="p-4 md:p-8 space-y-6">
                     <div className="space-y-4">
                       <div className="flex items-center justify-between px-2">
                         <span className="text-[10px] font-black uppercase tracking-widest text-brand-black/30">
@@ -325,8 +325,8 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                     </div>
                   </div>
 
-                  {/* CHECKOUT WIZARD SECTION */}
-                  <div className="p-4 md:p-8 bg-white border-t border-brand-gray/30 mt-auto overflow-y-auto max-h-[60vh] md:max-h-none shrink-0 shadow-[0_-8px_40px_-15px_rgba(0,0,0,0.08)]">
+                  {/* CHECKOUT WIZARD - NO INTERNAL SCROLL */}
+                  <div className="p-4 md:p-8 bg-white border-t border-brand-gray/30 shadow-[0_-8px_40px_-15px_rgba(0,0,0,0.08)]">
                     {!isStoreOpen ? (
                       <div className="flex flex-col items-center justify-center py-6 space-y-6 text-center bg-red-50 rounded-3xl border-2 border-dashed border-red-200 p-6">
                         <Store size={40} className="text-brand-red" />
