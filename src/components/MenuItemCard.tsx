@@ -56,7 +56,7 @@ export default function MenuItemCard({ item, priority = false }: { item: Product
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="object-contain transition-all duration-1000 group-hover:scale-105"
           priority={priority}
-          quality={80}
+          quality={75}
         />
         
         {/* CIRCULAR ADD BUTTON - ELEVATED DESIGN */}

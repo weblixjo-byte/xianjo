@@ -16,7 +16,6 @@ interface CartStore {
   removeItem: (id: number | string) => void;
   clearCart: () => void;
   getSubTotal: () => number;
-  getTax: () => number;
   getTotalPrice: () => number;
 }
 
@@ -41,8 +40,7 @@ export const useCart = create<CartStore>()(
       removeItem: (id) => set({ items: get().items.filter((i) => i.id !== id) }),
       clearCart: () => set({ items: [] }),
       getSubTotal: () => get().items.reduce((acc, item) => acc + item.price * item.quantity, 0),
-      getTax: () => get().getSubTotal() * 0.16, // 16% VAT for Jordan (JD)
-      getTotalPrice: () => get().getSubTotal() + get().getTax(),
+      getTotalPrice: () => get().getSubTotal(),
     }),
     {
       name: 'xian-cart-storage', // Persist cart in local storage

@@ -1,12 +1,13 @@
 'use client';
 import { useCart } from '@/store/useCart';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Phone, MapPin, User, CheckCircle2, Trash2, ArrowRight, AlertCircle, ShoppingCart, Clock, Store, Zap, Locate } from 'lucide-react';
+import { X, Phone, MapPin, User, CheckCircle2, Trash2, ArrowRight, AlertCircle, ShoppingCart, Clock, Store, Zap, Locate, ChevronDown, Bike } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSession, signIn } from 'next-auth/react';
 import { useLanguage } from '@/store/useLanguage';
+import { DELIVERY_ZONES, DeliveryZone } from '@/constants/deliveryZones';
 
 export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
   const { language } = useLanguage();
@@ -21,6 +22,7 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
   const [mounted, setMounted] = useState(false);
   const [lastOrderId, setLastOrderId] = useState('');
   const [isDetecting, setIsDetecting] = useState(false);
+  const [selectedZone, setSelectedZone] = useState<DeliveryZone>(DELIVERY_ZONES[0]);
 
   // Promo Code State
   const [couponCode, setCouponCode] = useState('');
@@ -39,9 +41,11 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
   }, []);
 
   const currentTotal = getTotalPrice();
+  const getDeliveryFee = () => orderType === 'DELIVERY' ? selectedZone.fee : 0;
   const getFinalPrice = () => {
-    if (discountPercent > 0) return currentTotal * (1 - discountPercent);
-    return currentTotal;
+    const total = currentTotal + getDeliveryFee();
+    if (discountPercent > 0) return total * (1 - discountPercent);
+    return total;
   };
 
   const handleValidateCoupon = async (codeToValidate: string = couponCode) => {
@@ -402,6 +406,26 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                           {orderType === 'DELIVERY' ? (
                             <>
                                 <div className="space-y-3">
+                                  {/* ZONE SELECTION */}
+                                  <div className="relative group">
+                                    <Bike className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-brand-black/20 group-focus-within:text-brand-red transition-colors`} size={18} />
+                                    <select 
+                                      className={`w-full appearance-none bg-brand-cream/50 ${language === 'ar' ? 'pr-12 pl-10' : 'pl-12 pr-10'} py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px] cursor-pointer`}
+                                      value={selectedZone.id}
+                                      onChange={(e) => {
+                                        const zone = DELIVERY_ZONES.find(z => z.id === e.target.value);
+                                        if (zone) setSelectedZone(zone);
+                                      }}
+                                    >
+                                      {DELIVERY_ZONES.map(zone => (
+                                        <option key={zone.id} value={zone.id}>
+                                          {language === 'ar' ? zone.nameAr : zone.nameEn} (+{zone.fee.toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'})
+                                        </option>
+                                      ))}
+                                    </select>
+                                    <ChevronDown className={`absolute ${language === 'ar' ? 'left-5' : 'right-5'} top-1/2 -translate-y-1/2 text-brand-black/20 pointer-events-none`} size={18} />
+                                  </div>
+
                                   <div className="relative">
                                     <MapPin className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-brand-black/20`} size={18} />
                                     <input 
@@ -422,7 +446,9 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                                         : 'bg-white text-brand-red border-brand-red/20 hover:border-brand-red hover:bg-brand-red/5'}`}
                                   >
                                     <Locate size={18} />
-                                    <span>{isDetecting ? 'جاري تحديد موقعك...' : 'تحديد موقعي التلقائي (توصيل أدق)'}</span>
+                                    <span>{isDetecting 
+                                      ? (language === 'ar' ? 'جاري تحديد موقعك...' : 'Detecting your location...') 
+                                      : (language === 'ar' ? 'إرسال موقعي الدقيق للمطعم' : 'Send exact location to restaurant')}</span>
                                   </button>
                                 </div>
                             </>
@@ -519,18 +545,23 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                         <div className="pt-4 border-t border-brand-gray/20">
                           <div className="flex justify-between items-center mb-6">
                              <div className="flex flex-col">
-                               <span className="text-brand-black/40 font-bold">{language === 'ar' ? 'المجموع الفرعي' : 'Subtotal'}</span>
-                               {discountPercent > 0 && <span className="text-green-600 text-xs font-black">{language === 'ar' ? 'خصم ترحيبي' : 'Welcome Discount'} ({(discountPercent * 100).toFixed(0)}%)</span>}
-                             </div>
-                             <div className="flex flex-col items-end">
-                               {discountPercent > 0 ? (
-                                 <>
-                                   <span className="font-bold text-sm text-brand-black/30 line-through">{currentTotal.toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
-                                   <span className="font-black text-lg text-green-600">{getFinalPrice().toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
-                                 </>
-                               ) : (
-                                 <span className="font-black text-lg">{currentTotal.toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
-                               )}
+                                <span className="text-brand-black/40 font-bold">{language === 'ar' ? 'المجموع الفرعي' : 'Subtotal'}</span>
+                                {orderType === 'DELIVERY' && (
+                                  <span className="text-brand-black/40 font-bold text-xs">
+                                    {language === 'ar' ? 'رسوم التوصيل' : 'Delivery Fee'} ({language === 'ar' ? selectedZone.nameAr : selectedZone.nameEn})
+                                  </span>
+                                )}
+                                {discountPercent > 0 && <span className="text-green-600 text-xs font-black">{language === 'ar' ? 'خصم ترحيبي' : 'Welcome Discount'} ({(discountPercent * 100).toFixed(0)}%)</span>}
+                              </div>
+                              <div className="flex flex-col items-end">
+                                {discountPercent > 0 ? (
+                                  <>
+                                    <span className="font-bold text-sm text-brand-black/30 line-through">{(currentTotal + (orderType === 'DELIVERY' ? selectedZone.fee : 0)).toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
+                                    <span className="font-black text-lg text-green-600">{getFinalPrice().toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
+                                  </>
+                                ) : (
+                                  <span className="font-black text-lg">{getFinalPrice().toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
+                                )}
                              </div>
                           </div>
                           <button 
