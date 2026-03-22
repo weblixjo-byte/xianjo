@@ -83,7 +83,7 @@ export default function MenuItemCard({ item, priority = false }: { item: Product
       {/* TEXT SECTION - FIXED ALIGNMENT */}
       <div className={`flex flex-col gap-2 flex-1 px-1 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
         <div className="min-h-[2.5rem] flex flex-col justify-center">
-            <h3 className="text-sm md:text-base font-black text-brand-black line-clamp-2 leading-tight uppercase tracking-tight">
+            <h3 className="text-sm md:text-base font-black !text-black line-clamp-2 leading-tight uppercase tracking-tight">
               {language === 'ar' ? item.nameAr : (item.nameEn || item.nameAr)}
             </h3>
         </div>
