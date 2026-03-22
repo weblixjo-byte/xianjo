@@ -333,7 +333,7 @@ export default function AdminDashboard() {
                <p className="text-brand-red font-black text-xl tracking-widest animate-pulse font-serif">جاري المزامنة..</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 xl:gap-10">
               {orders.length === 0 ? (
                  <div className="col-span-full bg-white py-40 text-center flex flex-col items-center gap-8 rounded-[4rem] border-2 border-dashed border-brand-gray">
                    <Box size={80} className="text-brand-black/10" strokeWidth={1} />
@@ -450,30 +450,29 @@ export default function AdminDashboard() {
                             <div className="flex items-start justify-between p-4 bg-[#F9F7F2] rounded-2xl border border-brand-gray group/link hover:border-brand-red/30 transition-all">
                               <div className="flex items-start gap-4 flex-1">
                                 <div className="bg-white p-2 rounded-xl text-brand-red shadow-sm"><MapPin size={20} /></div>
-                                <div className="flex flex-col flex-1 overflow-hidden">
-                                   <span className="text-[10px] font-black text-brand-red uppercase tracking-widest mb-1">{order.deliveryArea || 'منطقة التوصيل'}</span>
+                                <div className="flex flex-col flex-1 min-w-0">
+                                   <span className="text-[10px] font-black text-brand-red uppercase tracking-widest mb-2 px-1">{order.deliveryArea || 'منطقة التوصيل'}</span>
                                    {order.address?.startsWith('http') ? (
-                                     <div className="flex flex-col gap-2">
-                                       <a 
-                                         href={order.address} 
-                                         target="_blank" 
-                                         rel="noopener noreferrer"
-                                         className="text-blue-600 font-bold text-sm underline break-all flex items-center gap-1 hover:text-blue-800"
-                                       >
-                                         <ExternalLink size={14} /> فتح الموقع على الخريطة
-                                       </a>
+                                     <div className="flex flex-col gap-3">
                                        <button 
                                          onClick={() => {
                                            navigator.clipboard.writeText(order.address || '');
-                                           toast.success('تم نسخ الرابط!');
+                                           toast.success('تم نسخ الرابط الموقع!');
                                          }}
-                                         className="text-[10px] bg-brand-black text-white px-3 py-1.5 rounded-lg w-fit font-black uppercase tracking-wider active:scale-95 transition-all"
+                                         className="w-full bg-brand-black text-white py-4 rounded-xl font-black text-xs uppercase tracking-[0.2em] shadow-lg active:scale-95 transition-all flex items-center justify-center gap-3 group"
                                        >
-                                         نسخ الرابط (Copy Link)
+                                         <MapPin size={16} className="text-brand-red" />
+                                         <span>نسخ رابط الموقع (Copy Link)</span>
                                        </button>
+                                       <div className="px-1 flex items-center gap-1.5 opacity-30">
+                                         <div className="w-1.5 h-1.5 bg-brand-red rounded-full"></div>
+                                         <p className="text-[9px] font-bold truncate">رابط قوقل ماب مفعل</p>
+                                       </div>
                                      </div>
                                    ) : (
-                                     <span className="font-bold text-brand-black text-sm leading-relaxed">{order.address}</span>
+                                     <div className="p-4 bg-white/50 rounded-2xl border border-brand-gray/50">
+                                        <p className="font-bold text-brand-black text-sm leading-relaxed whitespace-pre-line">{order.address}</p>
+                                     </div>
                                    )}
                                 </div>
                               </div>
