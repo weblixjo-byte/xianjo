@@ -6,8 +6,10 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSession, signIn } from 'next-auth/react';
+import { useLanguage } from '@/store/useLanguage';
 
 export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
+  const { language } = useLanguage();
   const { data: session } = useSession();
   const { items, getSubTotal, getTotalPrice, clearCart, removeItem } = useCart();
   const [isOrdered, setIsOrdered] = useState(false);
@@ -209,13 +211,19 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                 </div>
                 
                 <div className="space-y-4">
-                  <h2 className="text-4xl font-black text-brand-black">Order Received!</h2>
-                  <p className="text-brand-black/60 font-medium">Thank you for trusting Xian. Your order is under review and our team will contact you shortly.</p>
+                  <h2 className="text-4xl font-black text-brand-black">
+                    {language === 'ar' ? 'تم استلام طلبك!' : 'Order Received!'}
+                  </h2>
+                  <p className="text-brand-black/60 font-medium">
+                    {language === 'ar' 
+                      ? 'شكراً لثقتك بـ شيان. طلبك قيد المراجعة الآن وسيتواصل معك فريقنا قريباً.' 
+                      : 'Thank you for trusting Xian. Your order is under review and our team will contact you shortly.'}
+                  </p>
                 </div>
                 
                 {lastOrderId && (
                    <div className="w-full bg-brand-cream/30 p-6 rounded-2xl border border-brand-gray/50 flex flex-col items-center gap-3">
-                     <p className="text-brand-black/60 text-xs font-black uppercase tracking-widest">Your Secret Tracking Number</p>
+                     <p className="text-brand-black/60 text-xs font-black uppercase tracking-widest">{language === 'ar' ? 'رقم التتبع المباشر' : 'Your Secret Tracking Number'}</p>
                      <div className="flex w-full mt-2">
                        <input 
                          readOnly 
@@ -238,22 +246,22 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                          id="copy-btn"
                          className="bg-brand-black text-white px-6 rounded-l-xl font-bold hover:bg-brand-red transition-colors min-w-[80px]"
                        >
-                         Copy
+                         {language === 'ar' ? 'نسخ' : 'Copy'}
                        </button>
                      </div>
-                     <p className="text-[10px] font-bold text-brand-black/40 mt-1">You can use this code to track your order later</p>
+                     <p className="text-[10px] font-bold text-brand-black/40 mt-1">{language === 'ar' ? 'يمكنك استخدام هذا الكود لتتبع طلبك لاحقاً' : 'You can use this code to track your order later'}</p>
                      
                      <Link 
                        href={`/order-status/${lastOrderId}`} 
                        onClick={onClose} 
                        className="btn-matte w-full justify-center mt-3 shadow-sm"
                      >
-                       Live Order Tracking
+                       {language === 'ar' ? 'تتبع الطلب المباشر' : 'Live Order Tracking'}
                      </Link>
                    </div>
                 )}
                 
-                <button onClick={onClose} className="text-brand-black/40 font-bold hover:text-brand-red transition-all">Back to Home</button>
+                <button onClick={onClose} className="text-brand-black/40 font-bold hover:text-brand-red transition-all">{language === 'ar' ? 'العودة للرئيسية' : 'Back to Home'}</button>
               </div>
             ) : (
               <>
@@ -261,7 +269,9 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                 <div className="p-8 border-b border-brand-gray/30 flex justify-between items-center bg-white">
                   <div className="flex items-center gap-4">
                     <ShoppingCart size={28} className="text-brand-black" />
-                    <h2 className="text-2xl font-black text-brand-black luxury-heading">Shopping Cart</h2>
+                    <h2 className="text-2xl font-black text-brand-black luxury-heading">
+                      {language === 'ar' ? 'سلة الطلبات' : 'Shopping Cart'}
+                    </h2>
                   </div>
                   <button onClick={onClose} className="p-2 text-brand-black/20 hover:text-brand-red transition-all"><X size={24} /></button>
                 </div>
@@ -273,7 +283,9 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                   {items.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full text-brand-black/10 space-y-6">
                       <ShoppingCart size={60} strokeWidth={1} />
-                      <p className="text-xl font-bold">Your cart is empty..</p>
+                      <p className="text-xl font-bold">
+                        {language === 'ar' ? 'سلة المشتريات فارغة..' : 'Your cart is empty..'}
+                      </p>
                     </div>
                   ) : (
                     items.map((item) => (
@@ -292,8 +304,8 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                         <div className="flex-1">
                           <h4 className="font-black text-brand-black text-lg">{item.name}</h4>
                           <div className="flex items-center gap-4 mt-1">
-                            <span className="text-brand-red font-black">{item.price.toFixed(2)} JOD</span>
-                            <span className="text-brand-black/30 font-bold text-xs">Qty: {item.quantity}</span>
+                            <span className="text-brand-red font-black">{item.price.toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
+                            <span className="text-brand-black/30 font-bold text-xs">{language === 'ar' ? 'الكمية' : 'Qty'}: {item.quantity}</span>
                           </div>
                         </div>
                         <button 
@@ -316,8 +328,8 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                              <Store size={40} />
                            </div>
                            <div className="space-y-3">
-                              <h3 className="text-2xl font-black text-brand-red">Store Currently Closed 🛑</h3>
-                              <p className="text-sm text-brand-red/80 font-bold leading-relaxed px-4">Sorry, we cannot accept new orders at this time. Please try again when the store is open.</p>
+                              <h3 className="text-2xl font-black text-brand-red">{language === 'ar' ? 'المطعم مغلق حالياً 🛑' : 'Store Currently Closed 🛑'}</h3>
+                              <p className="text-sm text-brand-red/80 font-bold leading-relaxed px-4">{language === 'ar' ? 'عذراً، لا يمكننا استقبال طلبات جديدة حالياً. يرجى المحاولة مرة أخرى عندما يكون المطعم مفتوحاً.' : 'Sorry, we cannot accept new orders at this time. Please try again when the store is open.'}</p>
                            </div>
                        </div>
                     ) : !session ? (
@@ -326,8 +338,8 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                            <AlertCircle size={40} className="text-brand-red" />
                         </div>
                         <div className="space-y-2">
-                           <h3 className="text-xl font-black text-brand-black">Sign In Required</h3>
-                           <p className="text-sm text-brand-black/40 font-medium">One step away from completing your order and sharing the experience with us.</p>
+                           <h3 className="text-xl font-black text-brand-black">{language === 'ar' ? 'تسجيل الدخول مطلوب' : 'Sign In Required'}</h3>
+                           <p className="text-sm text-brand-black/40 font-medium">{language === 'ar' ? 'خطوة واحدة تفصلك عن إكمال طلبك ومشاركة التجربة معنا.' : 'One step away from completing your order and sharing the experience with us.'}</p>
                         </div>
                         <button 
                           onClick={() => signIn('google')}
@@ -339,42 +351,48 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                             <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
                             <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                           </svg>
-                          <span>Sign in with Google to continue</span>
+                          <span>{language === 'ar' ? 'سجل دخول بجوجل للمتابعة' : 'Sign in with Google to continue'}</span>
                         </button>
                       </div>
                     ) : (
                       <div className="space-y-6">
                         <div className="flex items-center justify-between gap-4 mb-2">
-                           <h3 className="font-black text-xl text-brand-black">Order Options</h3>
-                           
-                           {/* TOGGLE PICKUP/DELIVERY */}
-                           <div className="flex bg-gray-100 p-1 rounded-xl">
-                              <button 
-                                onClick={() => setOrderType('DELIVERY')}
-                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${orderType === 'DELIVERY' ? 'bg-black text-white shadow-md' : 'text-gray-400'}`}
-                              >Delivery</button>
-                              <button 
-                                onClick={() => setOrderType('PICKUP')}
-                                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${orderType === 'PICKUP' ? 'bg-black text-white shadow-md' : 'text-gray-400'}`}
-                              >Pickup</button>
-                           </div>
+                            <h3 className="font-black text-xl text-brand-black">
+                              {language === 'ar' ? 'خيارات الطلب' : 'Order Options'}
+                            </h3>
+                            
+                            {/* TOGGLE PICKUP/DELIVERY */}
+                            <div className="flex bg-gray-100 p-1 rounded-xl">
+                               <button 
+                                 onClick={() => setOrderType('DELIVERY')}
+                                 className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${orderType === 'DELIVERY' ? 'bg-black text-white shadow-md' : 'text-gray-400'}`}
+                               >
+                                 {language === 'ar' ? 'توصيل' : 'Delivery'}
+                               </button>
+                               <button 
+                                 onClick={() => setOrderType('PICKUP')}
+                                 className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${orderType === 'PICKUP' ? 'bg-black text-white shadow-md' : 'text-gray-400'}`}
+                               >
+                                 {language === 'ar' ? 'استلام' : 'Pickup'}
+                               </button>
+                            </div>
                         </div>
                         
                         <div className="space-y-4">
                           <div className="relative">
-                            <User className="absolute right-5 top-1/2 -translate-y-1/2 text-brand-black/20" size={18} />
+                            <User className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-brand-black/20`} size={18} />
                             <input 
-                              placeholder="Full Name" 
-                              className="w-full bg-brand-cream/50 pr-12 pl-6 py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px]"
+                              placeholder={language === 'ar' ? 'الاسم الكامل' : 'Full Name'} 
+                              className={`w-full bg-brand-cream/50 ${language === 'ar' ? 'pr-12 pl-6 text-right' : 'pl-12 pr-6 text-left'} py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px]`}
                               value={form.name}
                               onChange={(e) => setForm({...form, name: e.target.value})}
                             />
                           </div>
                           <div className="relative">
-                            <Phone className="absolute right-5 top-1/2 -translate-y-1/2 text-brand-black/20" size={18} />
+                            <Phone className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-brand-black/20`} size={18} />
                             <input 
-                              placeholder="Phone Number" 
-                              className="w-full bg-brand-cream/50 pr-12 pl-6 py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px]"
+                              placeholder={language === 'ar' ? 'رقم الهاتف' : 'Phone Number'} 
+                              className={`w-full bg-brand-cream/50 ${language === 'ar' ? 'pr-12 pl-6' : 'pl-12 pr-6'} py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px]`}
                               dir="ltr"
                               value={form.phone}
                               onChange={(e) => setForm({...form, phone: e.target.value})}
@@ -385,10 +403,10 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                             <>
                                 <div className="space-y-3">
                                   <div className="relative">
-                                    <MapPin className="absolute right-5 top-1/2 -translate-y-1/2 text-brand-black/20" size={18} />
+                                    <MapPin className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-brand-black/20`} size={18} />
                                     <input 
-                                      placeholder="Address (Area, Street, Building)" 
-                                      className="w-full bg-brand-cream/50 pr-12 pl-6 py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px]"
+                                      placeholder={language === 'ar' ? 'العنوان بالتفصيل (منطقة، شارع، بناية)' : 'Address (Area, Street, Building)'} 
+                                      className={`w-full bg-brand-cream/50 ${language === 'ar' ? 'pr-12 pl-6' : 'pl-12 pr-6'} py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px]`}
                                       value={form.address}
                                       onChange={(e) => setForm({...form, address: e.target.value})}
                                     />
@@ -422,8 +440,8 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                           )}
   
                           <textarea 
-                            placeholder="Additional Notes (Optional)..." 
-                            className="w-full bg-brand-cream/50 px-6 py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px] min-h-[80px] resize-none"
+                            placeholder={language === 'ar' ? 'ملاحظات إضافية (اختياري)...' : 'Additional Notes (Optional)...'} 
+                            className={`w-full bg-brand-cream/50 px-6 py-5 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px] min-h-[80px] resize-none ${language === 'ar' ? 'text-right' : 'text-left'}`}
                             value={form.notes}
                             onChange={(e) => setForm({...form, notes: e.target.value})}
                           />
@@ -431,11 +449,13 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
   
                         {/* PROMO CODE SECTION */}
                         <div className="pt-4 border-t border-brand-gray/20">
-                          <label className="text-[10px] font-black text-brand-black/40 uppercase tracking-widest mb-2 block">Promo Code (Optional)</label>
+                          <label className="text-[10px] font-black text-brand-black/40 uppercase tracking-widest mb-2 block">
+                            {language === 'ar' ? 'كود الخصم (اختياري)' : 'Promo Code (Optional)'}
+                          </label>
                           <div className="flex gap-2 relative">
                             <input 
-                              placeholder="Enter promo code (WELCOME30)" 
-                              className="w-full bg-brand-cream/50 pl-4 pr-4 py-3 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px] uppercase"
+                              placeholder={language === 'ar' ? 'أدخل كود الخصم (مثلاً WELCOME30)' : 'Enter promo code (WELCOME30)'} 
+                              className={`w-full bg-brand-cream/50 px-4 py-3 rounded-xl border border-brand-gray/40 focus:bg-white focus:border-brand-red/30 outline-none transition-all font-bold text-[16px] uppercase ${language === 'ar' ? 'text-right' : 'text-left'}`}
                               value={couponCode}
                               onChange={(e) => {
                                 const val = e.target.value.toUpperCase();
@@ -470,26 +490,26 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
   
                         {/* PAYMENT METHOD SELECTION */}
                         <div className="pt-6 border-t border-brand-gray/20">
-                          <h4 className="font-black text-brand-black mb-3">Payment Method</h4>
+                          <h4 className="font-black text-brand-black mb-3">{language === 'ar' ? 'طريقة الدفع' : 'Payment Method'}</h4>
                           <div className="grid grid-cols-2 gap-3 pb-2">
                              <button 
                                onClick={() => setPaymentMethod('CASH')}
                                className={`border-2 rounded-xl py-3 font-bold transition-all ${paymentMethod === 'CASH' ? 'border-brand-red bg-red-50 text-brand-red shadow-sm' : 'border-brand-gray/30 text-brand-black/50 hover:border-brand-gray'}`}
                              >
-                               Cash on Delivery
+                               {language === 'ar' ? 'الدفع عند الاستلام' : 'Cash on Delivery'}
                              </button>
                              <button 
                                onClick={() => setPaymentMethod('CLIQ')}
                                className={`border-2 rounded-xl py-3 font-bold transition-all flex flex-col items-center justify-center gap-1 ${paymentMethod === 'CLIQ' ? 'border-purple-600 bg-purple-50 text-purple-700 shadow-sm' : 'border-brand-gray/30 text-brand-black/50 hover:border-brand-gray'}`}
                              >
-                               <span className="flex items-center gap-1"><Zap size={14} className={paymentMethod === 'CLIQ' ? 'text-purple-600' : 'text-gray-400'}/> CliQ</span>
+                               <span className="flex items-center gap-1"><Zap size={14} className={paymentMethod === 'CLIQ' ? 'text-purple-600' : 'text-gray-400'}/> {language === 'ar' ? 'كليك' : 'CliQ'}</span>
                              </button>
                           </div>
                           {paymentMethod === 'CLIQ' && (
                              <div className="bg-purple-100/50 p-4 rounded-xl border border-purple-200 text-center mb-2 animate-fade-in text-sm mt-3">
-                               <p className="text-purple-800 font-bold mb-1">Please transfer to the following Alias:</p>
+                               <p className="text-purple-800 font-bold mb-1">{language === 'ar' ? 'يرجى التحويل إلى الاسم المستعار التالي:' : 'Please transfer to the following Alias:'}</p>
                                <span className="bg-white px-3 py-1 rounded-md border border-purple-200 font-black text-purple-900 tracking-widest text-lg inline-block my-1 shadow-sm select-all">XIANREST</span>
-                               <p className="text-purple-600/80 font-bold mt-1 text-xs px-2 leading-relaxed">We will verify the transfer and approve your order in real-time.</p>
+                               <p className="text-purple-600/80 font-bold mt-1 text-xs px-2 leading-relaxed">{language === 'ar' ? 'سنقوم بالتحقق من التحويل والموافقة على طلبك في الوقت الفعلي.' : 'We will verify the transfer and approve your order in real-time.'}</p>
                              </div>
                           )}
                         </div>
@@ -497,17 +517,17 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                         <div className="pt-4 border-t border-brand-gray/20">
                           <div className="flex justify-between items-center mb-6">
                              <div className="flex flex-col">
-                               <span className="text-brand-black/40 font-bold">Subtotal</span>
-                               {discountPercent > 0 && <span className="text-green-600 text-xs font-black">Welcome Discount ({(discountPercent * 100).toFixed(0)}%)</span>}
+                               <span className="text-brand-black/40 font-bold">{language === 'ar' ? 'المجموع الفرعي' : 'Subtotal'}</span>
+                               {discountPercent > 0 && <span className="text-green-600 text-xs font-black">{language === 'ar' ? 'خصم ترحيبي' : 'Welcome Discount'} ({(discountPercent * 100).toFixed(0)}%)</span>}
                              </div>
                              <div className="flex flex-col items-end">
                                {discountPercent > 0 ? (
                                  <>
-                                   <span className="font-bold text-sm text-brand-black/30 line-through">{currentTotal.toFixed(2)} JOD</span>
-                                   <span className="font-black text-lg text-green-600">{getFinalPrice().toFixed(2)} JOD</span>
+                                   <span className="font-bold text-sm text-brand-black/30 line-through">{currentTotal.toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
+                                   <span className="font-black text-lg text-green-600">{getFinalPrice().toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
                                  </>
                                ) : (
-                                 <span className="font-black text-lg">{currentTotal.toFixed(2)} JOD</span>
+                                 <span className="font-black text-lg">{currentTotal.toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
                                )}
                              </div>
                           </div>
@@ -520,8 +540,8 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                               <div className="w-6 h-6 border-3 border-white/20 border-t-white rounded-full animate-spin" />
                             ) : (
                               <>
-                                <span>Confirm Order • {getFinalPrice().toFixed(2)} JOD</span>
-                                <ArrowRight size={20} className="mr-2" />
+                                <span>{language === 'ar' ? 'تأكيد الطلب' : 'Confirm Order'} • {getFinalPrice().toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
+                                <ArrowRight size={20} className={language === 'ar' ? 'mr-2 rotate-180' : 'ml-2'} />
                               </>
                             )}
                           </button>

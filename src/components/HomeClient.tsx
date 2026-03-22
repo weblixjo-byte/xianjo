@@ -6,8 +6,10 @@ import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import MenuItemCard from '@/components/MenuItemCard';
 import CartSidebar from '@/components/CartSidebar';
+import { useLanguage } from '@/store/useLanguage';
 
 export default function HomeClient() {
+  const { language } = useLanguage();
   const { items, getTotalPrice } = useCart();
   const [products, setProducts] = useState<any[]>([]);
   const [categoryOrder, setCategoryOrder] = useState<string[]>([]);
@@ -97,7 +99,7 @@ export default function HomeClient() {
   if (!mounted) return null;
 
   return (
-    <div className="bg-white min-h-screen font-body" dir="ltr">
+    <div className="bg-white min-h-screen font-body" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <Header onCartOpen={() => setIsSidebarOpen(true)} />
       
       <main className="pt-24 pb-32">
@@ -128,9 +130,11 @@ export default function HomeClient() {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-6 mb-10">
+        <div className="max-w-7xl mx-auto px-6 mb-10 text-center">
            <h2 className="text-3xl font-bold text-black luxury-heading mb-2">{selectedCategory}</h2>
-           <p className="text-gray-500 text-sm font-medium">Carefully selected premium dishes just for you</p>
+           <p className="text-gray-500 text-sm font-medium">
+             {language === 'ar' ? 'أطباق مختارة بعناية خصيصاً لك' : 'Carefully selected premium dishes just for you'}
+           </p>
         </div>
 
         <section className="max-w-7xl mx-auto px-6">
@@ -152,7 +156,6 @@ export default function HomeClient() {
                 ))}
                </AnimatePresence>
             </div>
-          )}
         </section>
       </main>
 
@@ -164,16 +167,18 @@ export default function HomeClient() {
             exit={{ y: 100 }}
             className="fixed bottom-0 left-0 right-0 z-[110] bg-white border-t border-gray-100 p-6 flex items-center justify-between"
           >
-            <div className="flex-1 flex flex-col">
-               <span className="text-xs font-bold text-gray-400">Current Order Total</span>
-               <span className="text-xl font-bold text-black">{totalPrice.toFixed(2)} JOD</span>
+            <div className={`flex-1 flex flex-col ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+               <span className="text-xs font-bold text-gray-400">
+                 {language === 'ar' ? 'إجمالي الطلب' : 'Current Order Total'}
+               </span>
+               <span className="text-xl font-bold text-black">{totalPrice.toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
             </div>
             <button 
               onClick={() => setIsSidebarOpen(true)}
               className="bg-black text-white px-8 py-4 rounded-xl font-bold flex items-center gap-3 active:scale-95 transition-all shadow-lg"
             >
               <ShoppingCart size={20} />
-              <span>View Cart ({cartCount})</span>
+              <span>{language === 'ar' ? `عرض السلة (${cartCount})` : `View Cart (${cartCount})`}</span>
             </button>
           </motion.div>
         ) : null}
