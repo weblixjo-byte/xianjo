@@ -465,16 +465,6 @@ export default function AdminDashboard() {
                            order.status === 'READY' ? 'جاهز للتسليم' :
                            'تم الاستلام'}
                         </div>
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handlePrint(order);
-                          }}
-                          className="flex items-center gap-2 px-4 py-2 bg-white text-brand-black border-2 border-brand-gray rounded-2xl hover:bg-brand-black hover:text-white transition-all shadow-sm active:scale-95 group/print"
-                        >
-                          <Printer size={16} className="text-brand-red group-hover/print:text-white" />
-                          <span className="text-[10px] font-black uppercase tracking-widest">طباعة الفاتورة</span>
-                        </button>
                       </div>
                     </div>
                     
@@ -654,6 +644,16 @@ export default function AdminDashboard() {
                          )}
 
                          <div className="flex flex-col gap-4">
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handlePrint(order);
+                              }}
+                              className="w-full bg-white text-brand-black border-2 border-brand-gray py-5 rounded-2xl flex items-center justify-center gap-4 font-black transition-all hover:bg-brand-black hover:text-white active:scale-95 shadow-sm mb-2 group/print"
+                            >
+                              <Printer size={24} className="text-brand-red group-hover/print:text-white" />
+                              <span className="text-xl">طـباعة الـفاتورة (Print)</span>
+                            </button>
                           {order.status === 'PENDING' && (
                             <button 
                               onClick={() => handleUpdateStatus(order.id, 'PREPARING')}
