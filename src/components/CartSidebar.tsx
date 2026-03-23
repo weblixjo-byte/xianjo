@@ -62,15 +62,16 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-        setForm(prev => ({ ...prev, address: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}` }));
+        const mapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+        setForm(prev => ({ ...prev, address: `${latitude.toFixed(6)}, ${longitude.toFixed(6)} (${mapsUrl})` }));
         setIsDetecting(false);
         
-        // Optional: Try reverse geocoding if possible, but for now coordinates are a good start
+        // Optional: Try reverse geocoding
         try {
           const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=${language}`);
           const data = await res.json();
           if (data && data.display_name) {
-            setForm(prev => ({ ...prev, address: data.display_name }));
+            setForm(prev => ({ ...prev, address: `${data.display_name} (${mapsUrl})` }));
           }
         } catch (e) {
           console.error("Geocoding error:", e);

@@ -6,7 +6,8 @@ import {
   Bell, Zap, Store,
   Printer, X, Plus, Edit2, Camera, DollarSign, Save, LayoutGrid,
   Layers, Search, ArrowLeft, Folder, ChevronUp, ChevronDown, ListOrdered,
-  CheckSquare, MoveRight, Ticket, Power, Check, FileSpreadsheet
+  CheckSquare, MoveRight, Ticket, Power, Check, FileSpreadsheet,
+  ExternalLink, Copy
 } from 'lucide-react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -829,6 +830,7 @@ export default function AdminDashboard() {
                             onArchive={handleArchive}
                             onPrint={handlePrint}
                             onPaymentReceived={handlePaymentReceived}
+                            language={language}
                           />
                        ))}
                     </div>
@@ -1403,11 +1405,42 @@ export default function AdminDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-4">
                     <h4 className="text-[10px] font-black uppercase tracking-[3px] text-brand-black/20">{language === 'ar' ? 'معلومات الزبون' : 'Customer Info'}</h4>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3 text-brand-black font-bold text-sm"><User size={16} className="text-brand-red"/> {selectedOrder.customerName}</div>
-                      <div className="flex items-center gap-3 text-brand-black font-bold text-sm"><Phone size={16} className="text-brand-red"/> {selectedOrder.phoneNumber}</div>
-                      <div className="flex items-center gap-3 text-brand-black font-bold text-xs"><MapPin size={16} className="text-brand-red"/> {selectedOrder.address || (language === 'ar' ? 'لا يوجد عنوان' : 'No Address')}</div>
-                    </div>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3 text-brand-black font-bold text-sm"><User size={16} className="text-brand-red"/> {selectedOrder.customerName}</div>
+                        <div className="flex items-center gap-3 text-brand-black font-bold text-sm"><Phone size={16} className="text-brand-red"/> {selectedOrder.phoneNumber}</div>
+                        <div className="flex flex-col gap-2">
+                           <div className="flex items-start gap-3 text-brand-black font-bold text-xs">
+                              <MapPin size={16} className="text-brand-red shrink-0 mt-0.5"/> 
+                              <span className="leading-relaxed">
+                                 {selectedOrder.address?.replace(/\(https:\/\/www\.google\.com\/maps\?q=[-0-9.,]+\)/, '').trim() || (language === 'ar' ? 'لا يوجد عنوان' : 'No Address')}
+                              </span>
+                           </div>
+                           {selectedOrder.address?.match(/https:\/\/www\.google\.com\/maps\?q=[-0-9.,]+/) && (
+                              <div className="flex items-center gap-2 mt-1 px-8">
+                                 <a 
+                                    href={selectedOrder.address.match(/https:\/\/www\.google\.com\/maps\?q=[-0-9.,]+/)?.[0]} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-2 text-[10px] font-black text-blue-600 hover:text-blue-800 bg-blue-50 px-3 py-1.5 rounded-lg transition-colors"
+                                 >
+                                    <ExternalLink size={12} /> {language === 'ar' ? 'فتح في الخرائط' : 'Open in Maps'}
+                                 </a>
+                                 <button 
+                                    onClick={() => {
+                                       const url = selectedOrder.address?.match(/https:\/\/www\.google\.com\/maps\?q=[-0-9.,]+/)?.[0];
+                                       if (url) {
+                                          navigator.clipboard.writeText(url);
+                                          toast.success(language === 'ar' ? 'تم نسخ الرابط!' : 'Link Copied!');
+                                       }
+                                    }}
+                                    className="flex items-center gap-2 text-[10px] font-black text-brand-black/40 hover:text-brand-black bg-brand-gray/10 px-3 py-1.5 rounded-lg transition-colors"
+                                 >
+                                    <Copy size={12} /> {language === 'ar' ? 'نسخ الرابط' : 'Copy Link'}
+                                 </button>
+                              </div>
+                           )}
+                        </div>
+                      </div>
                   </div>
                   <div className="space-y-4">
                     <h4 className="text-[10px] font-black uppercase tracking-[3px] text-brand-black/20">{language === 'ar' ? 'التوقيت' : 'Timing'}</h4>
@@ -1437,15 +1470,97 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                {selectedOrder.notes && (
-                   <div className="space-y-4">
-                      <h4 className="text-[10px] font-black uppercase tracking-[3px] text-brand-black/20">{language === 'ar' ? 'ملاحظات' : 'Notes'}</h4>
-                      <div className="bg-amber-50 rounded-2xl p-6 border border-amber-100 text-amber-900 font-bold text-sm italic">&quot;{selectedOrder.notes}&quot;</div>
-                   </div>
-                )}
-              </div>
-            </motion.div>
-          </div>
+                 {selectedOrder.notes && (
+                    <div className="space-y-4">
+                       <h4 className="text-[10px] font-black uppercase tracking-[3px] text-brand-black/20">{language === 'ar' ? 'ملاحظات' : 'Notes'}</h4>
+                       <div className="bg-amber-50 rounded-2xl p-6 border border-amber-100 text-amber-900 font-bold text-sm italic">&quot;{selectedOrder.notes}&quot;</div>
+                    </div>
+                 )}
+
+                 {/* Modal Actions */}
+                 <div className="pt-8 border-t border-brand-gray/20 flex flex-col gap-4">
+                    <div className="flex flex-col gap-3">
+                       {selectedOrder.paymentMethod === 'CLIQ' && selectedOrder.paymentStatus === 'PENDING' && (
+                         <button 
+                           onClick={(e) => {
+                             handlePaymentReceived(selectedOrder.id, e);
+                             setSelectedOrder(prev => prev ? { ...prev, paymentStatus: 'COMPLETED' } : null);
+                           }}
+                           className="w-full bg-blue-600 text-white py-5 rounded-2xl font-black shadow-lg shadow-blue-200 active:scale-95 transition-all flex items-center justify-center gap-2"
+                         >
+                           <CheckCircle size={20} /> تأكيد استلام التحويل كليك
+                         </button>
+                       )}
+                       
+                       {selectedOrder.status === 'PENDING' && (
+                          <div className="flex flex-col gap-3">
+                            <button 
+                              onClick={() => {
+                                handleUpdateStatus(selectedOrder.id, 'PREPARING');
+                                setSelectedOrder(prev => prev ? { ...prev, status: 'PREPARING' } : null);
+                              }} 
+                              className="w-full bg-brand-red text-white py-5 rounded-2xl font-black shadow-xl shadow-brand-red/20 active:scale-95 transition-all flex items-center justify-center gap-3"
+                            >
+                              <Zap size={20} /> قبول الطلب وتجهيزه
+                            </button>
+                            <button 
+                              onClick={() => {
+                                handleUpdateStatus(selectedOrder.id, 'REJECTED');
+                                setSelectedOrder(null);
+                              }} 
+                              className="w-full bg-gray-100 text-gray-500 py-4 rounded-2xl font-black hover:bg-red-50 hover:text-red-500 transition-all flex items-center justify-center gap-2"
+                            >
+                              <X size={18} /> رفض الطلب وإلغاؤه
+                            </button>
+                          </div>
+                       )}
+
+                       {selectedOrder.status === 'PREPARING' && (
+                         <button 
+                           onClick={() => {
+                             handleUpdateStatus(selectedOrder.id, 'READY');
+                             setSelectedOrder(prev => prev ? { ...prev, status: 'READY' } : null);
+                           }} 
+                           className="w-full bg-brand-black text-white py-5 rounded-2xl font-black active:scale-95 transition-all"
+                         >
+                            جاهز للتسليم الآن
+                         </button>
+                       )}
+
+                       {selectedOrder.status === 'READY' && (
+                         <button 
+                           onClick={() => {
+                             handleUpdateStatus(selectedOrder.id, 'SHIPPED');
+                             setSelectedOrder(prev => prev ? { ...prev, status: 'SHIPPED' } : null);
+                           }} 
+                           className="w-full bg-green-600 text-white py-5 rounded-2xl font-black active:scale-95 transition-all"
+                         >
+                            تم التسليم النهائي ✅
+                         </button>
+                       )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                       <button 
+                         onClick={() => handlePrint(selectedOrder)} 
+                         className="p-4 bg-brand-gray/20 text-brand-black rounded-2xl flex items-center justify-center gap-3 font-black text-xs hover:bg-brand-gray/40 transition-all border border-brand-gray/10"
+                       >
+                         <Printer size={18}/> طباعة الفاتورة
+                       </button>
+                       <button 
+                         onClick={() => {
+                           handleArchive(selectedOrder.id);
+                           setSelectedOrder(null);
+                         }} 
+                         className="p-4 bg-brand-gray/20 text-brand-black/40 rounded-2xl flex items-center justify-center gap-3 font-black text-xs hover:text-brand-red hover:bg-red-50 transition-all border border-brand-gray/10"
+                       >
+                         <Trash2 size={18}/> أرشفة الطلب
+                       </button>
+                    </div>
+                 </div>
+               </div>
+             </motion.div>
+           </div>
         )}
 
         {selectedCustomer && (
@@ -1527,12 +1642,13 @@ export default function AdminDashboard() {
   );
 }
 
-function OrderCard({ order, onUpdateStatus, onArchive, onPrint, onPaymentReceived }: { 
+function OrderCard({ order, onUpdateStatus, onArchive, onPrint, onPaymentReceived, language }: { 
   order: Order, 
   onUpdateStatus: (id: string, status: string) => void, 
   onArchive: (id: string) => void, 
   onPrint: (order: Order) => void,
-  onPaymentReceived: (id: string, e: React.MouseEvent) => void
+  onPaymentReceived: (id: string, e: React.MouseEvent) => void,
+  language: string
 }) {
   return (
     <div className={`bg-white rounded-[2.5rem] overflow-hidden shadow-sm border border-brand-gray flex flex-col group relative
@@ -1562,12 +1678,44 @@ function OrderCard({ order, onUpdateStatus, onArchive, onPrint, onPaymentReceive
               <div className="bg-brand-red/5 p-2 rounded-xl text-brand-red"><Phone size={18} /></div>
               <span className="font-bold text-brand-black text-sm tracking-tight" dir="ltr">{order.phoneNumber}</span>
            </div>
-           {order.orderType === 'DELIVERY' && order.deliveryArea && (
-              <div className="flex items-center gap-3">
+           <div className="flex flex-col gap-2">
+              <div className="flex items-start gap-3">
                 <div className="bg-brand-red/5 p-2 rounded-xl text-brand-red"><MapPin size={18} /></div>
-                <span className="font-bold text-brand-black text-xs">{order.deliveryArea}</span>
+                <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+                  {order.deliveryArea && <span className="font-black text-brand-black text-[10px] uppercase tracking-wider opacity-30">{order.deliveryArea}</span>}
+                  <span className="font-bold text-brand-black text-xs leading-relaxed">
+                    {order.address?.replace(/\(https:\/\/www\.google\.com\/maps\?q=[-0-9.,]+\)/, '').trim() || (language === 'ar' ? 'لا يوجد عنوان مفصل' : 'No detailed address')}
+                  </span>
+                  
+                  {order.address?.match(/https:\/\/www\.google\.com\/maps\?q=[-0-9.,]+/) && (
+                    <div className="flex items-center gap-2 mt-1">
+                      <a 
+                        href={order.address.match(/https:\/\/www\.google\.com\/maps\?q=[-0-9.,]+/)?.[0]} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-[9px] font-black text-blue-600 hover:text-blue-800 bg-blue-50 px-2.5 py-1.5 rounded-lg border border-blue-100 transition-all active:scale-95"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <ExternalLink size={10} /> خرائط جوجل
+                      </a>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const url = order.address?.match(/https:\/\/www\.google\.com\/maps\?q=[-0-9.,]+/)?.[0];
+                          if (url) {
+                            navigator.clipboard.writeText(url);
+                            toast.success(language === 'ar' ? 'تم نسخ الرابط!' : 'Link Copied!');
+                          }
+                        }}
+                        className="flex items-center gap-2 text-[9px] font-black text-brand-black/40 hover:text-brand-black bg-brand-gray/5 px-2.5 py-1.5 rounded-lg border border-brand-gray/10 transition-all active:scale-95"
+                      >
+                        <Copy size={10} /> نسخ الرابط
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
-           )}
+           </div>
         </div>
 
         <div className="bg-brand-black/5 p-4 rounded-2xl space-y-3">
@@ -1605,8 +1753,8 @@ function OrderCard({ order, onUpdateStatus, onArchive, onPrint, onPaymentReceive
                   <button onClick={() => onUpdateStatus(order.id, 'PREPARING')} className="w-full bg-brand-red text-white py-4 rounded-xl font-black shadow-lg shadow-brand-red/20 active:scale-95 transition-all flex items-center justify-center gap-2">
                     <Zap size={16} /> قبول الطلب
                   </button>
-                  <button onClick={() => onUpdateStatus(order.id, 'REJECTED')} className="w-full bg-gray-100 text-gray-400 py-3 rounded-xl font-black hover:bg-red-50 hover:text-red-500 transition-all flex items-center justify-center gap-2 text-[10px]">
-                    <X size={14} /> رفض الطلب
+                  <button onClick={() => onUpdateStatus(order.id, 'REJECTED')} className="w-full bg-gray-50 text-brand-black/40 py-4 rounded-xl font-black hover:bg-red-50 hover:text-brand-red border border-brand-gray/10 transition-all flex items-center justify-center gap-2 text-xs">
+                    <X size={16} /> رفض وإلغاء الطلب
                   </button>
                 </div>
              )}

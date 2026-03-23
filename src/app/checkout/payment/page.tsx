@@ -60,6 +60,10 @@ export default function PaymentPage() {
   }, [verificationPolling, orderId, pollOrderStatus]);
 
   const handleOrder = async (method: 'CASH' | 'CLIQ' | 'APPLE_PAY' | 'CARD') => {
+    if (method === 'CARD' || method === 'APPLE_PAY') {
+      toast.error(language === 'ar' ? 'عذراً، هذه الخدمة غير متوفرة حالياً' : 'Sorry, this service is currently unavailable');
+      return;
+    }
     if (method === 'CLIQ' && !showCliQModal && !orderId) {
       setShowCliQModal(true);
       return;
@@ -209,8 +213,10 @@ export default function PaymentPage() {
           />
           <PaymentOption 
             label={language === 'ar' ? 'الدفع من خلال البطاقة' : 'Pay via Card'}
+            sublabel={language === 'ar' ? 'غير متوفر مؤقتاً' : 'Temporarily Unavailable'}
+            disabled={true}
             icon={
-              <div className="flex gap-1">
+              <div className="flex gap-1 opacity-50">
                 <div className="bg-white border border-gray-200 rounded-lg p-1.5"><CreditCard size={18} className="text-red-500" /></div>
                 <div className="bg-white border border-gray-200 rounded-lg p-1.5"><CreditCard size={18} className="text-blue-600" /></div>
               </div>
@@ -220,7 +226,9 @@ export default function PaymentPage() {
           />
           <PaymentOption 
             label={language === 'ar' ? 'أبل باي' : 'Apple Pay'}
-            icon={<div className="bg-white border border-gray-200 rounded-lg p-1 px-2 flex items-center gap-1 font-black text-sm"><Apple size={16} fill="black" /> Pay</div>}
+            sublabel={language === 'ar' ? 'غير متوفر مؤقتاً' : 'Temporarily Unavailable'}
+            disabled={true}
+            icon={<div className="bg-white border border-gray-200 rounded-lg p-1 px-2 flex items-center gap-1 font-black text-sm opacity-50"><Apple size={16} fill="black" /> Pay</div>}
             onClick={() => handleOrder('APPLE_PAY')}
             loading={loading && paymentMethod === 'APPLE_PAY'}
           />
@@ -318,20 +326,21 @@ export default function PaymentPage() {
   );
 }
 
-function PaymentOption({ label, icon, onClick, loading }: { label: string, icon: React.ReactNode, onClick: () => void, loading: boolean }) {
+function PaymentOption({ label, sublabel, icon, onClick, loading, disabled = false }: { label: string, sublabel?: string, icon: React.ReactNode, onClick: () => void, loading: boolean, disabled?: boolean }) {
   const { language } = useLanguage();
   return (
     <button 
       onClick={onClick}
-      disabled={loading}
-      className="w-full flex items-center justify-between p-4 bg-white border-b border-gray-50 hover:bg-gray-50 transition-colors group"
+      disabled={loading || disabled}
+      className={`w-full flex items-center justify-between p-4 bg-white border-b border-gray-50 hover:bg-gray-50 transition-colors group ${disabled ? 'cursor-not-allowed grayscale-[0.5]' : ''}`}
     >
       <div className="flex items-center gap-4">
-        {language === 'ar' ? <ChevronLeft size={20} className="text-blue-500 transition-transform group-hover:-translate-x-1" /> : <ChevronRight size={20} className="text-blue-500 transition-transform group-hover:translate-x-1" />}
+        {!disabled && (language === 'ar' ? <ChevronLeft size={20} className="text-blue-500 transition-transform group-hover:-translate-x-1" /> : <ChevronRight size={20} className="text-blue-500 transition-transform group-hover:translate-x-1" />)}
         {icon}
       </div>
-      <div className="flex items-center gap-3">
-        <span className="font-bold text-gray-700">{label}</span>
+      <div className="flex flex-col items-end gap-1">
+        <span className={`font-bold ${disabled ? 'text-gray-400 line-through' : 'text-gray-700'}`}>{label}</span>
+        {sublabel && <span className="text-[10px] font-black text-brand-red uppercase tracking-tighter animate-pulse">{sublabel}</span>}
         {loading && <Loader2 size={18} className="animate-spin text-brand-red" />}
       </div>
     </button>
