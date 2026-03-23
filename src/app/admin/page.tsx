@@ -4,10 +4,11 @@ import {
   CheckCircle, RefreshCcw, User, Phone, MapPin, Trash2, Clock, 
   ShieldCheck, Box, Package, 
   Bell, Zap, Store,
-  Printer
+  Printer, X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast, { Toaster } from 'react-hot-toast';
+import { useLanguage } from '@/store/useLanguage';
 
 interface OrderItem {
   id: string;
@@ -55,6 +56,7 @@ interface ReportSummary {
 
 
 export default function AdminDashboard() {
+  const { language } = useLanguage();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isStoreOpen, setIsStoreOpen] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
@@ -66,6 +68,9 @@ export default function AdminDashboard() {
 
   type Tab = 'ORDERS' | 'HISTORY' | 'CUSTOMERS' | 'REPORTS' | 'SYSTEM';
   const [activeTab, setActiveTab] = useState<Tab>('ORDERS');
+  
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   
   // New States for expanded features
   const [historyOrders, setHistoryOrders] = useState<Order[]>([]);
@@ -551,7 +556,7 @@ export default function AdminDashboard() {
                            </thead>
                            <tbody>
                               {historyOrders.map((order) => (
-                                <tr key={order.id} className="border-b border-brand-gray hover:bg-gray-50 transition-all">
+                                <tr key={order.id} className="border-b border-brand-gray hover:bg-gray-50 transition-all cursor-pointer group" onClick={() => setSelectedOrder(order)}>
                                    <td className="p-6 font-black text-xs text-brand-red">#{order.id.slice(-6).toUpperCase()}</td>
                                    <td className="p-6">
                                       <p className="font-black text-xs">{order.customerName}</p>
@@ -592,7 +597,7 @@ export default function AdminDashboard() {
                            </thead>
                            <tbody>
                               {customers.map((c, i) => (
-                                <tr key={i} className="border-b border-brand-gray hover:bg-gray-50 transition-all">
+                                <tr key={i} className="border-b border-brand-gray hover:bg-gray-50 transition-all cursor-pointer group" onClick={() => setSelectedCustomer(c)}>
                                    <td className="p-6 font-black text-xs">{c.name}</td>
                                    <td className="p-6 text-xs font-bold" dir="ltr">{c.phone}</td>
                                    <td className="p-6 text-[10px] text-gray-500">{c.area || 'غير محدد'}</td>
@@ -661,6 +666,134 @@ export default function AdminDashboard() {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* MODALS */}
+      <AnimatePresence>
+        {selectedOrder && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedOrder(null)} className="absolute inset-0 bg-brand-black/60 backdrop-blur-sm" />
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="relative bg-white w-full max-w-2xl rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+              <div className="p-8 border-b border-brand-gray/20 flex items-center justify-between bg-brand-cream/30">
+                <div>
+                  <h3 className="text-2xl font-black text-brand-black tracking-tight">{language === 'ar' ? 'تفاصيل الطلب' : 'Order Details'}</h3>
+                  <p className="text-brand-red font-bold">#{selectedOrder.id.slice(-6).toUpperCase()}</p>
+                </div>
+                <button onClick={() => setSelectedOrder(null)} className="p-3 bg-white rounded-2xl shadow-sm border border-brand-gray/20 text-brand-black/40 hover:text-brand-red transition-all"><X size={24} /></button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-8 space-y-8">
+                {/* Status Badge */}
+                <div className="flex items-center gap-2">
+                   <div className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest ${selectedOrder.status === 'SHIPPED' ? 'bg-green-100 text-green-700' : 'bg-brand-gray/10 text-brand-black'}`}>
+                      {selectedOrder.status}
+                   </div>
+                   <div className="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest bg-brand-red/5 text-brand-red">
+                      {selectedOrder.paymentMethod}
+                   </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-4">
+                    <h4 className="text-[10px] font-black uppercase tracking-[3px] text-brand-black/20">{language === 'ar' ? 'معلومات الزبون' : 'Customer Info'}</h4>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3 text-brand-black font-bold text-sm"><User size={16} className="text-brand-red"/> {selectedOrder.customerName}</div>
+                      <div className="flex items-center gap-3 text-brand-black font-bold text-sm"><Phone size={16} className="text-brand-red"/> {selectedOrder.phoneNumber}</div>
+                      <div className="flex items-center gap-3 text-brand-black font-bold text-xs"><MapPin size={16} className="text-brand-red"/> {selectedOrder.address || (language === 'ar' ? 'لا يوجد عنوان' : 'No Address')}</div>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <h4 className="text-[10px] font-black uppercase tracking-[3px] text-brand-black/20">{language === 'ar' ? 'التوقيت' : 'Timing'}</h4>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3 text-brand-black font-bold text-xs"><Clock size={16} className="text-brand-red"/> {new Date(selectedOrder.createdAt).toLocaleString(language === 'ar' ? 'ar-EG' : 'en-US')}</div>
+                      {selectedOrder.pickupTime && <div className="flex items-center gap-3 text-brand-red font-black text-sm"><Store size={16}/> {selectedOrder.pickupTime}</div>}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h4 className="text-[10px] font-black uppercase tracking-[3px] text-brand-black/20">{language === 'ar' ? 'الأصناف المطلوبة' : 'Order Items'}</h4>
+                  <div className="bg-brand-gray/5 rounded-3xl p-6 space-y-4 border border-brand-gray/10">
+                    {selectedOrder.items?.map((item: OrderItem) => (
+                      <div key={item.id} className="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-brand-gray/5">
+                        <div className="flex items-center gap-4">
+                          <div className="w-8 h-8 rounded-lg bg-brand-cream flex items-center justify-center font-black text-brand-red text-xs">{item.quantity}x</div>
+                          <span className="font-bold text-brand-black text-sm">{item.name}</span>
+                        </div>
+                        <span className="font-black text-brand-red text-sm">{item.price.toFixed(2)} د.أ</span>
+                      </div>
+                    ))}
+                    <div className="pt-4 mt-4 border-t border-brand-gray/10 flex justify-between items-center px-2">
+                       <span className="font-black text-brand-black text-lg">{language === 'ar' ? 'الإجمالي' : 'Total Amount'}</span>
+                       <span className="font-black text-brand-red text-2xl">{selectedOrder.totalPrice.toFixed(2)} JOD</span>
+                    </div>
+                  </div>
+                </div>
+
+                {selectedOrder.notes && (
+                   <div className="space-y-4">
+                      <h4 className="text-[10px] font-black uppercase tracking-[3px] text-brand-black/20">{language === 'ar' ? 'ملاحظات' : 'Notes'}</h4>
+                      <div className="bg-amber-50 rounded-2xl p-6 border border-amber-100 text-amber-900 font-bold text-sm italic">&quot;{selectedOrder.notes}&quot;</div>
+                   </div>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {selectedCustomer && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedCustomer(null)} className="absolute inset-0 bg-brand-black/60 backdrop-blur-sm" />
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="relative bg-white w-full max-w-2xl rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+              <div className="p-8 border-b border-brand-gray/20 flex items-center justify-between bg-brand-red text-white">
+                <div className="flex items-center gap-6">
+                   <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center text-brand-red font-black text-3xl shadow-xl">{selectedCustomer.name[0]}</div>
+                   <div>
+                      <h3 className="text-3xl font-black tracking-tight">{selectedCustomer.name}</h3>
+                      <p className="text-white/80 font-bold flex items-center gap-2 mt-1"><Phone size={16}/> {selectedCustomer.phone}</p>
+                   </div>
+                </div>
+                <button onClick={() => setSelectedCustomer(null)} className="p-3 bg-white/10 rounded-2xl text-white hover:bg-white/20 transition-all"><X size={24} /></button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-8 space-y-8">
+                <div className="grid grid-cols-3 gap-6">
+                   <div className="bg-brand-gray/5 p-6 rounded-3xl text-center border border-brand-gray/10">
+                      <p className="text-[10px] font-black uppercase text-brand-black/20 mb-1">{language === 'ar' ? 'عدد الطلبات' : 'Total Orders'}</p>
+                      <p className="text-3xl font-black text-brand-red">{selectedCustomer.orderCount}</p>
+                   </div>
+                   <div className="col-span-2 bg-brand-gray/5 p-6 rounded-3xl border border-brand-gray/10">
+                      <p className="text-[10px] font-black uppercase text-brand-black/20 mb-1">{language === 'ar' ? 'آخر نشاط' : 'Last Activity'}</p>
+                      <p className="text-lg font-black text-brand-black">{new Date(selectedCustomer.lastOrder).toLocaleDateString(language === 'ar' ? 'ar-EG' : 'en-US')}</p>
+                      <p className="text-xs font-bold text-brand-black/40">{selectedCustomer.area || 'Unknown Area'}</p>
+                   </div>
+                </div>
+
+                <div className="space-y-4">
+                   <h4 className="text-[10px] font-black uppercase tracking-[3px] text-brand-black/20">{language === 'ar' ? 'سجل الطلبات' : 'Order History'}</h4>
+                   <div className="space-y-3">
+                      {historyOrders.filter(o => o.phoneNumber === selectedCustomer.phone).slice(0, 5).map(o => (
+                         <div key={o.id} className="bg-white p-5 rounded-2xl border border-brand-gray/20 flex items-center justify-between hover:border-brand-red transition-all cursor-pointer group" onClick={() => { setSelectedOrder(o); setSelectedCustomer(null); }}>
+                            <div className="flex items-center gap-4">
+                               <div className="w-10 h-10 rounded-xl bg-brand-cream flex items-center justify-center text-brand-red"><Package size={20}/></div>
+                               <div>
+                                  <p className="font-black text-brand-black text-sm">#{o.id.slice(-6).toUpperCase()}</p>
+                                  <p className="text-[10px] font-bold text-brand-black/40">{new Date(o.createdAt).toLocaleDateString()}</p>
+                               </div>
+                            </div>
+                            <div className="text-right">
+                               <p className="font-black text-brand-red text-lg">{o.totalPrice.toFixed(2)} د.أ</p>
+                               <p className="text-[10px] font-bold uppercase tracking-widest text-brand-black/20 group-hover:text-brand-red transition-colors">{language === 'ar' ? 'عرض التفاصيل' : 'View Details'} →</p>
+                            </div>
+                         </div>
+                      ))}
+                      {historyOrders.filter(o => o.phoneNumber === selectedCustomer.phone).length === 0 && (
+                         <div className="text-center py-10 text-brand-black/20 font-bold italic">{language === 'ar' ? 'لم يتم تحميل سجل الطلبات الكامل بعد..' : 'Full history not loaded in memory..'}</div>
+                      )}
+                   </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
