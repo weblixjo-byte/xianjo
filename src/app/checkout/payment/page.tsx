@@ -4,11 +4,9 @@ import { useCart } from '@/store/useCart';
 import { useCheckout } from '@/store/useCheckout';
 import { useLanguage } from '@/store/useLanguage';
 import { DELIVERY_ZONES } from '@/constants/deliveryZones';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, HelpCircle, CreditCard, Apple, CheckCircle2, AlertCircle, Loader2, Banknote } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 
 export default function PaymentPage() {
   const { language } = useLanguage();
@@ -16,7 +14,7 @@ export default function PaymentPage() {
   const { form, resetForm } = useCheckout();
   const router = useRouter();
 
-  const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'CLIQ' | 'APPLE_PAY' | 'CARD' | null>(null);
+  const [paymentMethod] = useState<'CASH' | 'CLIQ' | 'APPLE_PAY' | 'CARD' | null>(null);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [isOrdered, setIsOrdered] = useState(false);
@@ -111,17 +109,14 @@ export default function PaymentPage() {
           <p className="text-brand-black font-black text-lg">152718113</p>
         </div>
 
-        {/* PAYMENT OPTIONS */}
         <div className="space-y-3">
           <PaymentOption 
-            id="CLIQ"
             label={language === 'ar' ? 'كليك' : 'CliQ'}
             icon={<div className="bg-white border border-gray-200 rounded-lg p-1 px-3 font-black text-sm italic">CliQ</div>}
             onClick={() => handleOrder('CLIQ')}
             loading={loading && paymentMethod === 'CLIQ'}
           />
           <PaymentOption 
-            id="CARD"
             label={language === 'ar' ? 'الدفع من خلال البطاقة' : 'Pay via Card'}
             icon={
               <div className="flex gap-1">
@@ -133,14 +128,12 @@ export default function PaymentPage() {
             loading={loading && paymentMethod === 'CARD'}
           />
           <PaymentOption 
-            id="APPLE_PAY"
             label={language === 'ar' ? 'أبل باي' : 'Apple Pay'}
             icon={<div className="bg-white border border-gray-200 rounded-lg p-1 px-2 flex items-center gap-1 font-black text-sm"><Apple size={16} fill="black" /> Pay</div>}
             onClick={() => handleOrder('APPLE_PAY')}
             loading={loading && paymentMethod === 'APPLE_PAY'}
           />
           <PaymentOption 
-            id="CASH"
             label={language === 'ar' ? 'كاش عند الوصول' : 'Cash on Delivery'}
             icon={<div className="bg-white border border-gray-200 rounded-lg p-1 px-2"><Banknote size={20} className="text-green-600" /></div>}
             onClick={() => handleOrder('CASH')}
@@ -175,7 +168,7 @@ export default function PaymentPage() {
   );
 }
 
-function PaymentOption({ id, label, icon, onClick, loading }: { id: string, label: string, icon: React.ReactNode, onClick: () => void, loading: boolean }) {
+function PaymentOption({ label, icon, onClick, loading }: { label: string, icon: React.ReactNode, onClick: () => void, loading: boolean }) {
   const { language } = useLanguage();
   return (
     <button 

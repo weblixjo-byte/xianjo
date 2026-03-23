@@ -1,9 +1,8 @@
 'use client';
 import { useCart } from '@/store/useCart';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Phone, MapPin, User, CheckCircle2, Trash2, ArrowRight, AlertCircle, ShoppingCart, Clock, Store, Zap, Locate, ChevronDown, Bike } from 'lucide-react';
+import { X, Phone, MapPin, User, Trash2, ArrowRight, AlertCircle, ShoppingCart, Clock, Store, Locate, ChevronDown, Bike } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
 import { useSession, signIn } from 'next-auth/react';
 import { useLanguage } from '@/store/useLanguage';
@@ -15,29 +14,24 @@ import { useRouter } from 'next/navigation';
 export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
   const { language } = useLanguage();
   const { data: session } = useSession();
-  const { items, getSubTotal, getTotalPrice, clearCart, removeItem } = useCart();
-  const [isOrdered, setIsOrdered] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
+  const { items, clearCart, removeItem } = useCart();
   const [form, setForm] = useState({ name: '', phone: '', address: '', deliveryArea: '', notes: '', pickupTime: '' });
   const [orderType, setOrderType] = useState<'DELIVERY' | 'PICKUP'>('DELIVERY');
-  const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'CLIQ'>('CASH');
   const [mounted, setMounted] = useState(false);
-  const [lastOrderId, setLastOrderId] = useState('');
-  const [isDetecting, setIsDetecting] = useState(false);
   const [selectedZone, setSelectedZone] = useState<DeliveryZone>(DELIVERY_ZONES[0]);
-  const [checkoutStep, setCheckoutStep] = useState(1); // 1: Details, 2: Payment
 
   // Promo Code State
-  const [couponCode, setCouponCode] = useState('');
-  const [discountPercent, setDiscountPercent] = useState(0);
-  const [couponError, setCouponError] = useState('');
-  const [couponSuccess, setCouponSuccess] = useState('');
-  const [validatingCoupon, setValidatingCoupon] = useState(false);
+  const [couponCode] = useState('');
+  const [discountPercent] = useState(0);
   const [isStoreOpen, setIsStoreOpen] = useState<boolean>(true);
   const { setForm: setCheckoutForm } = useCheckout();
   const router = useRouter();
 
+
+  useEffect(() => {
+    const timer = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     fetch('/api/settings').then(res => res.json()).then(data => {
@@ -47,124 +41,10 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
     }).catch(() => {});
   }, []);
 
-  const currentTotal = getTotalPrice();
+  const currentTotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const getDeliveryFee = () => orderType === 'DELIVERY' ? selectedZone.fee : 0;
-  const getFinalPrice = () => {
-    const total = currentTotal + getDeliveryFee();
-    if (discountPercent > 0) return total * (1 - discountPercent);
-    return total;
-  };
 
-  const handleValidateCoupon = async (codeToValidate: string = couponCode) => {
-    if (!codeToValidate.trim()) return;
-    setValidatingCoupon(true);
-    setCouponError('');
-    setCouponSuccess('');
-    try {
-      const res = await fetch('/api/coupon/validate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: codeToValidate })
-      });
-      const data = await res.json();
-      if (res.ok && data.valid) {
-        setDiscountPercent(data.discountPercent);
-        setCouponSuccess(data.message);
-      } else {
-        setDiscountPercent(0);
-        setCouponError(data.error);
-      }
-    } catch {
-      setDiscountPercent(0);
-      setCouponError("Failed to validate coupon");
-    } finally {
-      setValidatingCoupon(false);
-    }
-  };
-
-  useEffect(() => {
-    setMounted(true);
-    if (session?.user?.name && !form.name) {
-      setForm(prev => ({ ...prev, name: session.user?.name || '' }));
-    }
-  }, [session, form.name]);
-
-  const handleDetectLocation = () => {
-    if (!navigator.geolocation) {
-      setErrorMsg("Geolocation is not supported by your browser");
-      return;
-    }
-
-    setIsDetecting(true);
-    setErrorMsg('');
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          const { latitude, longitude } = position.coords;
-          const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
-          setForm(prev => ({ 
-            ...prev, 
-            address: googleMapsUrl 
-          }));
-        } catch (err) {
-          console.error("Location error:", err);
-          setErrorMsg("Could not detect address, please enter it manually.");
-        } finally {
-          setIsDetecting(false);
-        }
-      },
-      (error) => {
-        console.error("Geolocation error:", error);
-        setIsDetecting(false);
-        setErrorMsg("Failed to detect location. Please check browser permissions.");
-      },
-      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
-    );
-  };
-
-  const handleOrder = async () => {
-    if (!session) return;
-    setErrorMsg('');
-    setLoading(true);
-    
-    try {
-      const res = await fetch('/api/order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          customerName: form.name,
-          phone: form.phone,
-          address: orderType === 'DELIVERY' ? form.address : 'Store Pickup',
-          deliveryArea: orderType === 'DELIVERY' ? selectedZone.nameEn : '',
-          pickupTime: orderType === 'PICKUP' ? form.pickupTime : '',
-          orderType: orderType,
-          paymentMethod: paymentMethod,
-          notes: form.notes,
-          totalPrice: getFinalPrice(),
-          userId: session?.user?.id,
-          couponCode: discountPercent > 0 ? couponCode : null,
-          items: items.map(item => ({
-            productId: item.id.toString(),
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity
-          }))
-        }),
-      });
-      
-      const data = await res.json();
-      if (res.ok) {
-        setLastOrderId(data.orderId);
-        setIsOrdered(true);
-        clearCart();
-      } else {
-        setErrorMsg(data.error || "An unexpected error occurred.");
-      }
-    } catch { 
-      setErrorMsg("Connection failed, please check your internet.");
-    } finally { setLoading(false); }
-  };
+  // Functions removed as they are now handled in /checkout/payment
 
   if (!mounted) return null;
 
@@ -201,14 +81,14 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                 </button>
                 <div className="flex flex-col">
                   <h2 className="text-xl md:text-2xl font-black text-brand-black tracking-tight">{language === 'ar' ? 'سلة المشتريات' : 'Shopping Cart'}</h2>
-                  {items.length > 0 && !isOrdered && (
+                  {items.length > 0 && (
                     <span className="text-xs font-bold text-brand-black/40">
                       {items.length} {language === 'ar' ? 'أصناف مختارة' : 'Selected Items'}
                     </span>
                   )}
                 </div>
               </div>
-              {items.length > 0 && !isOrdered && (
+              {items.length > 0 && (
                 <button 
                   onClick={clearCart}
                   className="text-xs font-black text-brand-red uppercase tracking-widest px-3 py-1.5 hover:bg-brand-red/5 rounded-lg transition-all"
@@ -220,64 +100,7 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
 
             {/* MAIN CONTENT - SINGLE SCROLLBAR */}
             <div className="flex-1 overflow-y-auto scroll-smooth">
-              {isOrdered ? (
-                // SUCCESS STATE
-                <div className="flex flex-col items-center justify-center text-center p-12 space-y-10 min-h-full">
-                  <div className="bg-white p-10 rounded-full shadow-lg border border-brand-gray/50">
-                    <CheckCircle2 size={80} className="text-brand-red" strokeWidth={1.5} />
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <h2 className="text-4xl font-black text-brand-black">
-                      {language === 'ar' ? 'تم استلام طلبك!' : 'Order Received!'}
-                    </h2>
-                    <p className="text-brand-black/60 font-medium">
-                      {language === 'ar' 
-                        ? 'شكراً لثقتك بـ شيان. طلبك قيد المراجعة الآن وسيتواصل معك فريقنا قريباً.' 
-                        : 'Thank you for trusting Xian. Your order is under review and our team will contact you shortly.'}
-                    </p>
-                  </div>
-                  
-                  {lastOrderId && (
-                    <div className="w-full bg-brand-cream/30 p-6 rounded-2xl border border-brand-gray/50 flex flex-col items-center gap-3">
-                      <p className="text-brand-black/60 text-xs font-black uppercase tracking-widest">{language === 'ar' ? 'رقم التتبع المباشر' : 'Your Secret Tracking Number'}</p>
-                      <div className="flex w-full mt-2">
-                        <input 
-                          readOnly 
-                          value={`#${lastOrderId.slice(-6).toUpperCase()}`} 
-                          className={`flex-1 bg-white border border-brand-gray rounded-${language === 'ar' ? 'r' : 'l'}-xl outline-none px-4 font-black text-brand-red text-center tracking-widest text-lg`}
-                        />
-                        <button 
-                          onClick={() => {
-                            navigator.clipboard.writeText(lastOrderId.slice(-6).toUpperCase());
-                            const btn = document.getElementById('copy-btn');
-                            if(btn) {
-                              btn.innerText = 'Copied!';
-                              btn.classList.add('bg-green-600', 'border-green-600', 'text-white');
-                              setTimeout(() => {
-                                btn.innerText = 'Copy';
-                                btn.classList.remove('bg-green-600', 'border-green-600', 'text-white');
-                              }, 2000);
-                            }
-                          }}
-                          id="copy-btn"
-                          className={`bg-brand-black text-white px-6 rounded-${language === 'ar' ? 'l' : 'r'}-xl font-bold hover:bg-brand-red transition-colors min-w-[80px]`}
-                        >
-                          {language === 'ar' ? 'نسخ' : 'Copy'}
-                        </button>
-                      </div>
-                      <Link 
-                        href={`/order-status/${lastOrderId}`} 
-                        onClick={onClose} 
-                        className="btn-matte w-full justify-center mt-3 shadow-sm"
-                      >
-                        {language === 'ar' ? 'تتبع الطلب المباشر' : 'Live Order Tracking'}
-                      </Link>
-                    </div>
-                  )}
-                  <button onClick={onClose} className="text-brand-black/40 font-bold hover:text-brand-red transition-all">{language === 'ar' ? 'العودة للرئيسية' : 'Back to Home'}</button>
-                </div>
-              ) : items.length === 0 ? (
+              {items.length === 0 ? (
                 // EMPTY STATE
                 <div className="flex flex-col items-center justify-center text-brand-black/10 py-20 space-y-6 min-h-full">
                   <ShoppingCart size={48} strokeWidth={1} />
@@ -358,12 +181,11 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                       <div className="space-y-6">
                         {/* WIZARD INDICATORS */}
                         <div className="flex items-center justify-center gap-2 mb-2">
-                           <div className={`h-1.5 rounded-full transition-all duration-300 ${checkoutStep === 1 ? 'w-12 bg-brand-red' : 'w-4 bg-brand-gray/30'}`} />
-                           <div className={`h-1.5 rounded-full transition-all duration-300 ${checkoutStep === 2 ? 'w-12 bg-brand-red' : 'w-4 bg-brand-gray/30'}`} />
+                           <div className="h-1.5 rounded-full transition-all duration-300 w-12 bg-brand-red" />
+                           <div className="h-1.5 rounded-full transition-all duration-300 w-4 bg-brand-gray/30" />
                         </div>
 
                         <AnimatePresence mode="wait">
-                          {checkoutStep === 1 ? (
                             <motion.div 
                               key="step1" initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 15 }} transition={{ duration: 0.2 }}
                               className="space-y-4"
@@ -413,9 +235,9 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                                           <MapPin className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-brand-black/20`} size={18} />
                                           <input placeholder={language === 'ar' ? 'العنوان بالتفصيل' : 'Detailed Address'} className={`w-full bg-brand-gray/5 text-brand-black ${language === 'ar' ? 'pr-12 pl-6' : 'pl-12 pr-6'} py-4 rounded-xl border border-brand-gray/20 focus:bg-white transition-all font-bold text-[15px]`} value={form.address} onChange={(e) => setForm({...form, address: e.target.value})} />
                                         </div>
-                                        <button onClick={handleDetectLocation} disabled={isDetecting} className={`w-full py-3 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 border-2 ${isDetecting ? 'bg-brand-red text-white border-brand-red animate-pulse' : 'bg-white text-brand-red border-brand-red/10'}`}>
-                                          <Locate size={14} /> <span>{isDetecting ? (language === 'ar' ? 'جاري التحديد...' : 'Detecting...') : (language === 'ar' ? 'تحديد موقعي التلقائي' : 'Auto-detect Location')}</span>
-                                        </button>
+                                        <div className="w-full py-3 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 border-2 bg-white text-brand-red border-brand-red/10">
+                                          <Locate size={14} /> <span>{language === 'ar' ? 'تحديد موقعي التلقائي' : 'Auto-detect Location'}</span>
+                                        </div>
                                       </>
                                     ) : (
                                       <div className="relative group">
@@ -424,6 +246,22 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                                       </div>
                                     )}
                                     <textarea placeholder={language === 'ar' ? 'ملاحظات إضافية...' : 'Additional Notes...'} className={`w-full bg-brand-gray/5 text-brand-black px-6 py-4 rounded-xl border border-brand-gray/20 focus:bg-white outline-none transition-all font-bold text-[15px] min-h-[90px] resize-none ${language === 'ar' ? 'text-right' : 'text-left'}`} value={form.notes} onChange={(e) => setForm({...form, notes: e.target.value})} />
+                                  </div>
+                                </div>
+
+                                {/* ORDER SUMMARY */}
+                                <div className="bg-brand-gray/5 p-6 rounded-3xl border border-brand-gray/10 space-y-3">
+                                  <div className="flex justify-between items-center text-sm font-bold">
+                                    <span className="text-brand-black/40">{language === 'ar' ? 'المجموع الفرعي' : 'Subtotal'}</span>
+                                    <span className="text-brand-black">{currentTotal.toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
+                                  </div>
+                                  <div className="flex justify-between items-center text-sm font-bold">
+                                    <span className="text-brand-black/40">{language === 'ar' ? 'رسوم التوصيل' : 'Delivery Fee'}</span>
+                                    <span className="text-brand-black">{getDeliveryFee().toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
+                                  </div>
+                                  <div className="pt-3 border-t border-brand-gray/10 flex justify-between items-center">
+                                    <span className="font-black text-brand-black">{language === 'ar' ? 'المجموع الكلي' : 'Total Price'}</span>
+                                    <span className="font-black text-brand-red text-xl">{(currentTotal + getDeliveryFee()).toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
                                   </div>
                                 </div>
                               </div>
@@ -445,7 +283,6 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                                 {language === 'ar' ? 'التالي' : 'Next'} <ArrowRight className={language === 'ar' ? 'rotate-180 group-hover:-translate-x-2' : 'group-hover:translate-x-2'} />
                               </button>
                             </motion.div>
-                          ) : null}
                         </AnimatePresence>
 
                       </div>
