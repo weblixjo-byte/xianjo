@@ -147,7 +147,7 @@ export default function OrderStatusPage({ params }: { params: Promise<{ id: stri
 
   const isPickup = order.orderType === 'PICKUP';
 
-  if (order.status === 'CANCELLED') {
+  if (order.status === 'CANCELLED' || order.status === 'REJECTED') {
     return (
       <div className="bg-brand-cream min-h-screen font-body pb-20" dir={isAr ? 'rtl' : 'ltr'}>
         <Header />

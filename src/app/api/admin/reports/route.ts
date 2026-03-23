@@ -43,6 +43,9 @@ export async function GET(request: Request) {
             gte: startDate,
             lte: endParsed,
           },
+          NOT: {
+            status: { in: ['REJECTED', 'CANCELLED'] }
+          }
         },
         include: { items: true },
         orderBy: { createdAt: 'desc' },
@@ -56,6 +59,11 @@ export async function GET(request: Request) {
       });
     } else if (type === 'all') {
       const orders = await prisma.order.findMany({
+        where: {
+          NOT: {
+            status: { in: ['REJECTED', 'CANCELLED'] }
+          }
+        },
         include: { items: true },
         orderBy: { createdAt: 'desc' },
       });
@@ -73,6 +81,9 @@ export async function GET(request: Request) {
           gte: startDate,
           lte: endDate,
         },
+        NOT: {
+          status: { in: ['REJECTED', 'CANCELLED'] }
+        }
       },
       include: { items: true },
       orderBy: { createdAt: 'desc' },

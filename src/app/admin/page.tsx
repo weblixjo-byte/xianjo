@@ -131,6 +131,7 @@ export default function AdminDashboard() {
   const [historyLoading, setHistoryLoading] = useState(false);
   const [customersLoading, setCustomersLoading] = useState(false);
   const [reportsLoading, setReportsLoading] = useState(false);
+  const [orderStatusFilter, setOrderStatusFilter] = useState<'ACTIVE' | 'REJECTED'>('ACTIVE');
 
   // Initialize Audio Context to bypass browser restrictions
   const unlockAudio = () => {
@@ -804,19 +805,23 @@ export default function AdminDashboard() {
           <AnimatePresence mode="wait">
             {activeTab === 'ORDERS' && (
               <motion.div key="orders" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                 {loading ? (
+                  <div className="flex gap-4 mb-8">
+                    <button onClick={() => setOrderStatusFilter('ACTIVE')} className={`px-6 py-3 rounded-2xl font-black text-xs transition-all ${orderStatusFilter === 'ACTIVE' ? 'bg-brand-black text-white shadow-xl' : 'bg-white border-2 border-brand-gray/50 text-brand-black/40 hover:bg-brand-gray/10'}`}>الطلبات النشطة</button>
+                    <button onClick={() => setOrderStatusFilter('REJECTED')} className={`px-6 py-3 rounded-2xl font-black text-xs transition-all ${orderStatusFilter === 'REJECTED' ? 'bg-brand-red text-white shadow-xl' : 'bg-white border-2 border-brand-gray/50 text-brand-black/40 hover:bg-brand-red/5 hover:text-brand-red'}`}>المرفوضة</button>
+                  </div>
+                  {loading ? (
                     <div className="flex flex-col items-center justify-center py-40 gap-4">
                       <div className="w-12 h-12 border-4 border-brand-red/20 border-t-brand-red rounded-full animate-spin"></div>
                       <p className="text-brand-black/40 font-black">جاري التحميل...</p>
                     </div>
-                  ) : orders.length === 0 ? (
+                  ) : orders.filter(o => orderStatusFilter === 'ACTIVE' ? o.status !== 'REJECTED' : o.status === 'REJECTED').length === 0 ? (
                     <div className="bg-white py-40 text-center flex flex-col items-center gap-8 rounded-[4rem] border-2 border-dashed border-brand-gray">
                       <Box size={80} className="text-brand-black/10" strokeWidth={1} />
-                      <h2 className="text-3xl font-serif text-brand-black/30">لا توجد طلبات نشطة حالياً</h2>
+                      <h2 className="text-3xl font-serif text-brand-black/30">{orderStatusFilter === 'ACTIVE' ? 'لا توجد طلبات نشطة حالياً' : 'لا توجد طلبات مرفوضة'}</h2>
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                       {orders.map((order) => (
+                       {orders.filter(o => orderStatusFilter === 'ACTIVE' ? o.status !== 'REJECTED' : o.status === 'REJECTED').map((order) => (
                          <OrderCard 
                             key={order.id} 
                             order={order} 
@@ -1566,7 +1571,7 @@ function OrderCard({ order, onUpdateStatus, onArchive, onPrint, onPaymentReceive
         </div>
 
         <div className="bg-brand-black/5 p-4 rounded-2xl space-y-3">
-           {order.items.map((item, idx) => (
+           {order.items.map((item: OrderItem, idx: number) => (
              <div key={idx} className="flex justify-between items-center text-xs">
                 <span className="font-black text-gray-500">{item.quantity}x {item.name}</span>
                 <span className="font-bold text-gray-400">{(item.price * item.quantity).toFixed(2)}</span>
@@ -1596,9 +1601,14 @@ function OrderCard({ order, onUpdateStatus, onArchive, onPrint, onPaymentReceive
                </button>
              )}
              {order.status === 'PENDING' && (
-               <button onClick={() => onUpdateStatus(order.id, 'PREPARING')} className="w-full bg-brand-red text-white py-4 rounded-xl font-black shadow-lg shadow-brand-red/20 active:scale-95 transition-all flex items-center justify-center gap-2">
-                 <Zap size={16} /> قبول الطلب
-               </button>
+                <div className="flex flex-col gap-2">
+                  <button onClick={() => onUpdateStatus(order.id, 'PREPARING')} className="w-full bg-brand-red text-white py-4 rounded-xl font-black shadow-lg shadow-brand-red/20 active:scale-95 transition-all flex items-center justify-center gap-2">
+                    <Zap size={16} /> قبول الطلب
+                  </button>
+                  <button onClick={() => onUpdateStatus(order.id, 'REJECTED')} className="w-full bg-gray-100 text-gray-400 py-3 rounded-xl font-black hover:bg-red-50 hover:text-red-500 transition-all flex items-center justify-center gap-2 text-[10px]">
+                    <X size={14} /> رفض الطلب
+                  </button>
+                </div>
              )}
              {order.status === 'PREPARING' && (
                <button onClick={() => onUpdateStatus(order.id, 'READY')} className="w-full bg-brand-black text-white py-4 rounded-xl font-black active:scale-95 transition-all">

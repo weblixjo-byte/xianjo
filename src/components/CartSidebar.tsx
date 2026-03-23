@@ -1,7 +1,7 @@
 'use client';
 import { useCart } from '@/store/useCart';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Phone, MapPin, User, Trash2, ArrowRight, AlertCircle, ShoppingCart, Clock, Store, Locate, ChevronDown, Bike } from 'lucide-react';
+import { X, Phone, MapPin, User, Trash2, ArrowRight, AlertCircle, ShoppingCart, Clock, Store, Locate, ChevronDown, Bike, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useSession, signIn } from 'next-auth/react';
@@ -24,6 +24,7 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
   const [couponCode] = useState('');
   const [discountPercent] = useState(0);
   const [isStoreOpen, setIsStoreOpen] = useState<boolean>(true);
+  const [isDetecting, setIsDetecting] = useState(false);
   const { setForm: setCheckoutForm } = useCheckout();
   const router = useRouter();
 
@@ -40,6 +41,49 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
       }
     }).catch(() => {});
   }, []);
+
+  // Auto-fill name from session
+  useEffect(() => {
+    if (session?.user?.name && !form.name) {
+      const timer = setTimeout(() => {
+        setForm(f => ({ ...f, name: session?.user?.name || '' }));
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [session?.user?.name, form.name]);
+
+  const handleDetectLocation = () => {
+    if (!navigator.geolocation) {
+      alert(language === 'ar' ? 'متصفحك لا يدعم تحديد الموقع' : 'Geolocation is not supported by your browser');
+      return;
+    }
+
+    setIsDetecting(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        setForm(prev => ({ ...prev, address: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}` }));
+        setIsDetecting(false);
+        
+        // Optional: Try reverse geocoding if possible, but for now coordinates are a good start
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=${language}`);
+          const data = await res.json();
+          if (data && data.display_name) {
+            setForm(prev => ({ ...prev, address: data.display_name }));
+          }
+        } catch (e) {
+          console.error("Geocoding error:", e);
+        }
+      },
+      (error) => {
+        setIsDetecting(false);
+        console.error("Geolocation error:", error);
+        alert(language === 'ar' ? 'تعذر تحديد الموقع. يرجى التأكد من تفعيل الخاصية.' : 'Unable to retrieve location. Please ensure GPS is enabled.');
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  };
 
   const currentTotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const getDeliveryFee = () => orderType === 'DELIVERY' ? selectedZone.fee : 0;
@@ -235,9 +279,14 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                                           <MapPin className={`absolute ${language === 'ar' ? 'right-5' : 'left-5'} top-1/2 -translate-y-1/2 text-brand-black/20`} size={18} />
                                           <input placeholder={language === 'ar' ? 'العنوان بالتفصيل' : 'Detailed Address'} className={`w-full bg-brand-gray/5 text-brand-black ${language === 'ar' ? 'pr-12 pl-6' : 'pl-12 pr-6'} py-4 rounded-xl border border-brand-gray/20 focus:bg-white transition-all font-bold text-[15px]`} value={form.address} onChange={(e) => setForm({...form, address: e.target.value})} />
                                         </div>
-                                        <div className="w-full py-3 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 border-2 bg-white text-brand-red border-brand-red/10">
-                                          <Locate size={14} /> <span>{language === 'ar' ? 'تحديد موقعي التلقائي' : 'Auto-detect Location'}</span>
-                                        </div>
+                                        <button 
+                                          onClick={handleDetectLocation}
+                                          disabled={isDetecting}
+                                          className="w-full py-3 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 border-2 bg-white text-brand-red border-brand-red/10 hover:bg-brand-red/5 transition-all disabled:opacity-50"
+                                        >
+                                          {isDetecting ? <Loader2 size={14} className="animate-spin" /> : <Locate size={14} />} 
+                                          <span>{isDetecting ? (language === 'ar' ? 'جاري التحديد...' : 'Detecting...') : (language === 'ar' ? 'تحديد موقعي التلقائي' : 'Auto-detect Location')}</span>
+                                        </button>
                                       </>
                                     ) : (
                                       <div className="relative group">
