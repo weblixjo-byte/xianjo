@@ -262,7 +262,11 @@ export default function AdminDashboard() {
     try {
       const res = await fetch('/api/admin/reports?type=all');
       const data = await res.json();
-      if (res.ok) setHistoryOrders(data.orders);
+      if (res.ok) {
+        setHistoryOrders(data.orders);
+      } else {
+        toast.error(`خطأ: ${data.error || 'فشل تحميل الأرشيف'}`);
+      }
     } catch (e) {
       console.error(e);
       toast.error('فشل تحميل الأرشيف');

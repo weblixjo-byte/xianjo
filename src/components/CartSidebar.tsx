@@ -15,7 +15,7 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
   const { items, getSubTotal, getTotalPrice, clearCart, removeItem } = useCart();
   const [isOrdered, setIsOrdered] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [, setErrorMsg] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
   const [form, setForm] = useState({ name: '', phone: '', address: '', deliveryArea: '', notes: '', pickupTime: '' });
   const [orderType, setOrderType] = useState<'DELIVERY' | 'PICKUP'>('DELIVERY');
   const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'CLIQ'>('CASH');
@@ -464,6 +464,12 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                                   {discountPercent > 0 && <div className="flex justify-between text-brand-red"><span>{language === 'ar' ? 'خصم' : 'Discount'}</span><span>-{((getSubTotal()+(orderType==='DELIVERY'?selectedZone.fee:0))*discountPercent).toFixed(2)} د.أ</span></div>}
                                   <div className="pt-2 mt-1 border-t border-white/10 flex justify-between items-center"><span className="text-white font-black text-lg">{language === 'ar' ? 'الإجمالي' : 'Total'}</span><span className="text-white font-black text-2xl">{getFinalPrice().toFixed(2)} د.أ</span></div>
                                 </div>
+                                {errorMsg && (
+                                  <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl flex items-center gap-3 text-red-500 text-xs font-bold my-4">
+                                    <AlertCircle size={16} />
+                                    <span>{errorMsg}</span>
+                                  </div>
+                                )}
                                 <button onClick={handleOrder} disabled={loading} className="w-full py-5 rounded-2xl bg-brand-red text-white font-black text-lg flex items-center justify-center gap-3 transition-all active:scale-95 shadow-lg shadow-brand-red/20">{loading ? '...' : (language === 'ar' ? 'تأكيد وإرسال الطلب' : 'Confirm & Send Order')}<CheckCircle2 /></button>
                               </div>
                             </motion.div>
