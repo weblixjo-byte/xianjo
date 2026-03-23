@@ -51,6 +51,7 @@ interface Customer {
 interface ReportSummary {
   totalOrders: number;
   totalRevenue: number;
+  itemBreakdown: { name: string; quantity: number }[];
   orders: Order[];
 }
 
@@ -629,19 +630,65 @@ export default function AdminDashboard() {
                    {reportsLoading ? (
                      <div className="py-20 text-center font-black">جاري إنشاء التقرير...</div>
                    ) : reportData && (
-                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div className="bg-brand-black text-white p-12 rounded-[3rem] shadow-2xl relative overflow-hidden">
-                           <div className="absolute top-0 right-0 w-32 h-32 bg-brand-red/10 rounded-bl-[8rem]"></div>
-                           <h4 className="text-white/40 text-[10px] font-black uppercase tracking-[0.4em] mb-4">Gross Revenue</h4>
-                           <p className="text-6xl font-black font-serif tracking-tighter mb-2">{reportData.totalRevenue.toFixed(2)} <small className="text-xs opacity-30 font-sans tracking-normal font-medium">JOD</small></p>
-                           <p className="text-green-400 text-xs font-bold flex items-center gap-2">إجمالي مبيعات الفترة</p>
-                        </div>
-                        <div className="bg-white p-12 rounded-[3rem] border-2 border-brand-gray shadow-sm">
-                           <h4 className="text-brand-black/20 text-[10px] font-black uppercase tracking-[0.4em] mb-4">Total Orders</h4>
-                           <p className="text-6xl font-black text-brand-black font-serif tracking-tighter mb-2">{reportData.totalOrders}</p>
-                           <p className="text-brand-red text-xs font-bold">عدد الطلبات المكتملة</p>
-                        </div>
-                     </div>
+                     <>
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                         <div className="bg-brand-black text-white p-12 rounded-[3rem] shadow-2xl relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-brand-red/10 rounded-bl-[8rem]"></div>
+                            <h4 className="text-white/40 text-[10px] font-black uppercase tracking-[0.4em] mb-4">Gross Revenue</h4>
+                            <p className="text-6xl font-black font-serif tracking-tighter mb-2">{reportData.totalRevenue.toFixed(2)} <small className="text-xs opacity-30 font-sans tracking-normal font-medium">JOD</small></p>
+                            <p className="text-green-400 text-xs font-bold flex items-center gap-2">إجمالي مبيعات الفترة</p>
+                         </div>
+                         <div className="bg-white p-12 rounded-[3rem] border-2 border-brand-gray shadow-sm">
+                            <h4 className="text-brand-black/20 text-[10px] font-black uppercase tracking-[0.4em] mb-4">Total Orders</h4>
+                            <p className="text-6xl font-black text-brand-black font-serif tracking-tighter mb-2">{reportData.totalOrders}</p>
+                            <p className="text-brand-red text-xs font-bold">عدد الطلبات المكتملة</p>
+                         </div>
+                      </div>
+
+                      <div className="bg-white rounded-[3rem] border-2 border-brand-gray shadow-sm overflow-hidden mt-8">
+                         <div className="p-8 border-b border-brand-gray/20 flex items-center justify-between">
+                            <h4 className="text-xl font-black text-brand-black">{language === 'ar' ? 'الأكثر مبيعاً للفترة المختارة' : 'Sales by Product'}</h4>
+                            <span className="text-xs font-bold text-brand-black/40">{reportData.itemBreakdown?.length} {language === 'ar' ? 'صنفاً' : 'Products'}</span>
+                         </div>
+                         <div className="overflow-x-auto">
+                            <table className="w-full text-right border-collapse">
+                               <thead className="bg-brand-gray/5 border-b border-brand-gray">
+                                  <tr>
+                                     <th className="p-6 text-xs font-black uppercase text-brand-black/40">الصنف</th>
+                                     <th className="p-6 text-xs font-black uppercase text-brand-black/40">الكمية المباعة</th>
+                                     <th className="p-6 text-xs font-black uppercase text-brand-black/40">الأداء</th>
+                                  </tr>
+                               </thead>
+                               <tbody>
+                                  {reportData.itemBreakdown?.map((item, idx) => (
+                                     <tr key={idx} className="border-b border-brand-gray last:border-0 hover:bg-gray-50 transition-all">
+                                        <td className="p-6 font-black text-xs text-brand-black">{item.name}</td>
+                                        <td className="p-6">
+                                           <div className="flex items-center gap-2">
+                                              <span className="font-black text-lg text-brand-red">{item.quantity}</span>
+                                              <span className="text-[10px] font-bold text-brand-black/20">طلبات</span>
+                                           </div>
+                                        </td>
+                                        <td className="p-6">
+                                           <div className="w-48 bg-brand-gray/20 h-2 rounded-full overflow-hidden">
+                                              <div 
+                                                 className="bg-brand-red h-full rounded-full transition-all duration-1000"
+                                                 style={{ width: `${Math.min(100, (item.quantity / (reportData.itemBreakdown[0]?.quantity || 1)) * 100)}%` }}
+                                              />
+                                           </div>
+                                        </td>
+                                     </tr>
+                                  ))}
+                                  {(!reportData.itemBreakdown || reportData.itemBreakdown.length === 0) && (
+                                     <tr>
+                                        <td colSpan={3} className="p-12 text-center text-brand-black/20 font-bold">{language === 'ar' ? 'لا يوجد بيانات مبيعات لهذه الفترة' : 'No sales data for this period'}</td>
+                                     </tr>
+                                  )}
+                               </tbody>
+                            </table>
+                         </div>
+                      </div>
+                     </>
                    )}
                 </motion.div>
               )}
