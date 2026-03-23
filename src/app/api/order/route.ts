@@ -142,8 +142,13 @@ export async function POST(request: Request) {
           )
         );
       }
+
+      // 📲 External Pushover App Alert (Dedicated Device Notification)
+      const { sendPushoverNotification } = await import('@/lib/pushover');
+      await sendPushoverNotification(newOrder.id, newOrder.totalPrice, newOrder.customerName);
+
     } catch (pushErr) {
-      console.error("Failed to send push notifications:", pushErr);
+      console.error("Failed to send notifications:", pushErr);
     }
 
     return NextResponse.json({ success: true, orderId: newOrder.id });
