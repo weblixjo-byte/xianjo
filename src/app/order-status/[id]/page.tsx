@@ -112,8 +112,8 @@ export default function OrderStatusPage({ params }: { params: Promise<{ id: stri
     PREPARING: isAr ? 'يتم التحضير' : 'Preparing',
     READY_PICKUP: isAr ? 'جاهز للاستلام' : 'Ready for Pickup',
     READY_DELIVERY: isAr ? 'جاهز للتوصيل' : 'Ready for Delivery',
-    SHIPPED_PICKUP: isAr ? 'تم الاستلام' : 'Picked Up',
-    SHIPPED_DELIVERY: isAr ? 'تم التوصيل بنجاح' : 'Delivered Successfully',
+    SHIPPED_PICKUP: isAr ? 'تم الاستلام ✅' : 'Picked Up ✅',
+    SHIPPED_DELIVERY: isAr ? 'جاري التوصيل..' : 'Out for Delivery..',
   };
 
   if (loading) {
