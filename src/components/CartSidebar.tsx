@@ -243,7 +243,7 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                         />
                         <button 
                           onClick={() => {
-                            navigator.clipboard.writeText(`#${lastOrderId.slice(-6).toUpperCase()}`);
+                            navigator.clipboard.writeText(lastOrderId.slice(-6).toUpperCase());
                             const btn = document.getElementById('copy-btn');
                             if(btn) {
                               btn.innerText = 'Copied!';
