@@ -245,15 +245,32 @@ export default function AdminDashboard() {
   const subscribeToPush = async () => {
     setPushLoading(true);
     try {
+      if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        throw new Error('Push notifications not supported in this browser');
+      }
+
+      // Check Notification Permission First
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') {
+        throw new Error('Permission denied by user');
+      }
+
       const registration = await navigator.serviceWorker.ready;
       const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
       
-      if (!publicKey) throw new Error('VAPID public key not found');
+      if (!publicKey) {
+        console.error('VAPID key is missing in ENV');
+        throw new Error('Configuration error: Missing VAPID key');
+      }
+
+      console.log('Subscribing with public key:', publicKey);
 
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicKey)
       });
+
+      console.log('Subscription successful:', subscription);
 
       const res = await fetch('/api/admin/push/subscribe', {
         method: 'POST',
@@ -264,10 +281,13 @@ export default function AdminDashboard() {
       if (res.ok) {
         setIsPushSubscribed(true);
         toast.success('تم تفعيل التنبيهات الفورية بنجاح! 📱');
+      } else {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Server rejected subscription');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Push subscription failed:', error);
-      toast.error('فشل تفعيل التنبيهات. تأكد من تفعيل أذونات الإشعارات.');
+      toast.error(`فشل تفعيل التنبيهات: ${error.message || 'خطأ غير متوقع'}`);
     } finally {
       setPushLoading(false);
     }
@@ -276,14 +296,26 @@ export default function AdminDashboard() {
   useEffect(() => {
     // Check if push is supported and subscribed
     if ('serviceWorker' in navigator && 'PushManager' in window) {
-      navigator.serviceWorker.register('/service-worker.js')
+      console.log('Registering service worker...');
+      navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
         .then(registration => {
+          console.log('Service Worker registered with scope:', registration.scope);
           return registration.pushManager.getSubscription();
         })
         .then(subscription => {
+          console.log('Current push subscription:', subscription);
           setIsPushSubscribed(!!subscription);
         })
-        .catch(err => console.error('SW error:', err));
+        .catch(err => {
+          console.error('Service Worker registration failed:', err);
+        });
+    } else {
+      console.warn('Push notifications are not supported in this browser.');
+    }
+
+    // Diagnostic log for VAPID key
+    if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
+      console.warn('Warning: NEXT_PUBLIC_VAPID_PUBLIC_KEY is not defined on the client.');
     }
 
     fetch('/api/settings').then(res => res.json()).then(data => {
