@@ -1,5 +1,6 @@
 import { prisma } from "../../../../db"; 
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 
 export const dynamic = 'force-dynamic';
 
@@ -33,6 +34,7 @@ export async function POST(request: Request) {
       }
     });
 
+    revalidatePath("/");
     return NextResponse.json(product);
   } catch (error) {
     console.error("Create Product Error:", error);

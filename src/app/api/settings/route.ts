@@ -1,5 +1,6 @@
 import { prisma } from "../../../db";
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 
 export const dynamic = 'force-dynamic';
 
@@ -32,6 +33,8 @@ export async function PATCH(req: Request) {
       update: { isStoreOpen, categoryOrder },
       create: { id: 1, isStoreOpen, categoryOrder },
     });
+
+    revalidatePath("/");
 
     return NextResponse.json(settings);
   } catch (error) {

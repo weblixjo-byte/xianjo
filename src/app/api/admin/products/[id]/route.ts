@@ -1,6 +1,6 @@
-// src/app/api/admin/products/[id]/route.ts
 import { prisma } from "../../../../../db"; 
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 
 export async function PATCH(
   request: Request,
@@ -27,6 +27,7 @@ export async function PATCH(
       }
     });
 
+    revalidatePath("/");
     return NextResponse.json(updatedProduct);
   } catch (error) {
     console.error("Update Product Error:", error);
@@ -43,6 +44,7 @@ export async function DELETE(
     await prisma.product.delete({
       where: { id }
     });
+    revalidatePath("/");
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Delete Product Error:", error);

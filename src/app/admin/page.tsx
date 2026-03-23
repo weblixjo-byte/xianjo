@@ -400,6 +400,7 @@ export default function AdminDashboard() {
     try {
       const res = await fetch('/api/settings');
       const data = await res.json();
+      if (data.isStoreOpen !== undefined) setIsStoreOpen(data.isStoreOpen);
       if (data.categoryOrder) setCategoryOrder(JSON.parse(data.categoryOrder));
     } catch (e) { console.error(e); }
   };
@@ -555,6 +556,15 @@ export default function AdminDashboard() {
 
 
   useEffect(() => {
+    if (activeTab === 'HISTORY') fetchHistory();
+    if (activeTab === 'CUSTOMERS') fetchCustomers();
+    if (activeTab === 'REPORTS') fetchReports();
+    if (activeTab === 'PRODUCTS') { fetchProducts(); fetchSettings(); }
+    if (activeTab === 'COUPONS') fetchCoupons();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
+
+  useEffect(() => {
     // Check if push is supported and subscribed
     if ('serviceWorker' in navigator && 'PushManager' in window) {
       console.log('Registering service worker...');
@@ -584,6 +594,17 @@ export default function AdminDashboard() {
     const interval = setInterval(() => fetchOrders(false), 8000); // Aggressive 8s refresh
     return () => clearInterval(interval);
   }, [isAudioUnlocked, fetchOrders]);
+
+  // Helper to get sorted categories based on categoryOrder
+  const allUniqueCats = Array.from(new Set(products.flatMap(p => p.category ? p.category.split(',').map((c: string) => c.trim()).filter(Boolean) : [])));
+  const sortedCategories = [...allUniqueCats].sort((a, b) => {
+    const indexA = categoryOrder.indexOf(a);
+    const indexB = categoryOrder.indexOf(b);
+    if (indexA === -1 && indexB === -1) return a.localeCompare(b);
+    if (indexA === -1) return 1;
+    if (indexB === -1) return -1;
+    return indexA - indexB;
+  });
 
   return (
     <div className="min-h-screen bg-[#F1F3F6] flex flex-col md:flex-row font-body" dir="rtl">
@@ -667,8 +688,6 @@ export default function AdminDashboard() {
                 if (tab.id === 'HISTORY') fetchHistory();
                 if (tab.id === 'CUSTOMERS') fetchCustomers();
                 if (tab.id === 'REPORTS') fetchReports();
-                if (tab.id === 'PRODUCTS') { fetchProducts(); fetchSettings(); }
-                if (tab.id === 'COUPONS') fetchCoupons();
               }}
               className={`w-full flex items-center gap-4 px-5 py-4 rounded-3xl font-black transition-all
                 ${activeTab === tab.id ? 'bg-white/10 text-white shadow-lg' : 'text-white/30 hover:bg-white/5 hover:text-white'}`}
@@ -934,8 +953,7 @@ export default function AdminDashboard() {
                           <div className="flex flex-wrap items-center gap-4 w-full md:w-auto">
                              <button
                                 onClick={() => {
-                                  const cats = Array.from(new Set(products.flatMap(p => p.category ? p.category.split(',').map((c: string) => c.trim()).filter(Boolean) : []))).sort();
-                                  setCategoryOrder(cats);
+                                  setCategoryOrder(sortedCategories);
                                   setIsReorderModalOpen(true);
                                 }}
                                 className="flex-1 md:flex-none bg-white border-2 border-brand-gray text-brand-black px-8 py-4 rounded-2xl font-black flex items-center justify-center gap-3 hover:bg-brand-gray transition-all shadow-sm"
@@ -992,7 +1010,7 @@ export default function AdminDashboard() {
                       <>
                         {!selectedCategory && !productSearchQuery ? (
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                            {Array.from(new Set(products.flatMap(p => p.category ? p.category.split(',').map((c: string) => c.trim()).filter(Boolean) : []))).sort().map((cat: string) => (
+                            {sortedCategories.map((cat: string) => (
                               <button key={cat} onClick={() => setSelectedCategory(cat)} className="group relative h-64 bg-white rounded-[3rem] p-10 border-2 border-brand-gray/30 shadow-sm hover:border-brand-red/20 hover:shadow-2xl transition-all text-right flex flex-col justify-between overflow-hidden">
                                 <div className="absolute top-0 right-0 p-12 text-brand-red/5 -mr-8 -mt-8 rotate-12 transition-transform group-hover:rotate-0"><Folder size={180} strokeWidth={1} /></div>
                                 <div className="relative z-10 w-16 h-16 bg-brand-cream rounded-[1.5rem] flex items-center justify-center text-brand-red group-hover:bg-brand-red group-hover:text-white transition-all duration-500 shadow-inner"><Folder size={28} /></div>
