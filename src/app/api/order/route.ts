@@ -14,7 +14,7 @@ const orderSchema = z.object({
   pickupTime: z.string().nullable().optional(),
   userId: z.string().nullable().optional(),
   couponCode: z.string().nullable().optional(),
-  paymentMethod: z.enum(['CASH', 'CLIQ']).default('CASH'),
+  paymentMethod: z.enum(['CASH', 'CLIQ', 'APPLE_PAY', 'CARD']).default('CASH'),
   items: z.array(z.object({
     productId: z.string(),
     name: z.string(),
@@ -100,6 +100,7 @@ export async function POST(request: Request) {
     }
 
     // Prisma: Create the validated deeply nested order 
+    const isPaidMethod = ['CLIQ', 'APPLE_PAY', 'CARD'].includes(data.paymentMethod);
     const newOrder = await prisma.order.create({
       data: {
         customerName: data.customerName,
@@ -113,7 +114,7 @@ export async function POST(request: Request) {
         userId: data.userId || null,
         couponCode: data.couponCode || null,
         paymentMethod: data.paymentMethod,
-        paymentStatus: data.paymentMethod === 'CLIQ' ? 'PENDING' : 'COMPLETED',
+        paymentStatus: isPaidMethod ? 'PENDING' : 'COMPLETED',
         items: {
           create: itemsToCreate
         }

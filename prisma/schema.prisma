@@ -22,7 +22,7 @@ model Order {
   totalPrice   Float
   status       String      @default("PENDING") // PENDING, PREPARING, READY, SHIPPED, CANCELLED
   couponCode   String?     // Null if no coupon applied
-  paymentMethod String     @default("CASH")    // CASH or CLIQ
+  paymentMethod String     @default("CASH")    // CASH, CLIQ, APPLE_PAY, or CARD
   paymentStatus String     @default("PENDING") // PENDING, COMPLETED
   isArchived    Boolean    @default(false)
   createdAt    DateTime    @default(now())

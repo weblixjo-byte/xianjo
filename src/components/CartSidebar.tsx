@@ -8,6 +8,9 @@ import Image from 'next/image';
 import { useSession, signIn } from 'next-auth/react';
 import { useLanguage } from '@/store/useLanguage';
 import { DELIVERY_ZONES, DeliveryZone } from '@/constants/deliveryZones';
+import { useCheckout } from '@/store/useCheckout';
+import { useRouter } from 'next/navigation';
+
 
 export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
   const { language } = useLanguage();
@@ -32,6 +35,9 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
   const [couponSuccess, setCouponSuccess] = useState('');
   const [validatingCoupon, setValidatingCoupon] = useState(false);
   const [isStoreOpen, setIsStoreOpen] = useState<boolean>(true);
+  const { setForm: setCheckoutForm } = useCheckout();
+  const router = useRouter();
+
 
   useEffect(() => {
     fetch('/api/settings').then(res => res.json()).then(data => {
@@ -421,60 +427,27 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                                   </div>
                                 </div>
                               </div>
-                              <button onClick={() => {if(!form.name.trim() || !form.phone.trim() || (orderType === 'DELIVERY' && !form.address.trim())) {alert(language === 'ar' ? 'يرجى إكمال البيانات' : 'Please complete fields'); return;} setCheckoutStep(2);}} className="w-full bg-brand-black text-white py-5 rounded-2xl font-black text-lg flex items-center justify-center gap-3 shadow-xl hover:bg-brand-red transition-all group">
+                              <button onClick={() => {
+                                if(!form.name.trim() || !form.phone.trim() || (orderType === 'DELIVERY' && !form.address.trim())) {
+                                  alert(language === 'ar' ? 'يرجى إكمال البيانات' : 'Please complete fields'); 
+                                  return;
+                                }
+                                setCheckoutForm({
+                                  ...form,
+                                  orderType,
+                                  selectedZoneId: selectedZone.id,
+                                  couponCode,
+                                  discountPercent
+                                });
+                                onClose();
+                                router.push('/checkout/payment');
+                              }} className="w-full bg-brand-black text-white py-5 rounded-2xl font-black text-lg flex items-center justify-center gap-3 shadow-xl hover:bg-brand-red transition-all group">
                                 {language === 'ar' ? 'التالي' : 'Next'} <ArrowRight className={language === 'ar' ? 'rotate-180 group-hover:-translate-x-2' : 'group-hover:translate-x-2'} />
                               </button>
                             </motion.div>
-                          ) : (
-                            <motion.div 
-                              key="step2" initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -15 }} transition={{ duration: 0.2 }}
-                              className="space-y-4"
-                            >
-                               <div className="bg-white p-5 md:p-6 rounded-3xl border border-brand-gray/30 shadow-sm space-y-5">
-                                <div className="flex items-center justify-between mb-1 pb-3 border-b border-brand-gray/10">
-                                   <div className="flex items-center gap-3">
-                                      <div className="w-6 h-6 rounded-full bg-brand-red text-white text-[10px] font-black flex items-center justify-center">2</div>
-                                      <h3 className="font-black text-lg text-brand-black">{language === 'ar' ? 'الدفع والخصومات' : 'Payment & Discounts'}</h3>
-                                   </div>
-                                   <button onClick={() => setCheckoutStep(1)} className="text-brand-red font-black text-[12px] underline">{language === 'ar' ? 'تعديل البيانات' : 'Edit Details'}</button>
-                                </div>
-
-                                <div className="space-y-2">
-                                  <div className="flex gap-2">
-                                    <input placeholder={language === 'ar' ? 'كود الخصم (WELCOME30)' : 'Promo Code (WELCOME30)'} className={`w-full bg-brand-gray/5 text-brand-black px-4 py-3 rounded-xl border border-brand-gray/20 outline-none font-bold text-[14px] uppercase ${language === 'ar' ? 'text-right' : 'text-left'}`} value={couponCode} onChange={(e) => {const v = e.target.value.toUpperCase(); setCouponCode(v); if(v === 'WELCOME30') handleValidateCoupon(v); else if(!v) setDiscountPercent(0);}} disabled={discountPercent > 0} />
-                                    {discountPercent === 0 && <button onClick={() => handleValidateCoupon()} disabled={validatingCoupon} className="bg-brand-black text-white px-4 py-3 rounded-xl font-black text-[10px]">{validatingCoupon ? '...' : (language === 'ar' ? 'تطبيق' : 'Apply')}</button>}
-                                  </div>
-                                  {couponError && <p className="text-brand-red text-[10px] font-bold px-2">{couponError}</p>}
-                                  {couponSuccess && <p className="text-green-600 text-[10px] font-bold px-2 flex items-center gap-1"><CheckCircle2 size={12}/> {couponSuccess}</p>}
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-3">
-                                   <button onClick={() => setPaymentMethod('CASH')} className={`border-2 rounded-2xl py-4 flex flex-col items-center gap-2 ${paymentMethod === 'CASH' ? 'border-brand-red bg-brand-red/5 text-brand-red' : 'border-brand-gray/20 text-brand-black/30'}`}><Store size={20}/> <span className="text-[10px] font-black">{language === 'ar' ? 'عند الاستلام' : 'Cash'}</span></button>
-                                   <button onClick={() => setPaymentMethod('CLIQ')} className={`border-2 rounded-2xl py-4 flex flex-col items-center gap-2 ${paymentMethod === 'CLIQ' ? 'border-purple-600 bg-purple-50 text-purple-700' : 'border-brand-gray/20 text-brand-black/30'}`}><Zap size={20}/> <span className="text-[10px] font-black">{language === 'ar' ? 'كليك' : 'CliQ'}</span></button>
-                                </div>
-                                {paymentMethod === 'CLIQ' && (
-                                   <div className="bg-purple-600 text-white p-4 rounded-2xl text-center"><p className="text-[10px] font-black uppercase opacity-80">{language === 'ar' ? 'الاسم المستعار:' : 'Alias:'}</p><span className="block text-xl font-black tracking-widest">XIAN99</span></div>
-                                )}
-                              </div>
-                              
-                              <div className="bg-brand-black p-6 rounded-3xl shadow-xl space-y-4">
-                                <div className="space-y-1 text-white/70 font-bold text-xs">
-                                  <div className="flex justify-between"><span>{language === 'ar' ? 'المجموع' : 'Subtotal'}</span><span>{getSubTotal().toFixed(2)} د.أ</span></div>
-                                  {orderType === 'DELIVERY' && <div className="flex justify-between"><span>{language === 'ar' ? 'التوصيل' : 'Delivery'}</span><span>{selectedZone.fee.toFixed(2)} د.أ</span></div>}
-                                  {discountPercent > 0 && <div className="flex justify-between text-brand-red"><span>{language === 'ar' ? 'خصم' : 'Discount'}</span><span>-{((getSubTotal()+(orderType==='DELIVERY'?selectedZone.fee:0))*discountPercent).toFixed(2)} د.أ</span></div>}
-                                  <div className="pt-2 mt-1 border-t border-white/10 flex justify-between items-center"><span className="text-white font-black text-lg">{language === 'ar' ? 'الإجمالي' : 'Total'}</span><span className="text-white font-black text-2xl">{getFinalPrice().toFixed(2)} د.أ</span></div>
-                                </div>
-                                {errorMsg && (
-                                  <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl flex items-center gap-3 text-red-500 text-xs font-bold my-4">
-                                    <AlertCircle size={16} />
-                                    <span>{errorMsg}</span>
-                                  </div>
-                                )}
-                                <button onClick={handleOrder} disabled={loading} className="w-full py-5 rounded-2xl bg-brand-red text-white font-black text-lg flex items-center justify-center gap-3 transition-all active:scale-95 shadow-lg shadow-brand-red/20">{loading ? '...' : (language === 'ar' ? 'تأكيد وإرسال الطلب' : 'Confirm & Send Order')}<CheckCircle2 /></button>
-                              </div>
-                            </motion.div>
-                          )}
+                          ) : null}
                         </AnimatePresence>
+
                       </div>
                     )}
                   </div>
