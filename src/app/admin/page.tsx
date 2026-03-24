@@ -717,7 +717,7 @@ export default function AdminDashboard() {
       </AnimatePresence>
 
       {/* SIDEBAR */}
-      <div className="w-full md:w-72 bg-brand-black text-white flex flex-col p-6 sticky top-0 md:h-screen z-50 overflow-y-auto no-scrollbar">
+      <div className="w-full md:w-72 bg-brand-black text-white flex flex-col p-6 sticky top-0 md:h-screen z-50 overflow-y-auto no-scrollbar no-print" title="sidebar">
         <div className="flex items-center gap-4 mb-20 px-2 mt-4">
           <div className="bg-brand-red p-3 rounded-2xl shadow-xl"><ShieldCheck size={28} /></div>
           <div>
@@ -790,7 +790,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           
-          <div className="flex items-center gap-4 w-full md:w-auto">
+          <div className="flex items-center gap-4 w-full md:w-auto no-print">
              <button onClick={() => fetchOrders(true)} className="flex-1 md:flex-none btn-burgundy px-10 py-5 rounded-2xl flex items-center justify-center gap-3 shadow-xl shadow-brand-red/10 group active:scale-95 transition-all">
                 <RefreshCcw size={20} className="group-hover:rotate-180 transition-transform duration-700" />
                 <span>تحديث</span>
@@ -806,9 +806,9 @@ export default function AdminDashboard() {
           <AnimatePresence mode="wait">
             {activeTab === 'ORDERS' && (
               <motion.div key="orders" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                  <div className="flex gap-4 mb-8">
-                    <button onClick={() => setOrderStatusFilter('ACTIVE')} className={`px-6 py-3 rounded-2xl font-black text-xs transition-all ${orderStatusFilter === 'ACTIVE' ? 'bg-brand-black text-white shadow-xl' : 'bg-white border-2 border-brand-gray/50 text-brand-black/40 hover:bg-brand-gray/10'}`}>الطلبات النشطة</button>
-                    <button onClick={() => setOrderStatusFilter('REJECTED')} className={`px-6 py-3 rounded-2xl font-black text-xs transition-all ${orderStatusFilter === 'REJECTED' ? 'bg-brand-red text-white shadow-xl' : 'bg-white border-2 border-brand-gray/50 text-brand-black/40 hover:bg-brand-red/5 hover:text-brand-red'}`}>المرفوضة</button>
+                  <div className="flex gap-4 mb-8 no-print">
+                      <button onClick={() => setOrderStatusFilter('ACTIVE')} className={`px-6 py-3 rounded-2xl font-black text-xs transition-all ${orderStatusFilter === 'ACTIVE' ? 'bg-brand-black text-white shadow-xl' : 'bg-white border-2 border-brand-gray/50 text-brand-black/40 hover:bg-brand-gray/10'}`}>الطلبات النشطة</button>
+                      <button onClick={() => setOrderStatusFilter('REJECTED')} className={`px-6 py-3 rounded-2xl font-black text-xs transition-all ${orderStatusFilter === 'REJECTED' ? 'bg-brand-red text-white shadow-xl' : 'bg-white border-2 border-brand-gray/50 text-brand-black/40 hover:bg-brand-red/5 hover:text-brand-red'}`}>المرفوضة</button>
                   </div>
                   {loading ? (
                     <div className="flex flex-col items-center justify-center py-40 gap-4">
@@ -844,7 +844,7 @@ export default function AdminDashboard() {
                       <h3 className="text-xl font-black text-brand-black">سجل الطلبات</h3>
                       <button 
                         onClick={handleExportOrders} 
-                        className="flex items-center gap-3 bg-white border-2 border-brand-gray/50 hover:border-brand-red/30 hover:bg-brand-red/5 px-6 py-3 rounded-2xl font-black text-xs transition-all text-brand-black shadow-sm group"
+                        className="flex items-center gap-3 bg-white border-2 border-brand-gray/50 hover:border-brand-red/30 hover:bg-brand-red/5 px-6 py-3 rounded-2xl font-black text-xs transition-all text-brand-black shadow-sm group no-print"
                       >
                         <FileSpreadsheet size={18} className="text-green-600" />
                         <span className="group-hover:translate-x-1 transition-transform">تصدير إكسيل</span>
@@ -897,7 +897,7 @@ export default function AdminDashboard() {
                       <h3 className="text-xl font-black text-brand-black">قاعدة بيانات الزبائن</h3>
                       <button 
                         onClick={handleExportCustomers} 
-                        className="flex items-center gap-3 bg-white border-2 border-brand-gray/50 hover:border-brand-red/30 hover:bg-brand-red/5 px-6 py-3 rounded-2xl font-black text-xs transition-all text-brand-black shadow-sm group"
+                        className="flex items-center gap-3 bg-white border-2 border-brand-gray/50 hover:border-brand-red/30 hover:bg-brand-red/5 px-6 py-3 rounded-2xl font-black text-xs transition-all text-brand-black shadow-sm group no-print"
                       >
                         <FileSpreadsheet size={18} className="text-green-600" />
                         <span className="group-hover:translate-x-1 transition-transform">تصدير القائمة</span>
@@ -939,7 +939,7 @@ export default function AdminDashboard() {
 
                {activeTab === 'REPORTS' && (
                  <motion.div key="reports" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
-                    <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-brand-gray shadow-sm">
+                    <div className="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-brand-gray shadow-sm no-print">
                        <div className="flex flex-wrap gap-4">
                           {['daily', 'weekly', 'monthly', 'all'].map(t => (
                             <button 
@@ -1028,7 +1028,7 @@ export default function AdminDashboard() {
 
                 {activeTab === 'PRODUCTS' && (
                   <motion.div key="products" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12 no-print">
                        <div className="flex items-center gap-4">
                           {selectedCategory && (
                             <button
@@ -1067,7 +1067,7 @@ export default function AdminDashboard() {
                        </div>
                     </div>
 
-                    <div className="flex flex-col md:flex-row items-center gap-6 mb-12">
+                    <div className="flex flex-col md:flex-row items-center gap-6 mb-12 no-print">
                       <div className="relative flex-1 group">
                         <Search size={18} className="absolute right-6 top-1/2 -translate-y-1/2 text-brand-black/20 group-focus-within:text-brand-red transition-colors" />
                         <input
@@ -1199,13 +1199,13 @@ export default function AdminDashboard() {
                         <div className="p-8 bg-red-50 border-2 border-red-100 rounded-[2rem] space-y-4">
                            <h4 className="font-black text-brand-red flex items-center gap-2"><Trash2 size={20}/> تصفير الموقع (Data Reset)</h4>
                            <p className="text-xs text-red-600 font-bold">سيؤدي هذا الإجراء إلى حذف جميع الطلبات والزبائن بشكل نهائي وبدء الموقع ببيانات نظيفة. لا يمكن التراجع عن هذا الفعل.</p>
-                           <button onClick={handleResetSystem} className="bg-brand-red text-white px-8 py-4 rounded-xl font-black text-sm hover:bg-red-700 transition-all shadow-lg active:scale-95">تصفير بالكامل الآن</button>
+                           <button onClick={handleResetSystem} className="bg-brand-red text-white px-8 py-4 rounded-xl font-black text-sm hover:bg-red-700 transition-all shadow-lg active:scale-95 no-print">تصفير بالكامل الآن</button>
                         </div>
                         
                         <div className="p-8 bg-green-50 border-2 border-green-100 rounded-[2rem] space-y-4">
                            <h4 className="font-black text-green-700 flex items-center gap-2"><FileSpreadsheet size={20}/> تصدير البيانات الكاملة</h4>
                            <p className="text-xs text-green-600 font-bold">بإمكانك تصدير كافة بيانات الطلبات والزبائن إلى ملفات Excel للمراجعة المحاسبية أو الأرشفة.</p>
-                           <div className="flex gap-4">
+                           <div className="flex gap-4 no-print">
                               <button onClick={handleExportOrders} className="bg-white border-2 border-green-200 text-green-700 px-6 py-3 rounded-xl font-black text-xs hover:bg-green-100 transition-all shadow-sm group flex items-center gap-2">
                                 <FileSpreadsheet size={14} />
                                 <span>تصدير الطلبات</span>
@@ -1478,7 +1478,7 @@ export default function AdminDashboard() {
                  )}
 
                  {/* Modal Actions */}
-                 <div className="pt-8 border-t border-brand-gray/20 flex flex-col gap-4">
+                 <div className="pt-8 border-t border-brand-gray/20 flex flex-col gap-4 no-print">
                     <div className="flex flex-col gap-3">
                        {selectedOrder.paymentMethod === 'CLIQ' && selectedOrder.paymentStatus === 'PENDING' && (
                          <button 

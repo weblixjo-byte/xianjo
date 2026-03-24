@@ -91,30 +91,35 @@ h1, h2, h3, h4, .luxury-heading {
   display: none;
 }
 
-/* --- RECEIPT PRINTING STYLES --- */
+/* --- PRINTING STYLES --- */
 @media print {
   @page {
-    margin: 0;
+    margin: 0.5cm;
     size: auto;
   }
   
-  body * {
-    visibility: hidden;
+  /* Reset background for print */
+  body {
+    background: white !important;
+    color: black !important;
   }
 
-  #print-area, #print-area * {
-    visibility: visible;
+  /* Utility to hide UI elements */
+  .no-print {
+    display: none !important;
   }
 
+  /* Handle Receipt Printing (#print-area) */
   #print-area {
-    position: absolute;
-    left: 0;
-    top: 0;
+    display: block !important;
+    position: relative;
     width: 80mm; /* Standard Thermal Receipt Width */
+    margin: 0 auto;
     padding: 10mm;
     background: white !important;
     color: black !important;
     font-family: 'Almarai', sans-serif !important;
+    border: none !important;
   }
 
   /* Force colors even in ink-saver mode */
