@@ -143,9 +143,11 @@ export default function AdminDashboard() {
 
   const fetchStoreStatus = useCallback(async () => {
     try {
-      const res = await fetch('/api/store-status');
+      const res = await fetch('/api/settings');
       const data = await res.json();
-      setIsStoreOpen(data.isOpen);
+      if (data && typeof data.isStoreOpen === 'boolean') {
+        setIsStoreOpen(data.isStoreOpen);
+      }
     } catch (_error) {
       console.error('Fetch store status error:', _error);
     }
@@ -153,10 +155,10 @@ export default function AdminDashboard() {
 
   const toggleStoreStatus = async () => {
     try {
-      const res = await fetch('/api/admin/store-status', {
-        method: 'POST',
+      const res = await fetch('/api/settings', {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isOpen: !isStoreOpen })
+        body: JSON.stringify({ isStoreOpen: !isStoreOpen })
       });
       if (res.ok) {
         setIsStoreOpen(!isStoreOpen);
