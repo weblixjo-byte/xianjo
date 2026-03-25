@@ -55,7 +55,7 @@ export default function OrderStatusPage({ params }: { params: Promise<{ id: stri
     preparing: isAr ? 'جاري التحضير بالمطبخ 👨‍🍳' : 'Preparing in kitchen 👨‍🍳',
     completed: isAr ? 'مكتمل وتم التسليم ✔️' : 'Completed and Delivered ✔️',
     orderTime: isAr ? 'وقت استلام الطلب' : 'Order Received Time',
-    invoice: isAr ? 'فاتورة الأصناف' : 'Items Invoice',
+    orderSummary: isAr ? 'ملخص الطلب' : 'Order Summary',
     total: isAr ? 'المجموع الصافي:' : 'Net Total:',
     backToHome: isAr ? 'العودة للقائمة الرئيسية' : 'Back to Main Menu'
   };
@@ -121,7 +121,7 @@ export default function OrderStatusPage({ params }: { params: Promise<{ id: stri
             </div>
 
             <div className="pt-4">
-              <h3 className="font-black text-xl mb-6 text-brand-black">{t.invoice}</h3>
+              <h3 className="font-black text-xl mb-6 text-brand-black">{t.orderSummary}</h3>
               <div className="bg-brand-cream border border-brand-gray rounded-2xl p-5 space-y-4">
                 {order.items.map((item) => (
                   <div key={item.id} className="flex justify-between items-center bg-white p-3 rounded-xl shadow-sm border border-gray-50">

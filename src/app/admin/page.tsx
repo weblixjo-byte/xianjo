@@ -4,7 +4,7 @@ import {
   CheckCircle, RefreshCcw, User, Phone, MapPin, Trash2, Clock, 
   ShieldCheck, Box, Package, 
   Bell, Zap, Store,
-  Printer, X, Plus, Edit2, Camera, DollarSign, Save, LayoutGrid,
+  X, Plus, Edit2, Camera, DollarSign, Save, LayoutGrid,
   Layers, Search, ArrowLeft, Folder, ChevronUp, ChevronDown, ListOrdered,
   CheckSquare, MoveRight, Ticket, Power, Check, FileSpreadsheet,
   ExternalLink, Copy
@@ -210,239 +210,7 @@ export default function AdminDashboard() {
     }
   }, [isAudioUnlocked, playAlarm, stopAlarm]);
 
-  const handlePrint = (order: Order) => {
-    const printWindow = window.open('', '_blank', 'width=350,height=600');
-    if (!printWindow) return;
 
-    const subtotal = order.items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-    const serviceFee = order.totalPrice - subtotal;
-    const shortId = order.id.slice(-6).toUpperCase();
-    const dateStr = new Date(order.createdAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
-
-    const html = `
-      <html>
-        <head>
-          <title>Invoice #${shortId}</title>
-          <style>
-            @page { margin: 0; size: 80mm auto; }
-            body { 
-              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-              margin: 0; padding: 10mm 5mm; width: 70mm; color: #000; font-size: 11px; line-height: 1.4;
-            }
-            .text-center { text-align: center; }
-            .text-right { text-align: right; }
-            .uppercase { text-transform: uppercase; }
-            .font-black { font-weight: 900; }
-            .font-bold { font-weight: 700; }
-            .border-t { border-top: 1px dashed #000; }
-            .border-b { border-bottom: 1px dashed #000; }
-            .py-4 { padding-top: 15px; padding-bottom: 15px; }
-            .mb-4 { margin-bottom: 15px; }
-            .mt-4 { margin-top: 15px; }
-            .grid { display: grid; grid-template-columns: 1fr 1fr; }
-            table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-            th { text-align: left; border-bottom: 1px solid #000; padding: 5px 0; font-size: 9px; }
-            td { padding: 8px 0; vertical-align: top; }
-            .total-row { font-size: 14px; margin-top: 10px; border-top: 1px solid #000; padding-top: 10px; }
-            .customer-box { background: #f9f9f9; padding: 10px; border: 1px solid #eee; border-radius: 8px; margin-top: 20px; }
-            .logo { width: 150px; filter: grayscale(1); margin-bottom: 5px; }
-            .disclaimer { font-size: 8px; color: #666; margin-top: 30px; }
-          </style>
-        </head>
-        <body>
-          <div class="text-center">
-            <img src="/logo.png" class="logo" />
-            <div class="font-black" style="font-size: 20px; letter-spacing: -1px;">XIAN RESTAURANT</div>
-            <div class="font-bold uppercase" style="font-size: 9px; color: #555;">Premium Asian Cuisine</div>
-            <div style="font-size: 9px; color: #888;">Amman, Jordan • +962 77 999 0504</div>
-          </div>
-
-          <div class="border-t border-b py-4 mb-4 mt-4 grid">
-            <div>
-              <div style="font-size: 8px; color: #666;" class="uppercase font-black">Order ID</div>
-              <div class="font-black">#${shortId}</div>
-            </div>
-            <div class="text-right">
-              <div style="font-size: 8px; color: #666;" class="uppercase font-black">Date</div>
-              <div class="font-bold">${dateStr}</div>
-            </div>
-            <div style="margin-top: 8px;">
-              <div style="font-size: 8px; color: #666;" class="uppercase font-black">Type</div>
-              <div class="font-black">${order.orderType === 'DELIVERY' ? 'Delivery' : 'Pickup'}</div>
-            </div>
-            <div class="text-right" style="margin-top: 8px;">
-              <div style="font-size: 8px; color: #666;" class="uppercase font-black">Status</div>
-              <div class="font-black">${order.paymentStatus === 'COMPLETED' ? 'PAID' : 'PAY ON ARRIVAL'}</div>
-            </div>
-          </div>
-
-          <table>
-            <thead>
-              <tr class="uppercase">
-                <th>Item</th>
-                <th class="text-center">Qty</th>
-                <th class="text-right">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${order.items.map(item => `
-                <tr>
-                  <td class="font-bold">${item.name}</td>
-                  <td class="text-center font-black">x${item.quantity}</td>
-                  <td class="text-right font-black">${(item.price * item.quantity).toFixed(2)}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-
-          <div class="border-t py-4" style="color: #444;">
-            <div class="grid">
-              <span>Items Subtotal:</span>
-              <span class="text-right">${subtotal.toFixed(2)} JOD</span>
-            </div>
-            <div class="grid" style="margin-top: 4px;">
-              <span>Service & Delivery:</span>
-              <span class="text-right">${serviceFee.toFixed(2)} JOD</span>
-            </div>
-            <div class="grid total-row font-black">
-              <span class="uppercase">Grand Total:</span>
-              <span class="text-right">${order.totalPrice.toFixed(2)} JOD</span>
-            </div>
-            <div class="grid font-bold" style="font-size: 9px; margin-top: 10px; color: #777;">
-              <span class="uppercase">Payment:</span>
-              <span class="text-right uppercase">${order.paymentMethod === 'CLIQ' ? 'CliQ (Digital)' : 'Cash'}</span>
-            </div>
-          </div>
-
-          <div class="customer-box">
-             <div style="font-size: 8px; color: #888;" class="uppercase font-black">Customer</div>
-             <div class="font-black" style="font-size: 13px;">${order.customerName}</div>
-             <div class="font-bold">${order.phoneNumber}</div>
-             ${order.orderType === 'DELIVERY' ? `
-               <div style="font-size: 8px; color: #888; margin-top: 8px;" class="uppercase font-black">Address</div>
-               <div class="font-bold">${order.deliveryArea || 'N/A'}</div>
-               <div style="font-size: 9px; color: #555; margin-top: 2px;">${order.address?.replace(/\(https:\/\/www\.google\.com\/maps\?q=[-0-9.,]+\)/, '').trim() || ''}</div>
-             ` : ''}
-             ${order.notes ? `
-               <div style="border-top: 1px solid #eee; margin-top: 8px; padding-top: 8px;">
-                 <div style="font-size: 8px; color: #888;" class="uppercase font-black">Notes</div>
-                 <div class="font-bold" style="font-style: italic;">"${order.notes}"</div>
-               </div>
-             ` : ''}
-          </div>
-
-          <div class="text-center disclaimer">
-            <div class="font-black uppercase" style="font-size: 18px; margin-bottom: 5px; color: #000; letter-spacing: -1px;">THANK YOU!</div>
-            <div>Hope you enjoy your meal</div>
-            <div class="font-bold">xiansushi.site</div>
-          </div>
-        </body>
-      </html>
-    `;
-
-    printWindow.document.write(html);
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => {
-      printWindow.print();
-      printWindow.close();
-    }, 500);
-  };
-
-  const handlePrintReport = () => {
-    if (!reportData) return;
-    const printWindow = window.open('', '_blank', 'width=350,height=600');
-    if (!printWindow) return;
-
-    const html = `
-      <html>
-        <head>
-          <title>Sales Report</title>
-          <style>
-            @page { margin: 0; size: 80mm auto; }
-            body { 
-              font-family: -apple-system, sans-serif;
-              margin: 0; padding: 10mm 5mm; width: 70mm; color: #000; font-size: 11px;
-            }
-            .text-center { text-align: center; }
-            .text-right { text-align: right; }
-            .uppercase { text-transform: uppercase; }
-            .font-black { font-weight: 900; }
-            .font-bold { font-weight: 700; }
-            .border-t { border-top: 1px dashed #000; }
-            .border-b { border-bottom: 1px dashed #000; }
-            .py-4 { padding-top: 15px; padding-bottom: 15px; }
-            .summary-box { background: #f9f9f9; padding: 15px; border-radius: 12px; margin: 15px 0; border: 1px solid #eee; }
-            table { width: 100%; border-collapse: collapse; }
-            th { text-align: left; border-bottom: 1px solid #000; padding: 5px 0; font-size: 9px; }
-            td { padding: 10px 0; border-bottom: 1px solid #eee; }
-            .logo { width: 100px; filter: grayscale(1); margin-bottom: 10px; }
-          </style>
-        </head>
-        <body>
-          <div class="text-center">
-            <img src="/logo.png" class="logo" />
-            <div class="font-black" style="font-size: 18px;">SALES SUMMARY</div>
-            <div class="font-bold uppercase" style="font-size: 9px; color: #666;">Xian Restaurant Official</div>
-          </div>
-
-          <div class="border-t border-b py-4 uppercase font-black" style="font-size: 9px; margin-top: 15px;">
-            <div style="display: flex; justify-content: space-between;">
-              <span>Period</span>
-              <span>${reportType}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-top: 5px;">
-              <span>Generated</span>
-              <span>${new Date().toLocaleString()}</span>
-            </div>
-          </div>
-
-          <div class="summary-box">
-             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                   <div style="font-size: 8px; color: #888;" class="uppercase">Revenue</div>
-                   <div class="font-black" style="font-size: 20px;">${reportData.totalRevenue.toFixed(2)} JOD</div>
-                </div>
-                <div class="text-right">
-                   <div style="font-size: 8px; color: #888;" class="uppercase">Orders</div>
-                   <div class="font-black" style="font-size: 20px;">${reportData.totalOrders}</div>
-                </div>
-             </div>
-          </div>
-
-          <table style="margin-top: 10px;">
-            <thead>
-              <tr class="uppercase">
-                <th>Item Name</th>
-                <th class="text-right">Qty</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${reportData.itemBreakdown?.map(item => `
-                <tr>
-                  <td class="font-bold">${item.name}</td>
-                  <td class="text-right font-black">${item.quantity}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-
-          <div class="text-center" style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; color: #999; font-size: 8px;">
-            <div class="font-black uppercase">Internal documented report</div>
-            <div>Xian Management System v1.0</div>
-          </div>
-        </body>
-      </html>
-    `;
-
-    printWindow.document.write(html);
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => {
-      printWindow.print();
-      printWindow.close();
-    }, 500);
-  };
 
   const handleArchive = async (id: string) => {
     if (!confirm('هل أنت متأكد من أرشفة هذا الطلب؟ سيبقى في السجلات ولكن سيختفي من القائمة الرئيسية.')) return;
@@ -989,7 +757,7 @@ export default function AdminDashboard() {
             { id: 'CUSTOMERS', label: 'الزبائن', icon: User, color: 'text-green-400' },
             { id: 'ZONES', label: 'مناطق التوصيل', icon: MapPin, color: 'text-yellow-400' },
             { id: 'COUPONS', label: 'الكوبونات', icon: Ticket, color: 'text-purple-400' },
-            { id: 'REPORTS', label: 'التقارير', icon: Printer, color: 'text-purple-400' },
+            { id: 'REPORTS', label: 'التقارير', icon: FileSpreadsheet, color: 'text-purple-400' },
             { id: 'SYSTEM', label: 'النظام', icon: Store, color: 'text-orange-400' },
           ].map((tab) => (
             <button
@@ -1051,10 +819,6 @@ export default function AdminDashboard() {
                 <RefreshCcw size={20} className="group-hover:rotate-180 transition-transform duration-700" />
                 <span>تحديث</span>
              </button>
-             <button onClick={() => window.print()} className="flex-1 md:flex-none bg-white border-2 border-brand-gray text-brand-black px-10 py-5 rounded-2xl font-black flex items-center justify-center gap-3 hover:bg-brand-gray transition-all shadow-sm">
-                <Printer size={20} />
-                <span>طباعة</span>
-             </button>
           </div>
         </div>
 
@@ -1084,7 +848,6 @@ export default function AdminDashboard() {
                             order={order} 
                             onUpdateStatus={handleUpdateStatus}
                             onArchive={handleArchive}
-                            onPrint={handlePrint}
                             onPaymentReceived={handlePaymentReceived}
                             language={language}
                           />
@@ -1134,7 +897,6 @@ export default function AdminDashboard() {
                                    <td className="p-6 font-black text-xs text-green-600">{order.totalPrice.toFixed(2)} د.أ</td>
                                    <td className="p-6">
                                       <div className="flex gap-2">
-                                        <button onClick={(e) => { e.stopPropagation(); handlePrint(order); }} className="p-2 text-brand-black hover:text-brand-red transition-all"><Printer size={16}/></button>
                                         <button onClick={(e) => { e.stopPropagation(); handleDeletePermanent(order.id); }} className="p-2 text-gray-300 hover:text-red-600 transition-all"><Trash2 size={16}/></button>
                                       </div>
                                    </td>
@@ -1207,15 +969,7 @@ export default function AdminDashboard() {
                             </button>
                           ))}
                        </div>
-                       <div className="flex gap-4">
-                          <button 
-                            onClick={handlePrintReport} 
-                            disabled={!reportData}
-                            className="flex items-center gap-3 bg-white border-2 border-brand-gray/50 hover:border-brand-red/30 hover:bg-brand-red/5 px-8 py-4 rounded-xl font-black text-xs transition-all text-brand-black shadow-sm group disabled:opacity-50"
-                          >
-                            <Printer size={18} className="text-blue-600" />
-                            <span>طباعة التقرير</span>
-                          </button>
+                        <div className="flex gap-4">
                           <button 
                             onClick={handleExportOrders} 
                             className="flex items-center gap-3 bg-brand-black text-white px-8 py-4 rounded-xl font-black text-xs transition-all hover:scale-[1.02] active:scale-95 shadow-xl group"
@@ -1854,13 +1608,7 @@ export default function AdminDashboard() {
                        )}
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                       <button 
-                         onClick={() => handlePrint(selectedOrder)} 
-                         className="p-4 bg-brand-gray/20 text-brand-black rounded-2xl flex items-center justify-center gap-3 font-black text-xs hover:bg-brand-gray/40 transition-all border border-brand-gray/10"
-                       >
-                         <Printer size={18}/> طباعة الفاتورة
-                       </button>
+                    <div className="flex flex-col gap-4">
                        <button 
                          onClick={() => {
                            handleArchive(selectedOrder.id);
@@ -1868,7 +1616,7 @@ export default function AdminDashboard() {
                          }} 
                          className="p-4 bg-brand-gray/20 text-brand-black/40 rounded-2xl flex items-center justify-center gap-3 font-black text-xs hover:text-brand-red hover:bg-red-50 transition-all border border-brand-gray/10"
                        >
-                         <Trash2 size={18}/> أرشفة الطلب
+                         <Trash2 size={18}/> أرشفة الطلب نهائياً
                        </button>
                     </div>
                  </div>
@@ -1956,11 +1704,10 @@ export default function AdminDashboard() {
   );
 }
 
-function OrderCard({ order, onUpdateStatus, onArchive, onPrint, onPaymentReceived, language }: { 
+function OrderCard({ order, onUpdateStatus, onArchive, onPaymentReceived, language }: { 
   order: Order, 
   onUpdateStatus: (id: string, status: string) => void, 
   onArchive: (id: string) => void, 
-  onPrint: (order: Order) => void,
   onPaymentReceived: (id: string, e: React.MouseEvent) => void,
   language: string
 }) {
@@ -2083,9 +1830,8 @@ function OrderCard({ order, onUpdateStatus, onArchive, onPrint, onPaymentReceive
                </button>
              )}
              
-             <div className="grid grid-cols-2 gap-2">
-                <button onClick={() => onPrint(order)} className="p-3 bg-gray-50 text-gray-600 rounded-xl border border-brand-gray flex items-center justify-center gap-2 font-black text-[10px] hover:bg-gray-100 transition-all"><Printer size={14}/> طباعة</button>
-                <button onClick={() => onArchive(order.id)} className="p-3 bg-gray-50 text-gray-400 rounded-xl border border-brand-gray flex items-center justify-center gap-2 font-black text-[10px] hover:text-brand-red transition-all"><Trash2 size={14}/> أرشفة</button>
+             <div className="flex flex-col gap-2">
+                <button onClick={() => onArchive(order.id)} className="w-full p-3 bg-gray-50 text-gray-400 rounded-xl border border-brand-gray flex items-center justify-center gap-2 font-black text-xs hover:text-brand-red transition-all"><Trash2 size={16}/> أرشفة الطلب</button>
              </div>
           </div>
         </div>
