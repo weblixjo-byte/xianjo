@@ -299,6 +299,9 @@ export default function PaymentPage() {
           <h3 className="text-lg font-black text-brand-black">{language === 'ar' ? 'ملخص الشراء' : 'Purchase Summary'}</h3>
           <div className="space-y-3">
             <SummaryRow label={language === 'ar' ? 'المجموع الفرعي' : 'Subtotal'} value={`${subTotal.toFixed(2)} ${language === 'ar' ? 'دينار' : 'JOD'}`} />
+            {form.orderType === 'DELIVERY' && (
+              <SummaryRow label={language === 'ar' ? 'رسوم التوصيل' : 'Delivery Fee'} value={`${deliveryFee.toFixed(2)} ${language === 'ar' ? 'دينار' : 'JOD'}`} />
+            )}
             <SummaryRow label={language === 'ar' ? 'الخصم' : 'Discount'} value={`${discountAmount.toFixed(2)} ${language === 'ar' ? 'دينار' : 'JOD'}`} valueClass="text-brand-red" />
             <SummaryRow label={language === 'ar' ? 'رسوم الخدمة' : 'Service Fee'} value={`${serviceFee.toFixed(2)} ${language === 'ar' ? 'دينار' : 'JOD'}`} info />
             <div className="pt-4 border-t border-gray-100 flex justify-between items-center">

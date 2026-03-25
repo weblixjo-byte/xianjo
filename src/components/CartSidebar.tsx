@@ -288,7 +288,7 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                                             <option value="" disabled>{language === 'ar' ? '--- يرجى تحديد المنطقة ---' : '--- Please select region ---'}</option>
                                             {deliveryZones.map((zone: DeliveryZone) => (
                                               <option key={zone.id} value={zone.id}>
-                                                {language === 'ar' ? zone.nameAr : zone.nameEn} (+{zone.fee.toFixed(2)} JOD)
+                                                {language === 'ar' ? zone.nameAr : zone.nameEn}
                                               </option>
                                             ))}
                                           </select>
@@ -320,16 +320,8 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                                 {/* ORDER SUMMARY */}
                                 <div className="bg-brand-gray/5 p-6 rounded-3xl border border-brand-gray/10 space-y-3">
                                   <div className="flex justify-between items-center text-sm font-bold">
-                                    <span className="text-brand-black/40">{language === 'ar' ? 'المجموع الفرعي' : 'Subtotal'}</span>
+                                    <span className="text-brand-black/40">{language === 'ar' ? 'المجموع' : 'Total'}</span>
                                     <span className="text-brand-black">{currentTotal.toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
-                                  </div>
-                                  <div className="flex justify-between items-center text-sm font-bold">
-                                    <span className="text-brand-black/40">{language === 'ar' ? 'رسوم التوصيل' : 'Delivery Fee'}</span>
-                                    <span className="text-brand-black">{getDeliveryFee().toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
-                                  </div>
-                                  <div className="pt-3 border-t border-brand-gray/10 flex justify-between items-center">
-                                    <span className="font-black text-brand-black">{language === 'ar' ? 'المجموع الكلي' : 'Total Price'}</span>
-                                    <span className="font-black text-brand-red text-xl">{(currentTotal + getDeliveryFee()).toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
                                   </div>
                                 </div>
                               </div>
