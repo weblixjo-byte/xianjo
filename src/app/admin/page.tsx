@@ -737,7 +737,7 @@ export default function AdminDashboard() {
            <div className="text-center border-b-2 border-black pb-4 mb-4">
             <h1 className="text-2xl font-black uppercase">Xian Restaurant</h1>
             <p className="text-xs font-bold">مطعم شيان</p>
-            <p className="text-[10px] mt-1">عمان، الأردن • Amman, Jordan</p>
+            <p className="text-[10px] mt-1">عمان، الأردن</p>
             <p className="text-[10px]">+962 77 999 0504</p>
           </div>
           <div className="space-y-2 mb-4 text-xs">
@@ -788,7 +788,7 @@ export default function AdminDashboard() {
           <div className="bg-brand-red p-3 rounded-2xl shadow-xl"><ShieldCheck size={28} /></div>
           <div>
             <h1 className="font-serif text-2xl font-black tracking-tight leading-none mb-1">إدارة شيان</h1>
-            <p className="text-[9px] font-bold text-white/30 uppercase tracking-[0.3em]">Control Panel</p>
+            <p className="text-[9px] font-bold text-white/30 uppercase tracking-[0.3em]">لوحة التحكم</p>
           </div>
         </div>
 
@@ -834,7 +834,7 @@ export default function AdminDashboard() {
                 </div>
               </button>
            )}
-           <p className="text-[10px] text-white/20 font-medium text-center uppercase tracking-widest pb-4">Xian Ops • Stable 2.5</p>
+           <p className="text-[10px] text-white/20 font-medium text-center uppercase tracking-widest pb-4">عمليات شيان • إصدار 2.5</p>
         </div>
       </div>
 
@@ -852,7 +852,7 @@ export default function AdminDashboard() {
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
               <p className="text-brand-black/40 font-black text-xs uppercase tracking-widest">
-                {activeTab === 'ORDERS' ? 'Live Monitoring Active' : 'System Secure'}
+                {activeTab === 'ORDERS' ? 'المراقبة الحية نشطة' : 'النظام آمن'}
               </p>
             </div>
           </div>
@@ -1034,12 +1034,12 @@ export default function AdminDashboard() {
                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                           <div className="bg-brand-black text-white p-12 rounded-[3rem] shadow-2xl relative overflow-hidden">
                              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-red/10 rounded-bl-[8rem]"></div>
-                             <h4 className="text-white/40 text-[10px] font-black uppercase tracking-[0.4em] mb-4">Gross Revenue</h4>
-                             <p className="text-6xl font-black font-serif tracking-tighter mb-2">{reportData.totalRevenue.toFixed(2)} <small className="text-xs opacity-30 font-sans tracking-normal font-medium">JOD</small></p>
+                             <h4 className="text-white/40 text-[10px] font-black uppercase tracking-[0.4em] mb-4">إجمالي الإيرادات</h4>
+                             <p className="text-6xl font-black font-serif tracking-tighter mb-2">{reportData.totalRevenue.toFixed(2)} <small className="text-xs opacity-30 font-sans tracking-normal font-medium">د.أ</small></p>
                              <p className="text-green-400 text-xs font-bold flex items-center gap-2">إجمالي مبيعات الفترة</p>
                           </div>
                           <div className="bg-white p-12 rounded-[3rem] border-2 border-brand-gray shadow-sm">
-                             <h4 className="text-brand-black/20 text-[10px] font-black uppercase tracking-[0.4em] mb-4">Total Orders</h4>
+                             <h4 className="text-brand-black/20 text-[10px] font-black uppercase tracking-[0.4em] mb-4">إجمالي الطلبات</h4>
                              <p className="text-6xl font-black text-brand-black font-serif tracking-tighter mb-2">{reportData.totalOrders}</p>
                              <p className="text-brand-red text-xs font-bold">عدد الطلبات المكتملة</p>
                           </div>
@@ -1047,8 +1047,8 @@ export default function AdminDashboard() {
 
                        <div className="bg-white rounded-[3rem] border-2 border-brand-gray shadow-sm overflow-hidden mt-8">
                           <div className="p-8 border-b border-brand-gray/20 flex items-center justify-between">
-                             <h4 className="text-xl font-black text-brand-black">{language === 'ar' ? 'الأكثر مبيعاً للفترة المختارة' : 'Sales by Product'}</h4>
-                             <span className="text-xs font-bold text-brand-black/40">{reportData.itemBreakdown?.length} {language === 'ar' ? 'صنفاً' : 'Products'}</span>
+                             <h4 className="text-xl font-black text-brand-black">المبيعات حسب الصنف للفترة المختارة</h4>
+                             <span className="text-xs font-bold text-brand-black/40">{reportData.itemBreakdown?.length} صنفاً</span>
                           </div>
                           <div className="overflow-x-auto">
                              <table className="w-full text-right border-collapse">
@@ -1081,7 +1081,7 @@ export default function AdminDashboard() {
                                    ))}
                                    {(!reportData.itemBreakdown || reportData.itemBreakdown.length === 0) && (
                                       <tr>
-                                         <td colSpan={3} className="p-12 text-center text-brand-black/20 font-bold">{language === 'ar' ? 'لا يوجد بيانات مبيعات لهذه الفترة' : 'No sales data for this period'}</td>
+                                         <td colSpan={3} className="p-12 text-center text-brand-black/20 font-bold">لا يوجد بيانات مبيعات لهذه الفترة</td>
                                       </tr>
                                    )}
                                 </tbody>
@@ -1139,7 +1139,7 @@ export default function AdminDashboard() {
                         <Search size={18} className="absolute right-6 top-1/2 -translate-y-1/2 text-brand-black/20 group-focus-within:text-brand-red transition-colors" />
                         <input
                           type="text"
-                          placeholder={(selectedCategory && selectedCategory !== 'الكل') ? `البحث في ${selectedCategory}...` : "البحث في جميع المنتجات..."}
+                          placeholder="البحث في القسم..."
                           value={productSearchQuery}
                           onChange={(e) => setProductSearchQuery(e.target.value)}
                           className="w-full bg-white border-2 border-brand-gray/40 rounded-[2rem] py-5 pr-14 pl-8 outline-none focus:border-brand-red/20 transition-all font-bold text-sm shadow-sm"
@@ -1191,7 +1191,7 @@ export default function AdminDashboard() {
                                       <p className="text-[11px] font-bold text-brand-black/20 uppercase tracking-[0.2em]">{product.nameEn}</p>
                                    </div>
                                 </div>
-                                <div className="text-3xl font-black text-brand-red font-serif tracking-tighter">{product.price.toFixed(2)} <span className="text-[10px] text-brand-black/20 uppercase">JOD</span></div>
+                                <div className="text-3xl font-black text-brand-red font-serif tracking-tighter">{product.price.toFixed(2)} <span className="text-[10px] text-brand-black/20 uppercase">د.أ</span></div>
                                 <div className="flex items-center gap-4">
                                    <button onClick={(e) => { e.stopPropagation(); handleProductToggle(product.id, product.isAvailable); }} className={`flex items-center gap-5 p-2 rounded-full transition-colors ${product.isAvailable ? 'text-green-600' : 'text-gray-300'}`}>
                                       <span className="text-[11px] font-black uppercase tracking-widest">{product.isAvailable ? 'نشط' : 'معطل'}</span>
@@ -1242,7 +1242,7 @@ export default function AdminDashboard() {
                              <div className="flex justify-between items-start mb-10">
                                 <div>
                                    <h3 className="text-4xl font-black font-serif text-brand-black tracking-tight">{coupon.code}</h3>
-                                   <p className={`text-[10px] font-black uppercase mt-2 ${coupon.isActive ? 'text-green-600' : 'text-gray-400'}`}>{coupon.isActive ? 'Active' : 'Disabled'}</p>
+                                   <p className={`text-[10px] font-black uppercase mt-2 ${coupon.isActive ? 'text-green-600' : 'text-gray-400'}`}>{coupon.isActive ? 'نشط' : 'معطل'}</p>
                                 </div>
                                 <div className="text-4xl font-black text-brand-red font-serif">%{coupon.discountPercent}</div>
                              </div>
@@ -1264,11 +1264,11 @@ export default function AdminDashboard() {
                     <div className="bg-white p-10 rounded-[3rem] border border-brand-gray shadow-sm">
                        <h3 className="text-2xl font-black text-brand-black mb-10 flex items-center gap-4">
                          <div className="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-2xl flex items-center justify-center"><MapPin size={24}/></div>
-                         {language === 'ar' ? 'إضافة منطقة توصيل' : 'Add Delivery Zone'}
+                          إضافة منطقة توصيل
                        </h3>
                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                           <input type="text" placeholder="الاسم بالعربي (مثال: اللويبدة)" className="bg-brand-gray/10 p-5 rounded-3xl outline-none font-bold placeholder:text-gray-400" value={zoneForm.nameAr} onChange={e => setZoneForm({...zoneForm, nameAr: e.target.value})} />
-                          <input type="text" placeholder="Name in English" className="bg-brand-gray/10 p-5 rounded-3xl outline-none font-bold placeholder:text-gray-400" value={zoneForm.nameEn} onChange={e => setZoneForm({...zoneForm, nameEn: e.target.value})} />
+                          <input type="text" placeholder="الاسم بالإنجليزي" className="bg-brand-gray/10 p-5 rounded-3xl outline-none font-bold placeholder:text-gray-400" value={zoneForm.nameEn} onChange={e => setZoneForm({...zoneForm, nameEn: e.target.value})} />
                           <input type="number" step="0.1" placeholder="سعر التوصيل" className="bg-brand-gray/10 p-5 rounded-3xl outline-none font-bold placeholder:text-gray-400" value={zoneForm.fee} onChange={e => setZoneForm({...zoneForm, fee: e.target.value})} />
                           <button onClick={handleAddZone} className="bg-brand-black text-white p-5 rounded-3xl font-black shadow-xl hover:bg-brand-red transition-all">حفظ المنطقة</button>
                        </div>
@@ -1344,7 +1344,7 @@ export default function AdminDashboard() {
               <div className="p-8 border-b border-brand-gray flex items-center justify-between">
                 <div>
                    <h3 className="text-2xl font-black text-brand-black">{editingProduct ? 'تعديل المنتج' : 'إضافة منتج جديد'}</h3>
-                   <p className="text-[10px] font-black uppercase text-brand-black/20 tracking-widest mt-1">{editingProduct ? 'Update existing item' : 'Create new menu item'}</p>
+                   <p className="text-[10px] font-black uppercase text-brand-black/20 tracking-widest mt-1">{editingProduct ? 'تحديث الصنف الحالي' : 'إنشاء صنف جديد'}</p>
                 </div>
                 <button onClick={() => setIsProductPanelOpen(false)} className="p-4 bg-brand-gray/50 rounded-2xl text-brand-black/40 hover:text-brand-red transition-all"><X size={24} /></button>
               </div>
@@ -1355,7 +1355,7 @@ export default function AdminDashboard() {
                    <input type="text" value={productFormData.nameAr} onChange={e => setProductFormData({...productFormData, nameAr: e.target.value})} className="w-full bg-brand-gray/10 border-2 border-transparent focus:border-brand-red/20 focus:bg-white rounded-3xl p-5 outline-none font-black text-lg transition-all" required />
                 </div>
                 <div className="space-y-4">
-                   <label className="text-[10px] font-black uppercase tracking-widest text-brand-black/30 px-2">Product Name (EN)</label>
+                   <label className="text-[10px] font-black uppercase tracking-widest text-brand-black/30 px-2">اسم المنتج (International Name)</label>
                    <input type="text" value={productFormData.nameEn} onChange={e => setProductFormData({...productFormData, nameEn: e.target.value})} className="w-full bg-brand-gray/10 border-2 border-transparent focus:border-brand-red/20 focus:bg-white rounded-3xl p-5 outline-none font-black text-lg transition-all" dir="ltr" required />
                 </div>
                 <div className="grid grid-cols-2 gap-6">
@@ -1412,7 +1412,7 @@ export default function AdminDashboard() {
               <div className="p-10 border-b border-brand-gray flex justify-between items-center bg-brand-cream/30">
                  <div>
                     <h3 className="text-3xl font-black text-brand-black font-serif uppercase tracking-tighter">ترتيب الأقسام</h3>
-                    <p className="text-[10px] font-black text-brand-black/30 uppercase tracking-[0.3em] mt-1">Order management</p>
+                    <p className="text-[10px] font-black text-brand-black/30 uppercase tracking-[0.3em] mt-1">إدارة الترتيب</p>
                  </div>
                  <button onClick={() => setIsReorderModalOpen(false)} className="p-4 bg-white rounded-2xl text-brand-black/20 hover:text-brand-red transition-all shadow-sm"><X size={24}/></button>
               </div>
@@ -1497,7 +1497,7 @@ export default function AdminDashboard() {
             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="relative bg-white w-full max-w-2xl rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
               <div className="p-8 border-b border-brand-gray/20 flex items-center justify-between bg-brand-cream/30">
                 <div>
-                  <h3 className="text-2xl font-black text-brand-black tracking-tight">{language === 'ar' ? 'تفاصيل الطلب' : 'Order Details'}</h3>
+                  <h3 className="text-2xl font-black text-brand-black tracking-tight">تفاصيل الطلب</h3>
                   <p className="text-brand-red font-bold">#{selectedOrder.id.slice(-6).toUpperCase()}</p>
                 </div>
                 <button onClick={() => setSelectedOrder(null)} className="p-3 bg-white rounded-2xl shadow-sm border border-brand-gray/20 text-brand-black/40 hover:text-brand-red transition-all"><X size={24} /></button>
@@ -1506,16 +1506,20 @@ export default function AdminDashboard() {
                 {/* Status Badge */}
                 <div className="flex items-center gap-2">
                    <div className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest ${selectedOrder.status === 'SHIPPED' ? 'bg-green-100 text-green-700' : 'bg-brand-gray/10 text-brand-black'}`}>
-                      {selectedOrder.status}
+                      {selectedOrder.status === 'PENDING' ? 'بانتظار الموافقة' : 
+                       selectedOrder.status === 'PREPARING' ? 'قيد التجهيز' :
+                       selectedOrder.status === 'READY' ? 'جاهز للتسليم' :
+                       selectedOrder.status === 'SHIPPED' ? 'تم التوصيل' :
+                       selectedOrder.status === 'REJECTED' ? 'مرفوض' : selectedOrder.status}
                    </div>
                    <div className="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest bg-brand-red/5 text-brand-red">
-                      {selectedOrder.paymentMethod}
+                      {selectedOrder.paymentMethod === 'CLIQ' ? 'كليك' : 'كاش'}
                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-4">
-                    <h4 className="text-[10px] font-black uppercase tracking-[3px] text-brand-black/20">{language === 'ar' ? 'معلومات الزبون' : 'Customer Info'}</h4>
+                    <h4 className="text-[10px] font-black uppercase tracking-[3px] text-brand-black/20">معلومات الزبون</h4>
                       <div className="space-y-3">
                         <div className="flex items-center gap-3 text-brand-black font-bold text-sm"><User size={16} className="text-brand-red"/> {selectedOrder.customerName}</div>
                         <div className="flex items-center gap-3 text-brand-black font-bold text-sm"><Phone size={16} className="text-brand-red"/> {selectedOrder.phoneNumber}</div>
@@ -1523,7 +1527,7 @@ export default function AdminDashboard() {
                            <div className="flex items-start gap-3 text-brand-black font-bold text-xs">
                               <MapPin size={16} className="text-brand-red shrink-0 mt-0.5"/> 
                               <span className="leading-relaxed">
-                                 {selectedOrder.address?.replace(/\(https:\/\/www\.google\.com\/maps\?q=[-0-9.,]+\)/, '').trim() || (language === 'ar' ? 'لا يوجد عنوان' : 'No Address')}
+                                 {selectedOrder.address?.replace(/\(https:\/\/www\.google\.com\/maps\?q=[-0-9.,]+\)/, '').trim() || 'لا يوجد عنوان مفصل'}
                               </span>
                            </div>
                            {selectedOrder.address?.match(/https:\/\/www\.google\.com\/maps\?q=[-0-9.,]+/) && (
@@ -1534,7 +1538,7 @@ export default function AdminDashboard() {
                                     rel="noopener noreferrer"
                                     className="flex items-center gap-2 text-[10px] font-black text-blue-600 hover:text-blue-800 bg-blue-50 px-3 py-1.5 rounded-lg transition-colors"
                                  >
-                                    <ExternalLink size={12} /> {language === 'ar' ? 'فتح في الخرائط' : 'Open in Maps'}
+                                    <ExternalLink size={12} /> فتح في الخرائط
                                  </a>
                                  <button 
                                     onClick={() => {
@@ -1546,7 +1550,7 @@ export default function AdminDashboard() {
                                     }}
                                     className="flex items-center gap-2 text-[10px] font-black text-brand-black/40 hover:text-brand-black bg-brand-gray/10 px-3 py-1.5 rounded-lg transition-colors"
                                  >
-                                    <Copy size={12} /> {language === 'ar' ? 'نسخ الرابط' : 'Copy Link'}
+                                    <Copy size={12} /> نسخ الرابط
                                  </button>
                               </div>
                            )}
@@ -1554,16 +1558,16 @@ export default function AdminDashboard() {
                       </div>
                   </div>
                   <div className="space-y-4">
-                    <h4 className="text-[10px] font-black uppercase tracking-[3px] text-brand-black/20">{language === 'ar' ? 'التوقيت' : 'Timing'}</h4>
+                    <h4 className="text-[10px] font-black uppercase tracking-[3px] text-brand-black/20">التوقيت</h4>
                     <div className="space-y-3">
-                      <div className="flex items-center gap-3 text-brand-black font-bold text-xs"><Clock size={16} className="text-brand-red"/> {new Date(selectedOrder.createdAt).toLocaleString(language === 'ar' ? 'ar-EG' : 'en-US')}</div>
+                      <div className="flex items-center gap-3 text-brand-black font-bold text-xs"><Clock size={16} className="text-brand-red"/> {new Date(selectedOrder.createdAt).toLocaleString('ar-JO')}</div>
                       {selectedOrder.pickupTime && <div className="flex items-center gap-3 text-brand-red font-black text-sm"><Store size={16}/> {selectedOrder.pickupTime}</div>}
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="text-[10px] font-black uppercase tracking-[3px] text-brand-black/20">{language === 'ar' ? 'الأصناف المطلوبة' : 'Order Items'}</h4>
+                  <h4 className="text-[10px] font-black uppercase tracking-[3px] text-brand-black/20">الأصناف المطلوبة</h4>
                   <div className="bg-brand-gray/5 rounded-3xl p-6 space-y-4 border border-brand-gray/10">
                     {selectedOrder.items?.map((item: OrderItem) => (
                       <div key={item.id} className="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-brand-gray/5">
@@ -1575,15 +1579,15 @@ export default function AdminDashboard() {
                       </div>
                     ))}
                     <div className="pt-4 mt-4 border-t border-brand-gray/10 flex justify-between items-center px-2">
-                       <span className="font-black text-brand-black text-lg">{language === 'ar' ? 'الإجمالي' : 'Total Amount'}</span>
-                       <span className="font-black text-brand-red text-2xl">{selectedOrder.totalPrice.toFixed(2)} JOD</span>
+                       <span className="font-black text-brand-black text-lg">المجموع الكلي</span>
+                       <span className="font-black text-brand-red text-2xl">{selectedOrder.totalPrice.toFixed(2)} د.أ</span>
                     </div>
                   </div>
                 </div>
 
                  {selectedOrder.notes && (
                     <div className="space-y-4">
-                       <h4 className="text-[10px] font-black uppercase tracking-[3px] text-brand-black/20">{language === 'ar' ? 'ملاحظات' : 'Notes'}</h4>
+                       <h4 className="text-[10px] font-black uppercase tracking-[3px] text-brand-black/20">ملاحظات</h4>
                        <div className="bg-amber-50 rounded-2xl p-6 border border-amber-100 text-amber-900 font-bold text-sm italic">&quot;{selectedOrder.notes}&quot;</div>
                     </div>
                  )}
@@ -1694,35 +1698,35 @@ export default function AdminDashboard() {
               <div className="flex-1 overflow-y-auto p-8 space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                    <div className="bg-brand-gray/5 p-6 rounded-3xl text-center border border-brand-gray/10">
-                      <p className="text-[10px] font-black uppercase text-brand-black/20 mb-1">{language === 'ar' ? 'عدد الطلبات' : 'Total Orders'}</p>
+                      <p className="text-[10px] font-black uppercase text-brand-black/20 mb-1">عدد الطلبات</p>
                       <p className="text-3xl font-black text-brand-red">{selectedCustomer.orderCount}</p>
                    </div>
                    <div className="bg-brand-black p-6 rounded-3xl text-center shadow-xl relative overflow-hidden group">
                       <div className="absolute top-0 right-0 w-12 h-12 bg-white/5 rounded-bl-3xl group-hover:scale-150 transition-transform"/>
-                      <p className="text-[10px] font-black uppercase text-white/30 mb-1">{language === 'ar' ? 'إجمالي المشتريات' : 'Total Spent'}</p>
-                      <p className="text-2xl font-black text-white">{selectedCustomer.totalSpent.toFixed(2)} <small className="text-[10px] font-sans">JD</small></p>
+                      <p className="text-[10px] font-black uppercase text-white/30 mb-1">إجمالي المشتريات</p>
+                      <p className="text-2xl font-black text-white">{selectedCustomer.totalSpent.toFixed(2)} <small className="text-[10px] font-sans">د.أ</small></p>
                    </div>
                    <div className="bg-brand-gray/5 p-6 rounded-3xl border border-brand-gray/10 flex flex-col justify-center">
-                      <p className="text-[10px] font-black uppercase text-brand-black/20 mb-1">{language === 'ar' ? 'المنطقة' : 'Region'}</p>
-                      <p className="text-sm font-black text-brand-black truncate">{selectedCustomer.area || (language === 'ar' ? 'غير محدد' : 'Unknown')}</p>
+                      <p className="text-[10px] font-black uppercase text-brand-black/20 mb-1">المنطقة</p>
+                      <p className="text-sm font-black text-brand-black truncate">{selectedCustomer.area || 'غير محدد'}</p>
                    </div>
                 </div>
 
                 <div className="bg-brand-cream/10 p-6 rounded-3xl border border-brand-cream/20">
-                   <p className="text-[10px] font-black uppercase text-brand-black/20 mb-3">{language === 'ar' ? 'آخر نشاط ونوع الحساب' : 'Last Activity & Account Type'}</p>
+                   <p className="text-[10px] font-black uppercase text-brand-black/20 mb-3">آخر نشاط ونوع الحساب</p>
                    <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                          <Clock size={16} className="text-brand-red"/>
-                         <span className="text-sm font-bold text-brand-black">{new Date(selectedCustomer.lastOrder).toLocaleString(language === 'ar' ? 'ar-EG' : 'en-US')}</span>
+                         <span className="text-sm font-bold text-brand-black">{new Date(selectedCustomer.lastOrder).toLocaleString('ar-JO')}</span>
                       </div>
                       <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${selectedCustomer.email ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>
-                         {selectedCustomer.email ? (language === 'ar' ? 'حساب مسجل' : 'Registered') : (language === 'ar' ? 'طلب زائر' : 'Guest')}
+                         {selectedCustomer.email ? ('حساب مسجل') : ('طلب زائر')}
                       </div>
                    </div>
                 </div>
 
                 <div className="space-y-4">
-                   <h4 className="text-[10px] font-black uppercase tracking-[3px] text-brand-black/20">{language === 'ar' ? 'سجل الطلبات' : 'Order History'}</h4>
+                   <h4 className="text-[10px] font-black uppercase tracking-[3px] text-brand-black/20">سجل الطلبات</h4>
                    <div className="space-y-3">
                       {historyOrders.filter(o => o.phoneNumber === selectedCustomer.phone).slice(0, 5).map(o => (
                          <div key={o.id} className="bg-white p-5 rounded-2xl border border-brand-gray/20 flex items-center justify-between hover:border-brand-red transition-all cursor-pointer group" onClick={() => { setSelectedOrder(o); setSelectedCustomer(null); }}>
@@ -1735,12 +1739,12 @@ export default function AdminDashboard() {
                             </div>
                             <div className="text-right">
                                <p className="font-black text-brand-red text-lg">{o.totalPrice.toFixed(2)} د.أ</p>
-                               <p className="text-[10px] font-bold uppercase tracking-widest text-brand-black/20 group-hover:text-brand-red transition-colors">{language === 'ar' ? 'عرض التفاصيل' : 'View Details'} →</p>
+                               <p className="text-[10px] font-bold uppercase tracking-widest text-brand-black/20 group-hover:text-brand-red transition-colors">{'عرض التفاصيل'} →</p>
                             </div>
                          </div>
                       ))}
                       {historyOrders.filter(o => o.phoneNumber === selectedCustomer.phone).length === 0 && (
-                         <div className="text-center py-10 text-brand-black/20 font-bold italic">{language === 'ar' ? 'لم يتم تحميل سجل الطلبات الكامل بعد..' : 'Full history not loaded in memory..'}</div>
+                         <div className="text-center py-10 text-brand-black/20 font-bold italic">{'لم يتم تحميل سجل الطلبات الكامل بعد..'}</div>
                       )}
                    </div>
                 </div>
@@ -1767,7 +1771,7 @@ function OrderCard({ order, onUpdateStatus, onArchive, onPrint, onPaymentReceive
       
       <div className="p-6 pb-3 flex justify-between items-center bg-brand-cream/5 border-b border-brand-gray/30">
         <div className="flex flex-col">
-          <span className="text-[9px] font-black text-brand-black/20">Ref: #{order.id.slice(-6).toUpperCase()}</span>
+          <span className="text-[9px] font-black text-brand-black/20">المعرف: #{order.id.slice(-6).toUpperCase()}</span>
           <span className="font-black text-brand-black text-sm flex items-center gap-2">
             <Clock size={14} className="text-brand-red" />
             {new Date(order.createdAt).toLocaleTimeString('ar-JO', { hour: '2-digit', minute: '2-digit' })}
@@ -1795,7 +1799,7 @@ function OrderCard({ order, onUpdateStatus, onArchive, onPrint, onPaymentReceive
                 <div className="flex flex-col gap-1.5 flex-1 min-w-0">
                   {order.deliveryArea && <span className="font-black text-brand-black text-[10px] uppercase tracking-wider opacity-30">{order.deliveryArea}</span>}
                   <span className="font-bold text-brand-black text-xs leading-relaxed">
-                    {order.address?.replace(/\(https:\/\/www\.google\.com\/maps\?q=[-0-9.,]+\)/, '').trim() || (language === 'ar' ? 'لا يوجد عنوان مفصل' : 'No detailed address')}
+                    {order.address?.replace(/\(https:\/\/www\.google\.com\/maps\?q=[-0-9.,]+\)/, '').trim() || ('لا يوجد عنوان مفصل')}
                   </span>
                   
                   {order.address?.match(/https:\/\/www\.google\.com\/maps\?q=[-0-9.,]+/) && (
@@ -1846,8 +1850,8 @@ function OrderCard({ order, onUpdateStatus, onArchive, onPrint, onPaymentReceive
 
         <div className="mt-auto pt-6 border-t border-brand-gray/30">
           <div className="flex justify-between items-center mb-6">
-             <span className="text-[10px] font-black text-brand-black/30">المجموع</span>
-             <span className="text-2xl font-black text-brand-red font-serif tracking-tighter">{order.totalPrice.toFixed(2)} <small className="text-[9px] tracking-normal font-sans uppercase">JD</small></span>
+             <span className="text-[10px] font-black text-brand-black/30">المجموع الكلي</span>
+             <span className="text-2xl font-black text-brand-red font-serif tracking-tighter">{order.totalPrice.toFixed(2)} <small className="text-[9px] tracking-normal font-sans uppercase">د.أ</small></span>
           </div>
 
           <div className="flex flex-col gap-3">
