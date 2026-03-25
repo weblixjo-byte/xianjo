@@ -25,14 +25,24 @@ export function Providers({ children }: { children: React.ReactNode }) {
           top: position === 'top-center' ? 40 : 20,
         }}
         toastOptions={{
-          duration: 3000,
+          duration: 4000,
           style: {
-            background: '#333',
-            color: '#fff',
-            borderRadius: '1rem',
-            padding: '12px 24px',
-            fontSize: '14px',
-            fontWeight: 'bold',
+            background: '#1a1a1a', // Xian Black
+            color: '#f9f7f2', // Xian Cream
+            borderRadius: '2rem',
+            padding: '16px 28px',
+            fontSize: '15px',
+            fontWeight: '900',
+            border: '1px solid rgba(146, 39, 36, 0.2)', // Subtle Brand Red
+            boxShadow: '0 25px 50px -12px rgba(146, 39, 36, 0.25)',
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase'
+          },
+          success: {
+            iconTheme: {
+              primary: '#922724', // Xian Red
+              secondary: '#fff',
+            },
           },
         }}
       />

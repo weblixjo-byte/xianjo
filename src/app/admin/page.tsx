@@ -112,26 +112,37 @@ export default function AdminDashboard() {
       if (pendingOrders > orderCountRef.current && isAudioUnlocked) {
         playAlarm();
         toast.custom((t) => (
-          <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-white shadow-2xl rounded-[2rem] pointer-events-auto flex ring-4 ring-brand-red/10 border-2 border-brand-red overflow-hidden`}>
-            <div className="flex-1 p-6">
-              <div className="flex items-start">
-                <div className="flex-shrink-0 pt-1 text-brand-red"><Bell className="h-10 w-10 animate-tada" /></div>
-                <div className="mr-5 flex-1">
-                  <p className="text-xl font-black text-brand-black">طلب جديد وارد!</p>
-                  <p className="mt-1 text-sm font-bold text-brand-black/40">لديك {pendingOrders} طلبات بانتظار الموافقة</p>
+          <div className={`${t.visible ? 'animate-in fade-in zoom-in slide-in-from-top-4' : 'animate-out fade-out zoom-out shadow-none'} max-w-md w-full bg-brand-black/95 backdrop-blur-xl shadow-[0_30px_60px_-15px_rgba(146,39,36,0.6)] rounded-[2.5rem] pointer-events-auto flex flex-col border-2 border-brand-red/30 overflow-hidden`}>
+            <div className="p-8">
+              <div className="flex items-center gap-6">
+                <div className="relative flex-shrink-0">
+                  <div className="absolute inset-0 bg-brand-red rounded-full blur-xl opacity-40 animate-pulse"></div>
+                  <div className="relative bg-brand-red p-4 rounded-2xl text-white shadow-lg">
+                    <Bell className="h-8 w-8 animate-tada" />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <p className="text-2xl font-black text-white leading-tight">طلب جديد وارد!</p>
+                  <p className="mt-1 text-sm font-bold text-white/40 uppercase tracking-widest">لديك {pendingOrders} طلبات بانتظار الموافقة</p>
                 </div>
               </div>
             </div>
-            <div className="flex border-r border-gray-200">
+            <div className="px-8 pb-8 flex gap-3">
               <button
                 onClick={() => { toast.dismiss(t.id); stopAlarm(); setActiveTab('ORDERS'); }}
-                className="w-full border border-transparent rounded-none rounded-r-lg p-6 flex items-center justify-center text-sm font-black text-brand-red hover:bg-brand-red/5 active:bg-brand-red/10 transition-all uppercase tracking-widest"
+                className="flex-1 bg-brand-red text-white py-5 rounded-2xl text-sm font-black uppercase tracking-widest hover:bg-brand-red/80 hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-brand-red/20"
               >
                 فتح الطلبات
               </button>
+              <button
+                onClick={() => { toast.dismiss(t.id); stopAlarm(); }}
+                className="px-6 bg-white/5 text-white/40 py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all border border-white/5"
+              >
+                تجاهل
+              </button>
             </div>
           </div>
-        ), { duration: 10000, position: 'top-right' });
+        ), { duration: 15000, position: 'top-right' });
       }
       orderCountRef.current = pendingOrders;
     } catch (_error) {
