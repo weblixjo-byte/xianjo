@@ -33,7 +33,6 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
       .catch(() => {});
   }, []);
 
-  const selectedZone = deliveryZones.find(z => z.id === form.selectedZoneId);
 
   // Promo Code State
   const [isStoreOpen, setIsStoreOpen] = useState<boolean>(true);
@@ -104,7 +103,6 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
   };
 
   const currentTotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const getDeliveryFee = () => (orderType === 'DELIVERY' && selectedZone) ? selectedZone.fee : 0;
 
   if (!mounted) return null;
 
