@@ -1,6 +1,6 @@
 'use client';
 import { motion } from 'framer-motion';
-import { FileSpreadsheet, Clock } from 'lucide-react';
+import { FileSpreadsheet } from 'lucide-react';
 import { Customer } from '@/types/admin';
 
 interface CustomersTabProps {

@@ -18,9 +18,7 @@ interface ProductsTabProps {
   onDeleteProduct: (id: string) => void;
   onToggleProduct: (id: string, current: boolean) => void;
   onReorder: () => void;
-  categoryOrder: string[];
   sortedCategories: string[];
-  language: string;
 }
 
 export default function ProductsTab({
@@ -37,9 +35,7 @@ export default function ProductsTab({
   onDeleteProduct,
   onToggleProduct,
   onReorder,
-  categoryOrder,
-  sortedCategories,
-  language
+  sortedCategories
 }: ProductsTabProps) {
   const filteredProducts = products.filter(p => 
     (p.nameAr.includes(productSearchQuery) || p.nameEn.toLowerCase().includes(productSearchQuery.toLowerCase())) && 

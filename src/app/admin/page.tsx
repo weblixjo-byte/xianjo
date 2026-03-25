@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { ShieldCheck, Bell } from 'lucide-react';
+import { Bell, Store } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import * as XLSX from 'xlsx';
 import { useLanguage } from '@/store/useLanguage';
@@ -85,6 +85,19 @@ export default function AdminDashboard() {
     window.location.reload();
   };
 
+  const stopAlarm = useCallback(() => {
+    if (alarmRef.current) {
+      alarmRef.current.pause();
+      alarmRef.current.currentTime = 0;
+    }
+  }, []);
+
+  const playAlarm = useCallback(() => {
+    if (alarmRef.current && isAudioUnlocked) {
+      alarmRef.current.play().catch(_e => console.error("Audio error", _e));
+    }
+  }, [isAudioUnlocked]);
+
   const fetchOrders = useCallback(async () => {
     try {
       const res = await fetch('/api/admin/orders');
@@ -121,22 +134,22 @@ export default function AdminDashboard() {
         ), { duration: 10000, position: 'top-right' });
       }
       orderCountRef.current = pendingOrders;
-    } catch (error) {
-      console.error('Fetch orders error:', error);
+    } catch (_error) {
+      console.error('Fetch orders error:', _error);
     } finally {
       setLoading(false);
     }
-  }, [isAudioUnlocked]);
+  }, [isAudioUnlocked, playAlarm, stopAlarm]);
 
-  const fetchStoreStatus = async () => {
+  const fetchStoreStatus = useCallback(async () => {
     try {
       const res = await fetch('/api/store-status');
       const data = await res.json();
       setIsStoreOpen(data.isOpen);
-    } catch (error) {
-      console.error('Fetch store status error:', error);
+    } catch (_error) {
+      console.error('Fetch store status error:', _error);
     }
-  };
+  }, []);
 
   const toggleStoreStatus = async () => {
     try {
@@ -149,7 +162,7 @@ export default function AdminDashboard() {
         setIsStoreOpen(!isStoreOpen);
         toast.success(isStoreOpen ? 'تم إغلاق المطعم' : 'تم فتح المطعم');
       }
-    } catch (error) {
+    } catch {
       toast.error('حدث خطأ');
     }
   };
@@ -166,7 +179,7 @@ export default function AdminDashboard() {
         fetchOrders();
         stopAlarm();
       }
-    } catch (error) {
+    } catch {
       toast.error('خطأ في التحديث');
     }
   };
@@ -182,7 +195,7 @@ export default function AdminDashboard() {
         toast.success('تمت الأرشفة');
         fetchOrders();
       }
-    } catch (error) {
+    } catch {
       toast.error('خطأ في الأرشفة');
     }
   };
@@ -199,12 +212,12 @@ export default function AdminDashboard() {
         toast.success('تم تأكيد الدفع');
         fetchOrders();
       }
-    } catch (error) {
+    } catch {
       toast.error('خطأ');
     }
   };
 
-  const fetchHistory = async () => {
+  const fetchHistory = useCallback(async () => {
     setHistoryLoading(true);
     try {
       const res = await fetch('/api/admin/history');
@@ -215,7 +228,7 @@ export default function AdminDashboard() {
     } finally {
       setHistoryLoading(false);
     }
-  };
+  }, []);
 
   const handleDeletePermanent = async (id: string) => {
     if (!confirm('حذف نهائي؟')) return;
@@ -225,7 +238,7 @@ export default function AdminDashboard() {
     } catch (error) { console.error(error); }
   };
 
-  const fetchCustomers = async () => {
+  const fetchCustomers = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch('/api/admin/customers');
@@ -233,19 +246,19 @@ export default function AdminDashboard() {
       setCustomers(data);
     } catch (error) { console.error(error); }
     finally { setLoading(false); }
-  };
+  }, []);
 
-  const fetchReports = async (type: string) => {
+  const fetchReports = useCallback(async (type: string) => {
     setReportLoading(true);
     try {
       const res = await fetch(`/api/admin/reports?type=${type}`);
       const data = await res.json();
       setReportData(data);
     } catch (error) { console.error(error); }
-    finally { setReportLoading(true); } // wait, this should be false, fixed below
-  };
+    finally { setReportLoading(false); }
+  }, []);
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch('/api/products');
@@ -255,7 +268,7 @@ export default function AdminDashboard() {
       setCategoryOrder(uniqueCats);
     } catch (error) { console.error(error); }
     finally { setLoading(false); }
-  };
+  }, []);
 
   const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -272,7 +285,7 @@ export default function AdminDashboard() {
         setIsProductModalOpen(false);
         fetchProducts();
       }
-    } catch (error) { toast.error('خطأ'); }
+    } catch { toast.error('خطأ'); }
   };
 
   const handleDeleteProduct = async (id: string) => {
@@ -291,7 +304,7 @@ export default function AdminDashboard() {
         body: JSON.stringify({ id, isAvailable: !current })
       });
       fetchProducts();
-    } catch (error) { console.error(error); }
+    } catch (_error) { console.error(_error); }
   };
 
   const handleBulkToggle = async (available: boolean) => {
@@ -303,7 +316,7 @@ export default function AdminDashboard() {
       });
       setSelectedIds([]);
       fetchProducts();
-    } catch (error) { console.error(error); }
+    } catch (_error) { console.error(_error); }
   };
 
   const handleBulkMove = async (category: string) => {
@@ -316,7 +329,7 @@ export default function AdminDashboard() {
       setIsBulkMoveOpen(false);
       setSelectedIds([]);
       fetchProducts();
-    } catch (error) { console.error(error); }
+    } catch (_error) { console.error(_error); }
   };
 
   const handleBulkDelete = async () => {
@@ -329,7 +342,7 @@ export default function AdminDashboard() {
       });
       setSelectedIds([]);
       fetchProducts();
-    } catch (error) { console.error(error); }
+    } catch (_error) { console.error(_error); }
   };
 
   const saveCategoryOrder = async () => {
@@ -345,18 +358,18 @@ export default function AdminDashboard() {
         setIsReorderModalOpen(false);
         fetchProducts();
       }
-    } catch (error) { toast.error('خطأ'); }
+    } catch { toast.error('خطأ'); }
     finally { setIsSavingOrder(false); }
   };
 
   // Coupons / Zones Handlers
-  const fetchCoupons = async () => {
+  const fetchCoupons = useCallback(async () => {
     try {
       const res = await fetch('/api/admin/coupons');
       const data = await res.json();
       setCoupons(data);
-    } catch (error) { console.error(error); }
-  };
+    } catch (_error) { console.error(_error); }
+  }, []);
 
   const handleCreateCoupon = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -371,7 +384,7 @@ export default function AdminDashboard() {
         setCouponCode(''); setCouponDiscount('');
         toast.success('تم الإنشاء');
       }
-    } catch (error) { toast.error('خطأ'); }
+    } catch { toast.error('خطأ'); }
   };
 
   const handleToggleCoupon = async (id: string, current: boolean) => {
@@ -382,23 +395,23 @@ export default function AdminDashboard() {
         body: JSON.stringify({ id, isActive: !current })
       });
       fetchCoupons();
-    } catch (error) { console.error(error); }
+    } catch (_error) { console.error(_error); }
   };
 
   const handleDeleteCoupon = async (id: string) => {
     try {
       await fetch(`/api/admin/coupons?id=${id}`, { method: 'DELETE' });
       fetchCoupons();
-    } catch (error) { console.error(error); }
+    } catch (_error) { console.error(_error); }
   };
 
-  const fetchZones = async () => {
+  const fetchZones = useCallback(async () => {
     try {
       const res = await fetch('/api/delivery-zones');
       const data = await res.json();
       setZones(data);
-    } catch (error) { console.error(error); }
-  };
+    } catch (_error) { console.error(_error); }
+  }, []);
 
   const handleAddZone = async () => {
     try {
@@ -411,14 +424,14 @@ export default function AdminDashboard() {
         fetchZones();
         setZoneForm({ nameEn: '', nameAr: '', fee: '' });
       }
-    } catch (error) { console.error(error); }
+    } catch (_error) { console.error(_error); }
   };
 
   const handleDeleteZone = async (id: string) => {
     try {
       await fetch(`/api/admin/zones?id=${id}`, { method: 'DELETE' });
       fetchZones();
-    } catch (error) { console.error(error); }
+    } catch (_error) { console.error(_error); }
   };
 
   const handleSystemReset = async () => {
@@ -426,11 +439,11 @@ export default function AdminDashboard() {
     try {
       const res = await fetch('/api/admin/reset', { method: 'POST' });
       if (res.ok) window.location.reload();
-    } catch (error) { toast.error('خطأ'); }
+    } catch { toast.error('خطأ'); }
   };
 
   // --- Exports ---
-  const exportToExcel = (data: any[], fileName: string) => {
+  const exportToExcel = (data: Record<string, unknown>[], fileName: string) => {
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
@@ -465,24 +478,13 @@ export default function AdminDashboard() {
   // --- Audio ---
   const unlockAudio = () => {
     setIsAudioUnlocked(true);
-    audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const Win = window as unknown as Window & { webkitAudioContext?: typeof AudioContext };
+    audioContextRef.current = new (window.AudioContext || Win.webkitAudioContext)();
     alarmRef.current = new Audio('/alarm.mp3');
     alarmRef.current.loop = true;
     audioContextRef.current.resume();
   };
 
-  const playAlarm = () => {
-    if (alarmRef.current && isAudioUnlocked) {
-      alarmRef.current.play().catch(e => console.error("Audio error", e));
-    }
-  };
-
-  const stopAlarm = () => {
-    if (alarmRef.current) {
-      alarmRef.current.pause();
-      alarmRef.current.currentTime = 0;
-    }
-  };
 
   // --- Effects ---
   useEffect(() => {
@@ -490,7 +492,7 @@ export default function AdminDashboard() {
     fetchStoreStatus();
     const interval = setInterval(fetchOrders, 30000);
     return () => clearInterval(interval);
-  }, [fetchOrders]);
+  }, [fetchOrders, fetchStoreStatus]);
 
   useEffect(() => {
     if (activeTab === 'HISTORY') fetchHistory();
@@ -499,7 +501,7 @@ export default function AdminDashboard() {
     if (activeTab === 'PRODUCTS') fetchProducts();
     if (activeTab === 'COUPONS') fetchCoupons();
     if (activeTab === 'ZONES') fetchZones();
-  }, [activeTab]);
+  }, [activeTab, fetchHistory, fetchCustomers, fetchReports, fetchProducts, fetchCoupons, fetchZones]);
 
   if (loading && orders.length === 0) {
     return (
@@ -573,7 +575,7 @@ export default function AdminDashboard() {
                   onAddProduct={() => { setEditingProduct(null); setProductFormData({ nameEn: '', nameAr: '', price: '', category: products[0]?.category || '', imageUrl: '', descriptionAr: '', descriptionEn: '' }); setIsProductModalOpen(true); }}
                   onEditProduct={(p) => { setEditingProduct(p); setProductFormData({ nameAr: p.nameAr, nameEn: p.nameEn, price: p.price.toString(), category: p.category, imageUrl: p.imageUrl || '', descriptionAr: p.descriptionAr || '', descriptionEn: p.descriptionEn || '' }); setIsProductModalOpen(true); }}
                   onDeleteProduct={handleDeleteProduct} onToggleProduct={handleToggleProduct} onReorder={() => setIsReorderModalOpen(true)}
-                  categoryOrder={categoryOrder} sortedCategories={categoryOrder} language={language}
+                  sortedCategories={categoryOrder}
                 />
               )}
 
@@ -595,8 +597,8 @@ export default function AdminDashboard() {
 
       <AnimatePresence>
         <OrderDetailsModal order={selectedOrder} onClose={() => setSelectedOrder(null)} onUpdateStatus={handleUpdateStatus} onArchive={handleArchive} onPaymentReceived={handlePaymentReceived} language={language} />
-        <CustomerDetailsModal customer={selectedCustomer} onClose={() => setSelectedCustomer(null)} onSelectOrder={setSelectedOrder} orderHistory={historyOrders} language={language} />
-        <ProductFormModal isOpen={isProductModalOpen} onClose={() => setIsProductModalOpen(false)} editingProduct={editingProduct} productFormData={productFormData} setProductFormData={setProductFormData} onSubmit={handleSaveProduct} products={products} />
+        <CustomerDetailsModal customer={selectedCustomer} onClose={() => setSelectedCustomer(null)} onSelectOrder={setSelectedOrder} orderHistory={historyOrders} />
+        <ProductFormModal isOpen={isProductModalOpen} onClose={() => setIsProductModalOpen(false)} editingProduct={editingProduct} productFormData={productFormData} setProductFormData={(data: Partial<Record<string, string>>) => setProductFormData(prev => ({ ...prev, ...data }))} onSubmit={handleSaveProduct} products={products} />
         <CategoryReorderModal isOpen={isReorderModalOpen} onClose={() => setIsReorderModalOpen(false)} categoryOrder={categoryOrder} setCategoryOrder={setCategoryOrder} onSave={saveCategoryOrder} isSaving={isSavingOrder} />
         <BulkActionsBar selectedCount={selectedIds.length} onClear={() => setSelectedIds([])} onToggleAvailability={handleBulkToggle} onMoveToCategory={() => setIsBulkMoveOpen(true)} onDelete={handleBulkDelete} />
         <BulkMoveModal isOpen={isBulkMoveOpen} onClose={() => setIsBulkMoveOpen(false)} categories={categoryOrder} onMove={handleBulkMove} />

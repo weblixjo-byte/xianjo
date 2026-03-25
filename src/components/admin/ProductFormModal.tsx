@@ -16,7 +16,7 @@ interface ProductFormModalProps {
     descriptionAr: string;
     descriptionEn: string;
   };
-  setProductFormData: (data: any) => void;
+  setProductFormData: (data: Partial<Record<string, string>>) => void;
   onSubmit: (e: React.FormEvent) => void;
   products: Product[];
 }

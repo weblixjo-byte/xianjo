@@ -1,9 +1,10 @@
 'use client';
-import { LayoutDashboard, History, Users, BarChart3, Package, Ticket, MapPin, Settings2, LogOut } from 'lucide-react';
+import { LayoutDashboard, History, Users, BarChart3, Package, Ticket, MapPin, Settings2, LogOut, LucideIcon } from 'lucide-react';
+import { AdminTab } from '@/types/admin';
 
 interface AdminSidebarProps {
   activeTab: string;
-  setActiveTab: (tab: any) => void;
+  setActiveTab: (tab: AdminTab) => void;
   pendingCount: number;
   onLogout: () => void;
 }
@@ -14,15 +15,15 @@ export default function AdminSidebar({
   pendingCount,
   onLogout
 }: AdminSidebarProps) {
-  const menuItems = [
-    { id: 'orders', label: 'الطلبات الحالية', icon: LayoutDashboard, badge: pendingCount > 0 ? pendingCount : null },
-    { id: 'history', label: 'سجل الطلبات', icon: History },
-    { id: 'customers', label: 'الزبائن', icon: Users },
-    { id: 'reports', label: 'التقارير والمبيعات', icon: BarChart3 },
-    { id: 'products', label: 'إدارة المنيو', icon: Package },
-    { id: 'coupons', label: 'الكوبونات', icon: Ticket },
-    { id: 'zones', label: 'مناطق التوصيل', icon: MapPin },
-    { id: 'system', label: 'النظام', icon: Settings2 },
+  const menuItems: { id: AdminTab; label: string; icon: LucideIcon; badge?: number | null }[] = [
+    { id: 'ORDERS', label: 'الطلبات الحالية', icon: LayoutDashboard, badge: pendingCount > 0 ? pendingCount : null },
+    { id: 'HISTORY', label: 'سجل الطلبات', icon: History },
+    { id: 'CUSTOMERS', label: 'الزبائن', icon: Users },
+    { id: 'REPORTS', label: 'التقارير والمبيعات', icon: BarChart3 },
+    { id: 'PRODUCTS', label: 'إدارة المنيو', icon: Package },
+    { id: 'COUPONS', label: 'الكوبونات', icon: Ticket },
+    { id: 'ZONES', label: 'مناطق التوصيل', icon: MapPin },
+    { id: 'SYSTEM', label: 'النظام', icon: Settings2 },
   ];
 
   return (

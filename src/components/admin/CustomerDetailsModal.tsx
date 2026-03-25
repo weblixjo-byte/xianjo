@@ -8,15 +8,13 @@ interface CustomerDetailsModalProps {
   onClose: () => void;
   onSelectOrder: (order: Order) => void;
   orderHistory: Order[];
-  language: string;
 }
 
 export default function CustomerDetailsModal({
   customer,
   onClose,
   onSelectOrder,
-  orderHistory,
-  language
+  orderHistory
 }: CustomerDetailsModalProps) {
   if (!customer) return null;
 
