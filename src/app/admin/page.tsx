@@ -325,7 +325,6 @@ export default function AdminDashboard() {
   };
 
   const fetchZones = useCallback(async () => {
-    setZonesLoading(true);
     try {
       const res = await fetch('/api/admin/delivery-zones');
       const data = await res.json();
