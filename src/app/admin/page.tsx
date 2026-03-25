@@ -129,13 +129,13 @@ export default function AdminDashboard() {
             </div>
             <div className="px-8 pb-8 flex gap-3">
               <button
-                onClick={() => { toast.dismiss(t.id); stopAlarm(); setActiveTab('ORDERS'); }}
+                onClick={() => { toast.dismiss(t.id); setActiveTab('ORDERS'); }}
                 className="flex-1 bg-brand-red text-white py-5 rounded-2xl text-sm font-black uppercase tracking-widest hover:bg-brand-red/80 hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-brand-red/20"
               >
                 فتح الطلبات
               </button>
               <button
-                onClick={() => { toast.dismiss(t.id); stopAlarm(); }}
+                onClick={() => { toast.dismiss(t.id); }}
                 className="px-6 bg-white/5 text-white/40 py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all border border-white/5"
               >
                 تجاهل
@@ -207,6 +207,7 @@ export default function AdminDashboard() {
       if (res.ok) {
         toast.success('تمت الأرشفة');
         fetchOrders();
+        stopAlarm();
       }
     } catch {
       toast.error('خطأ في الأرشفة');
@@ -224,6 +225,7 @@ export default function AdminDashboard() {
       if (res.ok) {
         toast.success('تم تأكيد الدفع');
         fetchOrders();
+        stopAlarm();
       }
     } catch {
       toast.error('خطأ');
