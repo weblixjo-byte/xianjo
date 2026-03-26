@@ -24,6 +24,10 @@ interface Order {
   paymentMethod?: string;
   paymentStatus?: string;
   items: OrderItem[];
+  deliveryFee: number;
+  serviceFee: number;
+  discountAmount: number;
+  couponCode?: string | null;
 }
 
 export default function OrderStatusPage({ params }: { params: Promise<{ id: string }> }) {
@@ -270,6 +274,29 @@ export default function OrderStatusPage({ params }: { params: Promise<{ id: stri
                   </div>
                 ))}
               </div>
+
+              {(order.deliveryFee > 0 || order.serviceFee > 0 || order.discountAmount > 0) && (
+                <div className="pt-6 border-t border-brand-gray/20 space-y-3">
+                  {order.deliveryFee > 0 && (
+                    <div className="flex justify-between items-center text-sm font-bold text-brand-black/40">
+                      <span>{isAr ? 'رسوم التوصيل:' : 'Delivery Fee:'}</span>
+                      <span>+{order.deliveryFee.toFixed(2)} {isAr ? 'د.أ' : 'JOD'}</span>
+                    </div>
+                  )}
+                  {order.serviceFee > 0 && (
+                    <div className="flex justify-between items-center text-sm font-bold text-brand-black/40">
+                      <span>{isAr ? 'رسوم إضافية:' : 'Additional Fees:'}</span>
+                      <span>+{order.serviceFee.toFixed(2)} {isAr ? 'د.أ' : 'JOD'}</span>
+                    </div>
+                  )}
+                  {order.discountAmount > 0 && (
+                    <div className="flex justify-between items-center text-sm font-black text-brand-red">
+                      <span>{isAr ? 'خصم:' : 'Discount:'} {order.couponCode ? `(${order.couponCode})` : ''}</span>
+                      <span>-{order.discountAmount.toFixed(2)} {isAr ? 'د.أ' : 'JOD'}</span>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="pt-10 border-t border-brand-gray/30 flex flex-col md:flex-row justify-between items-end gap-6">
                 <div className="w-full md:w-auto">

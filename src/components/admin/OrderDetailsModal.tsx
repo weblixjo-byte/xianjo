@@ -120,6 +120,30 @@ export default function OrderDetailsModal({
                   <span className="font-black text-brand-red text-sm">{item.price.toFixed(2)} د.أ</span>
                 </div>
               ))}
+              {/* التحليل المالي التفصيلي */}
+              {(order.deliveryFee > 0 || order.serviceFee > 0 || order.discountAmount > 0) && (
+                <div className="pt-4 mt-4 border-t border-brand-gray/10 space-y-2 px-2">
+                  {order.deliveryFee > 0 && (
+                    <div className="flex justify-between items-center text-sm font-bold text-gray-400">
+                      <span>رسوم التوصيل:</span>
+                      <span>+{order.deliveryFee.toFixed(2)} د.أ</span>
+                    </div>
+                  )}
+                  {order.serviceFee > 0 && (
+                    <div className="flex justify-between items-center text-sm font-bold text-gray-400">
+                      <span>رسوم إضافية:</span>
+                      <span>+{order.serviceFee.toFixed(2)} د.أ</span>
+                    </div>
+                  )}
+                  {order.discountAmount > 0 && (
+                    <div className="flex justify-between items-center text-sm font-black text-brand-red">
+                      <span>خصم {order.couponCode ? `(${order.couponCode})` : ''}:</span>
+                      <span>-{order.discountAmount.toFixed(2)} د.أ</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="pt-4 mt-4 border-t border-brand-gray/10 flex justify-between items-center px-2">
                 <span className="font-black text-brand-black text-lg">المجموع الكلي</span>
                 <span className="font-black text-brand-red text-2xl">{order.totalPrice.toFixed(2)} د.أ</span>

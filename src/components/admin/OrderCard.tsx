@@ -102,6 +102,30 @@ export default function OrderCard({ order, onUpdateStatus, onArchive, onPaymentR
               <span className="font-bold text-gray-400">{(item.price * item.quantity).toFixed(2)}</span>
             </div>
           ))}
+
+          {/* التحليل المالي المصغر */}
+          {(order.deliveryFee > 0 || order.serviceFee > 0 || order.discountAmount > 0) && (
+            <div className="pt-2 mt-2 border-t border-brand-gray/20 space-y-1.5">
+              {order.deliveryFee > 0 && (
+                <div className="flex justify-between items-center text-[10px] font-bold text-gray-400">
+                  <span>رسوم التوصيل:</span>
+                  <span>+{order.deliveryFee.toFixed(2)}</span>
+                </div>
+              )}
+              {order.serviceFee > 0 && (
+                <div className="flex justify-between items-center text-[10px] font-bold text-gray-400">
+                  <span>رسوم إضافية:</span>
+                  <span>+{order.serviceFee.toFixed(2)}</span>
+                </div>
+              )}
+              {order.discountAmount > 0 && (
+                <div className="flex justify-between items-center text-[10px] font-black text-brand-red">
+                  <span>خصم {order.couponCode ? `(${order.couponCode})` : ''}:</span>
+                  <span>-{order.discountAmount.toFixed(2)}</span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {order.notes && (
