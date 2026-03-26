@@ -1,6 +1,6 @@
 'use client';
 import { motion } from 'framer-motion';
-import { FileSpreadsheet } from 'lucide-react';
+import { FileSpreadsheet, Printer } from 'lucide-react';
 import { ReportSummary } from '@/types/admin';
 
 interface ReportsTabProps {
@@ -10,6 +10,7 @@ interface ReportsTabProps {
   fetchReports: (type: string) => void;
   loading: boolean;
   onExport: () => void;
+  onPrint: () => void;
 }
 
 export default function ReportsTab({
@@ -18,7 +19,8 @@ export default function ReportsTab({
   setReportType,
   fetchReports,
   loading,
-  onExport
+  onExport,
+  onPrint
 }: ReportsTabProps) {
   return (
     <motion.div key="reports" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
@@ -35,6 +37,13 @@ export default function ReportsTab({
           ))}
         </div>
         <div className="flex gap-4">
+          <button
+            onClick={onPrint}
+            className="flex items-center gap-3 bg-white border-2 border-brand-gray text-brand-black px-8 py-4 rounded-xl font-black text-xs transition-all hover:bg-gray-50 active:scale-95 shadow-sm"
+          >
+            <Printer size={18} className="text-brand-red" />
+            <span>طباعة التقرير</span>
+          </button>
           <button
             onClick={onExport}
             className="flex items-center gap-3 bg-brand-black text-white px-8 py-4 rounded-xl font-black text-xs transition-all hover:scale-[1.02] active:scale-95 shadow-xl group"

@@ -181,34 +181,42 @@ const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order }) => {
 
         <div className="receipt-divider"></div>
 
-        {/* Totals */}
+        {/* Totals Section */}
         <div className="totals-section">
           <div className="total-row">
-            <span>Subtotal:</span>
+            <span>Items Subtotal:</span>
             <span>{calculatedSubtotal.toFixed(2)} JOD</span>
           </div>
+          
           {deliveryFee > 0 && (
             <div className="total-row">
               <span>Delivery Fee:</span>
-              <span>{deliveryFee.toFixed(2)} JOD</span>
+              <span>+{deliveryFee.toFixed(2)} JOD</span>
             </div>
           )}
+          
           {serviceFee > 0 && (
             <div className="total-row">
-              <span>Service Fee:</span>
-              <span>{serviceFee.toFixed(2)} JOD</span>
+              <span>Service & Tax Fees:</span>
+              <span>+{serviceFee.toFixed(2)} JOD</span>
             </div>
           )}
+          
           {discountAmount > 0 && (
-            <div className="total-row">
-              <span>Discount ({order.couponCode}):</span>
+            <div className="total-row" style={{ color: '#000' }}>
+              <span>Promo Discount ({order.couponCode}):</span>
               <span>-{discountAmount.toFixed(2)} JOD</span>
             </div>
           )}
-          <div className="total-row grand-total">
-            <span>TOTAL:</span>
+
+          <div className="receipt-divider" style={{ borderTopStyle: 'solid', marginTop: '2mm' }}></div>
+          
+          <div className="total-row grand-total" style={{ fontSize: '18px', borderTop: 'none', marginTop: '0' }}>
+            <span>NET TOTAL:</span>
             <span>{finalTotal.toFixed(2)} JOD</span>
           </div>
+          
+          <div className="receipt-divider" style={{ borderTopStyle: 'solid', marginBottom: '2mm' }}></div>
         </div>
 
         {/* Payment */}

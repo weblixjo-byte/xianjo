@@ -29,6 +29,7 @@ import BulkActionsBar from '@/components/admin/BulkActionsBar';
 import BulkMoveModal from '@/components/admin/BulkMoveModal';
 import AudioUnlockOverlay from '@/components/admin/AudioUnlockOverlay';
 import OrderInvoice from '@/components/admin/OrderInvoice';
+import SalesReport from '@/components/admin/SalesReport';
 
 export default function AdminDashboard() {
   const { language } = useLanguage();
@@ -36,6 +37,7 @@ export default function AdminDashboard() {
   const [isStoreOpen, setIsStoreOpen] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
   const [printingOrder, setPrintingOrder] = useState<Order | null>(null);
+  const [isPrintingReport, setIsPrintingReport] = useState(false);
   const [isAudioUnlocked, setIsAudioUnlocked] = useState(false);
   const orderCountRef = useRef<number>(0);
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -517,6 +519,44 @@ export default function AdminDashboard() {
     }, 100);
   };
 
+  const handlePrintReport = () => {
+    setIsPrintingReport(true);
+    setTimeout(() => {
+      const content = document.getElementById('printable-sales-report');
+      if (!content) return;
+
+      const iframe = document.createElement('iframe');
+      iframe.style.position = 'fixed';
+      iframe.style.right = '0';
+      iframe.style.bottom = '0';
+      iframe.style.width = '0';
+      iframe.style.height = '0';
+      iframe.style.border = 'none';
+      document.body.appendChild(iframe);
+
+      const doc = iframe.contentWindow?.document;
+      if (!doc) return;
+
+      doc.open();
+      doc.write('<html><head><title>Sales Report</title>');
+      const styles = document.querySelectorAll('style, link[rel="stylesheet"]');
+      styles.forEach(s => doc.write(s.outerHTML));
+      doc.write('</head><body>');
+      doc.write(content.innerHTML);
+      doc.write('</body></html>');
+      doc.close();
+
+      setTimeout(() => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+          setIsPrintingReport(false);
+        }, 1000);
+      }, 500);
+    }, 100);
+  };
+
   const handleSystemReset = async () => {
     if (!confirm('تحذير: هذا سيحذف كل شيء!')) return;
     try {
@@ -648,7 +688,7 @@ export default function AdminDashboard() {
               )}
 
               {activeTab === 'HISTORY' && (
-                <HistoryTab historyOrders={historyOrders} loading={historyLoading} onExport={handleExportOrders} onSelectOrder={setSelectedOrder} onDeletePermanent={handleDeletePermanent} />
+                <HistoryTab historyOrders={historyOrders} loading={historyLoading} onExport={handleExportOrders} onSelectOrder={setSelectedOrder} onDeletePermanent={handleDeletePermanent} onPrint={handlePrint} />
               )}
 
               {activeTab === 'CUSTOMERS' && (
@@ -656,7 +696,7 @@ export default function AdminDashboard() {
               )}
 
               {activeTab === 'REPORTS' && (
-                <ReportsTab reportData={reportData} reportType={reportType} setReportType={setReportType} fetchReports={fetchReports} loading={reportLoading} onExport={handleExportOrders} />
+                <ReportsTab reportData={reportData} reportType={reportType} setReportType={setReportType} fetchReports={fetchReports} loading={reportLoading} onExport={handleExportOrders} onPrint={handlePrintReport} />
               )}
 
               {activeTab === 'PRODUCTS' && (
@@ -698,6 +738,11 @@ export default function AdminDashboard() {
       {/* Hidden Invoice for Global Printing (Card level) */}
       <div id="global-printable-invoice" className="hidden">
         {printingOrder && <OrderInvoice order={printingOrder} />}
+      </div>
+
+      {/* Hidden Sales Report for Printing */}
+      <div id="printable-sales-report" className="hidden">
+        {isPrintingReport && reportData && <SalesReport reportData={reportData} reportType={reportType} />}
       </div>
     </div>
   );
