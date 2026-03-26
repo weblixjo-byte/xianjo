@@ -35,9 +35,12 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
 
 
   // Promo Code State
+  const [couponInput, setCouponInput] = useState(form.couponCode || '');
+  const [couponLoading, setCouponLoading] = useState(false);
   const [isStoreOpen, setIsStoreOpen] = useState<boolean>(true);
   const [isDetecting, setIsDetecting] = useState(false);
   const router = useRouter();
+  const [couponError, setCouponError] = useState<string | null>(null);
 
 
   useEffect(() => {
@@ -67,6 +70,39 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
       return () => clearTimeout(timer);
     }
   }, [session?.user?.name, form.name, setForm]);
+
+  const handleApplyCoupon = async () => {
+    if (!couponInput.trim()) return;
+    if (!session) {
+      alert(language === 'ar' ? 'يجب تسجيل الدخول لاستخدام الكوبون' : 'Sign in to use coupon');
+      return;
+    }
+
+    setCouponLoading(true);
+    setCouponError(null);
+    try {
+      const res = await fetch('/api/coupon/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: couponInput })
+      });
+      const data = await res.json();
+      if (data.valid) {
+        setForm({ 
+          couponCode: couponInput.toUpperCase().trim(), 
+          discountPercent: data.discountPercent 
+        });
+        alert(data.message);
+      } else {
+        setCouponError(data.error);
+        setForm({ couponCode: '', discountPercent: 0 });
+      }
+    } catch {
+      setCouponError(language === 'ar' ? 'فشل التحقق من الكوبون' : 'Failed to validate coupon');
+    } finally {
+      setCouponLoading(false);
+    }
+  };
 
   const handleDetectLocation = () => {
     if (!navigator.geolocation) {
@@ -315,13 +351,58 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                                   </div>
                                 </div>
 
-                                {/* ORDER SUMMARY */}
-                                <div className="bg-brand-gray/5 p-6 rounded-3xl border border-brand-gray/10 space-y-3">
-                                  <div className="flex justify-between items-center text-sm font-bold">
-                                    <span className="text-brand-black/40">{language === 'ar' ? 'المجموع' : 'Total'}</span>
-                                    <span className="text-brand-black">{currentTotal.toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
+                                  {/* PROMO CODE SECTION */}
+                                  <div className="bg-white p-5 rounded-3xl border border-brand-gray/30 shadow-sm space-y-4">
+                                    <div className="flex items-center gap-3 pb-3 border-b border-brand-gray/10">
+                                      <div className="w-6 h-6 rounded-full bg-brand-red text-white text-[10px] font-black flex items-center justify-center">%</div>
+                                      <h3 className="font-black text-sm text-brand-black">{language === 'ar' ? 'هل لديك كود خصم؟' : 'Have a Promo Code?'}</h3>
+                                    </div>
+                                    <div className="flex gap-2">
+                                      <input 
+                                        placeholder={language === 'ar' ? 'أدخل الكود هنا' : 'Enter code'} 
+                                        className={`flex-1 bg-brand-gray/5 text-brand-black px-5 py-3 rounded-xl border border-brand-gray/20 outline-none font-bold text-sm ${form.couponCode ? 'border-green-500/30 bg-green-50/10' : ''}`}
+                                        value={couponInput}
+                                        onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                                        disabled={couponLoading || !!form.couponCode}
+                                      />
+                                      {form.couponCode ? (
+                                        <button 
+                                          onClick={() => { setForm({ couponCode: '', discountPercent: 0 }); setCouponInput(''); }}
+                                          className="px-4 bg-brand-red/5 text-brand-red rounded-xl font-black text-[10px] uppercase tracking-widest border border-brand-red/10"
+                                        >
+                                          {language === 'ar' ? 'إزالة' : 'Remove'}
+                                        </button>
+                                      ) : (
+                                        <button 
+                                          onClick={handleApplyCoupon}
+                                          disabled={couponLoading || !couponInput.trim()}
+                                          className="px-6 bg-brand-black text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-brand-red transition-all disabled:opacity-50"
+                                        >
+                                          {couponLoading ? <Loader2 className="animate-spin" size={14} /> : (language === 'ar' ? 'تطبيق' : 'Apply')}
+                                        </button>
+                                      )}
+                                    </div>
+                                    {couponError && <p className="text-[10px] font-bold text-brand-red">{couponError}</p>}
+                                    {form.couponCode && <p className="text-[10px] font-bold text-green-600 italic">✓ {language === 'ar' ? 'تم تطبيق الخصم بنجاح' : 'Promo code applied!'}</p>}
                                   </div>
-                                </div>
+
+                                  {/* ORDER SUMMARY */}
+                                  <div className="bg-brand-gray/5 p-6 rounded-3xl border border-brand-gray/10 space-y-3">
+                                    <div className="flex justify-between items-center text-sm font-bold">
+                                      <span className="text-brand-black/40">{language === 'ar' ? 'المجموع' : 'Subtotal'}</span>
+                                      <span className="text-brand-black">{currentTotal.toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
+                                    </div>
+                                    {form.discountPercent > 0 && (
+                                      <div className="flex justify-between items-center text-sm font-bold text-green-600">
+                                        <span>{language === 'ar' ? 'خصم الكود' : 'Promo Discount'} ({(form.discountPercent * 100).toFixed(0)}%)</span>
+                                        <span>-{(currentTotal * form.discountPercent).toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
+                                      </div>
+                                    )}
+                                    <div className="flex justify-between items-center pt-3 border-t border-brand-gray/10">
+                                      <span className="text-lg font-black text-brand-black">{language === 'ar' ? 'الإجمالي النهائي' : 'Final Total'}</span>
+                                      <span className="text-2xl font-black text-brand-red">{(currentTotal * (1 - form.discountPercent)).toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
+                                    </div>
+                                  </div>
                               </div>
                               
                               <button 
