@@ -28,8 +28,8 @@ export async function POST(req: Request) {
     const operations = [];
 
     for (const p of products) {
-      if (!p.nameAr || !p.nameEn || !p.price || !p.category) {
-        continue; // skip invalid rows
+      if (!p.nameAr || p.price === undefined || p.price === null || !p.category) {
+        continue; // skip invalid rows, nameEn is optional
       }
 
       const normalizedNameAr = String(p.nameAr).trim().toLowerCase();

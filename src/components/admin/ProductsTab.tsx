@@ -96,7 +96,7 @@ export default function ProductsTab({
             imageUrl: String(row['Image URL'] || row['رابط الصورة'] || row['imageUrl'] || ''),
             isAvailable: availFallback === 'Yes' || availFallback === 'نعم' || availFallback === true || String(availFallback).toLowerCase() === 'true' ? true : false,
           };
-        }).filter(p => p.nameAr && p.price > 0 && p.category);
+        }).filter(p => p.nameAr && p.price >= 0 && p.category);
 
         if (importedProducts.length === 0) {
           toast.error('لم يتم العثور على منتجات صالحة في الملف');
