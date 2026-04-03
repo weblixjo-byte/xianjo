@@ -6,24 +6,24 @@ import { prisma } from "@/db";
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: "Xian Restaurant (مطعم شيان) | Best Asian Food in Jordan",
-  description: "Experience the finest Asian cuisine in Amman at Xian Restaurant. Sushi, Noodles, and Gourmet Chinese dishes. Discover our menu and order online today!",
-  keywords: "Xian Restaurant, مطعم شيان, Asian Food Jordan, Xian Menu, Best Sushi Amman, Chinese Food Jordan",
+  title: "Xian Restaurant | Asian Cuisine & Chinese Food Amman",
+  description: "Order the best Asian Cuisine in Amman from Xian Restaurant. Fresh sushi, noodles & Chinese Food delivered fast. مطعم شيان للمأكولات الآسيوية.",
+  keywords: "Xian Restaurant, مطعم شيان, Asian Food Jordan, Xian Menu, Best Sushi Amman, Chinese Food Jordan, Asian Cuisine Amman",
   openGraph: {
-    title: "Xian Restaurant - Boutique Asian Cuisine Amman",
-    description: "Savor gourmet Asian flavors at Xian. Order your favorite Sushi and Noodles online. Amman's top-rated Asian dining.",
-    images: [{ url: '/hero-food.png', width: 1200, height: 630, alt: 'Xian Restaurant Gourmet Dish' }],
+    title: "مزيج يأسرك! اطلب الآن من مطعم شيان | Xian Restaurant",
+    description: "جرب المذاق الآسيوي الأصيل في عمّان. نودلز، سوشي، وأطباق صينية تُحضر بشغف وبأعلى جودة. اطلب الآن واكتشف النكهة الحقيقية!",
+    images: [{ url: '/hero-food.png', width: 1200, height: 630, alt: 'Xian Restaurant - Asian Cuisine Amman' }],
     type: 'website',
-    url: 'https://xianjo.com',
+    url: 'https://xianrestaurant.com',
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Xian Restaurant - Experience Excellence",
-    description: "Premium Asian dining delivered to your doorstep in Amman.",
+    title: "Xian Restaurant | Asian Cuisine Amman",
+    description: "Order the best Asian Cuisine in Amman from Xian Restaurant. Fresh sushi & Chinese food.",
     images: ['/hero-food.png'],
   },
   alternates: {
-    canonical: 'https://xianjo.com',
+    canonical: 'https://xianrestaurant.com',
   }
 };
 
@@ -47,7 +47,7 @@ export default async function Home() {
         "@type": "MenuItem",
         "name": p.nameEn || p.nameAr,
         "description": p.descriptionEn || p.descriptionAr || `Delicious ${p.nameEn || p.nameAr} at Xian Restaurant`,
-        "image": p.imageUrl || "https://xianjo.com/logo.png",
+        "image": p.imageUrl || "https://xianrestaurant.com/logo.png",
         "offers": {
           "@type": "Offer",
           "price": p.price,

@@ -4,13 +4,22 @@ import Footer from "@/components/Footer";
 import { Providers } from "@/components/Providers";
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://xianjo.com'),
+  metadataBase: new URL('https://xianrestaurant.com'),
   title: {
-    default: "Xian Restaurant | Asian Cuisine",
+    default: "Xian Restaurant | Asian Cuisine Amman",
     template: "%s | Xian Restaurant"
   },
-  description: "Boutique Asian Dining in the heart of Amman, Jordan.",
+  description: "Experience authentic Asian cuisine at Xian Restaurant Amman. Order premium Chinese food & sushi online. مطعم شيان الأردن.",
   robots: "index, follow",
+  openGraph: {
+    title: "Xian Restaurant | Asian Cuisine Amman",
+    description: "Experience authentic Asian cuisine at Xian Restaurant Amman. Order premium Chinese food & sushi online. مطعم شيان الأردن.",
+    url: "https://xianrestaurant.com",
+    siteName: "Xian Restaurant",
+    images: [{ url: "/hero-food.png", width: 1200, height: 630 }],
+    locale: "en_JO",
+    type: "website",
+  },
 };
 
 export const viewport: Viewport = {
@@ -30,9 +39,9 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "Restaurant",
     "name": "Xian Restaurant (مطعم شيان)",
-    "image": "https://xianjo.com/hero-food.png",
-    "@id": "https://xianjo.com",
-    "url": "https://xianjo.com",
+    "image": "https://xianrestaurant.com/hero-food.png",
+    "@id": "https://xianrestaurant.com",
+    "url": "https://xianrestaurant.com",
     "telephone": "+962779990504",
     "address": {
       "@type": "PostalAddress",
@@ -61,8 +70,8 @@ export default function RootLayout({
       "opens": "11:00",
       "closes": "23:00"
     },
-    "menu": "https://xianjo.com#menu-anchor",
-    "servesCuisine": ["Asian", "Chinese", "Sushi", "Noodles"],
+    "menu": "https://xianrestaurant.com#menu-anchor",
+    "servesCuisine": ["Asian", "Chinese", "Sushi", "Noodles", "Dumplings"],
     "priceRange": "$$"
   };
 

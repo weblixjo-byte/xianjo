@@ -1,9 +1,8 @@
 import { MetadataRoute } from 'next';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://xianjo.com';
+  const baseUrl = 'https://xianrestaurant.com';
 
-  // Home Page
   const routes = [
     {
       url: baseUrl,
@@ -11,16 +10,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily' as const,
       priority: 1,
     },
+    {
+      url: `${baseUrl}/#menu-anchor`,
+      lastModified: new Date(),
+      changeFrequency: 'always' as const,
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/#about`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/#contact`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+    }
   ];
-
-  // If you ever add /product/[id] pages, you'd fetch them here:
-  /*
-  const products = await prisma.product.findMany({ where: { isAvailable: true } });
-  const productRoutes = products.map((p) => ({
-    url: `${baseUrl}/product/${p.id}`, ...
-  }));
-  return [...routes, ...productRoutes];
-  */
 
   return routes;
 }
