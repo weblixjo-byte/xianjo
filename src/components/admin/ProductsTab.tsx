@@ -247,7 +247,7 @@ export default function ProductsTab({
                   <div className="flex items-center gap-8 flex-1">
                     <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all border-2 flex-shrink-0 ${selectedIds.includes(product.id) ? 'bg-brand-red border-brand-red text-white' : 'bg-brand-cream border-brand-gray/50 text-transparent'}`}><Check size={18} strokeWidth={4} /></div>
                     <div className="relative w-24 h-24 flex-shrink-0 rounded-[2rem] overflow-hidden border-2 border-brand-gray/50 shadow-inner bg-brand-cream ring-4 ring-white">
-                      {product.imageUrl && <Image src={product.imageUrl} fill className="object-cover" alt={product.nameAr} />}
+                      {product.imageUrl && <Image src={product.imageUrl} fill sizes="96px" quality={60} placeholder="blur" blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==" className="object-cover" alt={product.nameAr} />}
                     </div>
                     <div>
                       <h4 className="font-black text-2xl text-brand-black mb-1">{product.nameAr}</h4>

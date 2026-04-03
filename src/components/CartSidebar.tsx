@@ -227,6 +227,10 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                               src={item.imageUrl || `https://placehold.co/200x200/F9F7F2/1A1A1A.png?text=Xian`} 
                               alt={item.name} 
                               fill 
+                              sizes="80px"
+                              quality={60}
+                              placeholder="blur"
+                              blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
                               className="object-cover" 
                             />
                           </div>

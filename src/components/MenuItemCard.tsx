@@ -53,10 +53,12 @@ export default function MenuItemCard({ item, priority = false }: { item: Product
           src={item.imageUrl || `https://placehold.co/800x600/FFFFFF/1A1A1A.png?text=${item.nameAr}`} 
           alt={`${item.nameEn || item.nameAr} - Xian Restaurant (مطعم شيان) - Asian Food Jordan`}
           fill 
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           className="object-contain transition-all duration-1000 group-hover:scale-105"
           priority={priority}
-          quality={75}
+          quality={60}
+          placeholder="blur"
+          blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
         />
         
         {/* CIRCULAR ADD BUTTON - ELEVATED DESIGN */}
