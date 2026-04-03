@@ -80,8 +80,9 @@ export async function POST(req: Request) {
 
     revalidatePath("/");
     return NextResponse.json({ success: true, imported: operations.length });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Bulk Import Error:", error);
-    return NextResponse.json({ error: "فشل استيراد المنتجات، يرجى التأكد من تنسيق الملف" }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+    return NextResponse.json({ error: `فشل الاستيراد: ${errorMessage}` }, { status: 500 });
   }
 }
