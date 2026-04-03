@@ -28,15 +28,17 @@ export async function POST(req: Request) {
     const operations = [];
 
     for (const p of products) {
-      if (!p.nameAr || p.price === undefined || p.price === null || !p.category) {
-        continue; // skip invalid rows, nameEn is optional
+      if (!p.nameAr || String(p.nameAr).trim() === '') {
+        continue; // skip completely empty rows
       }
 
       const normalizedNameAr = String(p.nameAr).trim().toLowerCase();
       const existingId = existingMap.get(normalizedNameAr);
 
-      const price = parseFloat(p.price) || 0;
+      const price = p.price !== undefined && p.price !== null ? parseFloat(p.price) : 0;
+      const finalPrice = isNaN(price) ? 0 : price;
       const isAvailable = p.isAvailable === undefined ? true : Boolean(p.isAvailable);
+      const category = p.category && String(p.category).trim() !== '' ? String(p.category).trim() : 'متنوع';
 
       if (existingId) {
         // Update existing
@@ -48,8 +50,8 @@ export async function POST(req: Request) {
               nameAr: String(p.nameAr).trim(),
               descriptionEn: p.descriptionEn ? String(p.descriptionEn).trim() : null,
               descriptionAr: p.descriptionAr ? String(p.descriptionAr).trim() : null,
-              category: String(p.category).trim(),
-              price: price,
+              category: category,
+              price: finalPrice,
               isAvailable: isAvailable,
               imageUrl: p.imageUrl ? String(p.imageUrl).trim() : null,
             }
@@ -64,8 +66,8 @@ export async function POST(req: Request) {
               nameAr: String(p.nameAr).trim(),
               descriptionEn: p.descriptionEn ? String(p.descriptionEn).trim() : null,
               descriptionAr: p.descriptionAr ? String(p.descriptionAr).trim() : null,
-              category: String(p.category).trim(),
-              price: price,
+              category: category,
+              price: finalPrice,
               isAvailable: isAvailable,
               imageUrl: p.imageUrl ? String(p.imageUrl).trim() : null,
             }
