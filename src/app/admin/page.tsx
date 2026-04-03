@@ -436,10 +436,10 @@ export default function AdminDashboard() {
 
   const handleToggleCoupon = async (id: string, current: boolean) => {
     try {
-      await fetch('/api/admin/coupons', {
+      await fetch(`/api/admin/coupons/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, isActive: !current })
+        body: JSON.stringify({ isActive: !current })
       });
       fetchCoupons();
     } catch (_error) { console.error(_error); }
@@ -447,7 +447,7 @@ export default function AdminDashboard() {
 
   const handleDeleteCoupon = async (id: string) => {
     try {
-      await fetch(`/api/admin/coupons?id=${id}`, { method: 'DELETE' });
+      await fetch(`/api/admin/coupons/${id}`, { method: 'DELETE' });
       fetchCoupons();
     } catch (_error) { console.error(_error); }
   };
