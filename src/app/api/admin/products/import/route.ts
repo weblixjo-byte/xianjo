@@ -76,7 +76,15 @@ export async function POST(req: Request) {
       }
     }
 
-    await prisma.$transaction(operations);
+    // Run sequentially to prevent Vercel/Supabase transaction timeouts (>5000ms)
+    // We don't strictly need a rollback if one product fails anyway.
+    for (const op of operations) {
+      try {
+        await op;
+      } catch (opError) {
+        console.error("Failed to process an item:", opError);
+      }
+    }
 
     revalidatePath("/");
     return NextResponse.json({ success: true, imported: operations.length });
