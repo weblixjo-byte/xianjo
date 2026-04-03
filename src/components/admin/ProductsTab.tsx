@@ -78,46 +78,52 @@ export default function ProductsTab({
     try {
       const reader = new FileReader();
       reader.onload = async (event) => {
-        const data = event.target?.result;
-        const workbook = XLSX.read(data, { type: 'binary' });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const json = XLSX.utils.sheet_to_json<Record<string, string | number | boolean | undefined>>(worksheet);
+        try {
+          const data = event.target?.result as ArrayBuffer;
+          const workbook = XLSX.read(data, { type: 'array' });
+          const sheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[sheetName];
+          const json = XLSX.utils.sheet_to_json<Record<string, string | number | boolean | undefined>>(worksheet);
 
-        const importedProducts = json.map(row => {
-          const availFallback = row['Available'] || row['متوفر'] || row['isAvailable'];
-          return {
-            nameAr: String(row['Name (AR)'] || row['الاسم بالعربي'] || row['nameAr'] || ''),
-            nameEn: String(row['Name (EN)'] || row['الاسم بالانجليزي'] || row['nameEn'] || ''),
-            price: parseFloat(String(row['Price'] || row['السعر'] || row['price'] || 0)),
-            category: String(row['Category'] || row['القسم'] || row['category'] || ''),
-            descriptionAr: String(row['Description (AR)'] || row['الوصف بالعربي'] || row['descriptionAr'] || ''),
-            descriptionEn: String(row['Description (EN)'] || row['الوصف بالانجليزي'] || row['descriptionEn'] || ''),
-            imageUrl: String(row['Image URL'] || row['رابط الصورة'] || row['imageUrl'] || ''),
-            isAvailable: availFallback === 'Yes' || availFallback === 'نعم' || availFallback === true || String(availFallback).toLowerCase() === 'true' ? true : false,
-          };
-        }).filter(p => p.nameAr && p.price >= 0 && p.category);
+          const importedProducts = json.map(row => {
+            const availFallback = row['Available'] ?? row['متوفر'] ?? row['isAvailable'];
+            return {
+              nameAr: String(row['Name (AR)'] ?? row['الاسم بالعربي'] ?? row['nameAr'] ?? ''),
+              nameEn: String(row['Name (EN)'] ?? row['الاسم بالانجليزي'] ?? row['nameEn'] ?? ''),
+              price: row['Price'] ?? row['السعر'] ?? row['price'] ?? 0,
+              category: String(row['Category'] ?? row['القسم'] ?? row['category'] ?? ''),
+              descriptionAr: String(row['Description (AR)'] ?? row['الوصف بالعربي'] ?? row['descriptionAr'] ?? ''),
+              descriptionEn: String(row['Description (EN)'] ?? row['الوصف بالانجليزي'] ?? row['descriptionEn'] ?? ''),
+              imageUrl: String(row['Image URL'] ?? row['رابط الصورة'] ?? row['imageUrl'] ?? ''),
+              isAvailable: availFallback === 'Yes' || availFallback === 'نعم' || availFallback === true || String(availFallback).toLowerCase() === 'true' ? true : false,
+            };
+          }).filter(p => String(p.nameAr).trim() !== '');
 
-        if (importedProducts.length === 0) {
-          toast.error('لم يتم العثور على منتجات صالحة في الملف');
-          toast.error('تأكد من وجود الأعمدة: Name (AR), Category, Price');
-          return;
+          if (importedProducts.length === 0) {
+            toast.error('ملف الإكسيل فارغ أو لا يحتوي على أسماء منتجات صالحة');
+            return;
+          }
+
+          const res = await fetch('/api/admin/products/import', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(importedProducts),
+          });
+
+          if (!res.ok) {
+            const errorData = await res.json().catch(() => null);
+            throw new Error(errorData?.error || 'Failed to import');
+          }
+          
+          toast.success(`تم إرسال ${importedProducts.length} منتجات بنجاح لرفعها`);
+          setTimeout(() => window.location.reload(), 1000);
+        } catch (innerError: unknown) {
+          console.error(innerError);
+          const message = innerError instanceof Error ? innerError.message : 'حدث خطأ في قراءة بيانات الملف';
+          toast.error(message);
         }
-
-        const res = await fetch('/api/admin/products/import', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(importedProducts),
-        });
-
-        if (!res.ok) {
-          throw new Error('Failed to import');
-        }
-        
-        toast.success(`تم استيراد ${importedProducts.length} منتجات بنجاح`);
-        setTimeout(() => window.location.reload(), 1000);
       };
-      reader.readAsBinaryString(file);
+      reader.readAsArrayBuffer(file);
     } catch (error) {
       console.error(error);
       toast.error('حدث خطأ أثناء الاستيراد تأكد من تنسيق الملف');
