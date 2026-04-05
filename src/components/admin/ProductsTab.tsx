@@ -231,11 +231,11 @@ export default function ProductsTab({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {sortedCategories.map((cat: string) => (
                 <button key={cat} onClick={() => setSelectedCategory(cat)} className="group relative h-64 bg-white rounded-[3rem] p-10 border-2 border-brand-gray/30 shadow-sm hover:border-brand-red/20 hover:shadow-2xl transition-all text-right flex flex-col justify-between overflow-hidden">
-                  <div className="absolute top-0 right-0 p-12 text-brand-red/5 -mr-8 -mt-8 rotate-12 transition-transform group-hover:rotate-0"><Folder size={180} strokeWidth={1} /></div>
-                  <div className="relative z-10 w-16 h-16 bg-brand-cream rounded-[1.5rem] flex items-center justify-center text-brand-red group-hover:bg-brand-red group-hover:text-white transition-all duration-500 shadow-inner"><Folder size={28} /></div>
+                  <div className="absolute top-0 right-0 p-8 lg:p-10 xl:p-12 text-brand-red/5 -mr-8 -mt-8 rotate-12 transition-transform group-hover:rotate-0"><Folder size={180} strokeWidth={1} /></div>
+                  <div className="relative z-10 w-12 h-12 lg:w-16 lg:h-16 bg-brand-cream rounded-[1.2rem] lg:rounded-[1.5rem] flex items-center justify-center text-brand-red group-hover:bg-brand-red group-hover:text-white transition-all duration-500 shadow-inner"><Folder size={24} /></div>
                   <div className="relative z-10">
-                    <h3 className="text-3xl font-black text-brand-black mb-1 font-serif group-hover:text-brand-red transition-colors">{cat}</h3>
-                    <p className="text-[11px] font-black uppercase tracking-[0.2em] text-brand-black/20">{products.filter(p => p.category.includes(cat)).length} أصناف</p>
+                    <h3 className="text-2xl lg:text-3xl font-black text-brand-black mb-1 font-serif group-hover:text-brand-red transition-colors">{cat}</h3>
+                    <p className="text-[10px] lg:text-[11px] font-black uppercase tracking-[0.2em] text-brand-black/20">{products.filter(p => p.category.includes(cat)).length} أصناف</p>
                   </div>
                 </button>
               ))}
@@ -243,7 +243,7 @@ export default function ProductsTab({
           ) : (
             <div className="space-y-6">
               {filteredProducts.map(product => (
-                <div key={product.id} className={`group bg-white rounded-[2.5rem] p-6 lg:p-8 border-2 transition-all duration-500 cursor-pointer flex flex-col lg:flex-row gap-8 items-center ${selectedIds.includes(product.id) ? 'border-brand-red ring-8 ring-brand-red/5 shadow-2xl scale-[1.01]' : 'border-brand-gray hover:border-brand-red/20 shadow-sm'}`} onClick={() => handleSelectOne(product.id)}>
+                <div key={product.id} className={`group bg-white rounded-[2.5rem] p-4 lg:p-6 xl:p-8 border-2 transition-all duration-500 cursor-pointer flex flex-col lg:flex-row gap-4 lg:gap-8 items-center ${selectedIds.includes(product.id) ? 'border-brand-red ring-8 ring-brand-red/5 shadow-2xl scale-[1.01]' : 'border-brand-gray hover:border-brand-red/20 shadow-sm'}`} onClick={() => handleSelectOne(product.id)}>
                   <div className="flex items-center gap-8 flex-1">
                     <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all border-2 flex-shrink-0 ${selectedIds.includes(product.id) ? 'bg-brand-red border-brand-red text-white' : 'bg-brand-cream border-brand-gray/50 text-transparent'}`}><Check size={18} strokeWidth={4} /></div>
                     <div className="relative w-24 h-24 flex-shrink-0 rounded-[2rem] overflow-hidden border-2 border-brand-gray/50 shadow-inner bg-brand-cream ring-4 ring-white">

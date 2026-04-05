@@ -20,7 +20,7 @@ export default function OrderCard({ order, onUpdateStatus, onArchive, onPaymentR
     <div className={`bg-white rounded-[2.5rem] overflow-hidden shadow-sm border border-brand-gray flex flex-col group relative
       ${order.status === 'PENDING' ? 'ring-2 ring-brand-red ring-inset' : ''}`}>
 
-      <div className="p-6 pb-3 flex justify-between items-center bg-brand-cream/5 border-b border-brand-gray/30">
+      <div className="p-4 lg:p-5 xl:p-6 pb-3 flex justify-between items-center bg-brand-cream/5 border-b border-brand-gray/30">
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
             <span className="text-[9px] font-black text-brand-black/20">المعرف: #{order.id.slice(-6).toUpperCase()}</span>
@@ -45,7 +45,7 @@ export default function OrderCard({ order, onUpdateStatus, onArchive, onPaymentR
         </div>
       </div>
 
-      <div className="p-6 space-y-6 flex-1 flex flex-col">
+      <div className="p-4 lg:p-5 xl:p-6 space-y-6 flex-1 flex flex-col">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <div className="bg-brand-red/5 p-2 rounded-xl text-brand-red"><User size={18} /></div>

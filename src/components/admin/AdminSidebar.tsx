@@ -27,8 +27,8 @@ export default function AdminSidebar({
   ];
 
   return (
-    <div className="w-full lg:w-72 xl:w-80 shrink-0 bg-white border-b lg:border-b-0 lg:border-l border-brand-gray flex flex-col h-auto lg:h-screen sticky top-0 z-50">
-      <div className="p-8 lg:p-12">
+    <div className="w-full lg:w-64 xl:w-80 shrink-0 bg-white border-b lg:border-b-0 lg:border-l border-brand-gray flex flex-col h-auto lg:h-screen sticky top-0 z-50">
+      <div className="p-6 lg:p-10 xl:p-12">
         <div className="flex items-center gap-4 mb-12 group">
           <div className="w-14 h-14 bg-brand-red rounded-2xl flex items-center justify-center text-white shadow-xl shadow-brand-red/20 group-hover:rotate-12 transition-transform duration-500">
             <LayoutDashboard size={28} />
@@ -44,7 +44,7 @@ export default function AdminSidebar({
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
-              className={`flex items-center gap-4 px-6 py-4 rounded-2xl font-black text-sm whitespace-nowrap transition-all duration-300 relative group
+              className={`flex items-center gap-3 lg:gap-4 px-4 lg:px-6 py-4 rounded-2xl font-black text-sm whitespace-nowrap transition-all duration-300 relative group
                 ${activeTab === item.id 
                   ? 'bg-brand-black text-white shadow-2xl shadow-brand-black/20 translate-x-[-8px]' 
                   : 'text-brand-black/40 hover:bg-brand-gray hover:text-brand-black'}`}
@@ -61,7 +61,7 @@ export default function AdminSidebar({
         </nav>
       </div>
 
-      <div className="mt-auto p-8 lg:p-12 border-t border-brand-gray bg-brand-cream/10">
+      <div className="mt-auto p-6 lg:p-10 xl:p-12 border-t border-brand-gray bg-brand-cream/10">
         <button
           onClick={onLogout}
           className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-black text-sm text-brand-black/40 hover:bg-brand-red hover:text-white transition-all group"

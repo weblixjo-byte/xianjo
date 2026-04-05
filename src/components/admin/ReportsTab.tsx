@@ -59,15 +59,15 @@ export default function ReportsTab({
       ) : reportData && (
         <>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-brand-black text-white p-12 rounded-[3rem] shadow-2xl relative overflow-hidden">
+            <div className="bg-brand-black text-white p-8 lg:p-10 xl:p-12 rounded-[3rem] shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-brand-red/10 rounded-bl-[8rem]"></div>
               <h4 className="text-white/40 text-[10px] font-black uppercase tracking-[0.4em] mb-4">إجمالي الإيرادات</h4>
-              <p className="text-6xl font-black font-serif tracking-tighter mb-2">{reportData.totalRevenue.toFixed(2)} <small className="text-xs opacity-30 font-sans tracking-normal font-medium">د.أ</small></p>
+              <p className="text-4xl md:text-5xl xl:text-6xl font-black font-serif tracking-tighter mb-2">{reportData.totalRevenue.toFixed(2)} <small className="text-xs opacity-30 font-sans tracking-normal font-medium">د.أ</small></p>
               <p className="text-green-400 text-xs font-bold flex items-center gap-2">إجمالي مبيعات الفترة</p>
             </div>
-            <div className="bg-white p-12 rounded-[3rem] border-2 border-brand-gray shadow-sm">
+            <div className="bg-white p-8 lg:p-10 xl:p-12 rounded-[3rem] border-2 border-brand-gray shadow-sm">
               <h4 className="text-brand-black/20 text-[10px] font-black uppercase tracking-[0.4em] mb-4">إجمالي الطلبات</h4>
-              <p className="text-6xl font-black text-brand-black font-serif tracking-tighter mb-2">{reportData.totalOrders}</p>
+              <p className="text-4xl md:text-5xl xl:text-6xl font-black text-brand-black font-serif tracking-tighter mb-2">{reportData.totalOrders}</p>
               <p className="text-brand-red text-xs font-bold">عدد الطلبات المكتملة</p>
             </div>
           </div>
