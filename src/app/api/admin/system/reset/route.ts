@@ -7,17 +7,31 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
   }
   try {
-    const { action } = await request.json();
+    const { action, supportPassword } = await request.json();
+    const serverSupportPassword = process.env.SUPPORT_PASSWORD || 'support99';
+
+    if (supportPassword !== serverSupportPassword) {
+      return NextResponse.json({ error: "كلمة مرور الدعم غير صحيحة" }, { status: 403 });
+    }
 
     if (action === 'RESET_ALL_DATA') {
-      // DANGER: Wipes all orders, items, and users (clients), sessions/accounts (but keeps products and settings)
       await prisma.$transaction([
         prisma.orderItem.deleteMany(),
         prisma.order.deleteMany(),
-        prisma.user.deleteMany(),
+        prisma.user.deleteMany(), // Using User model correctly
         prisma.pushSubscription.deleteMany(),
       ]);
-      return NextResponse.json({ success: true, message: "All order data and user records have been wiped successfully." });
+      return NextResponse.json({ success: true, message: "تم تصفير جميع بيانات البيع والزبائن" });
+    }
+
+    if (action === 'RESET_MENU') {
+      await prisma.$transaction([
+        prisma.product.deleteMany(),
+        prisma.storeSettings.updateMany({
+          data: { categoryOrder: null }
+        })
+      ]);
+      return NextResponse.json({ success: true, message: "تم مسح المنيو والأقسام بالكامل" });
     }
 
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });

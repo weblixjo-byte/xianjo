@@ -21,6 +21,7 @@ import ProductsTab from '@/components/admin/ProductsTab';
 import CouponsTab from '@/components/admin/CouponsTab';
 import ZonesTab from '@/components/admin/ZonesTab';
 import SystemTab from '@/components/admin/SystemTab';
+import SupportTab from '@/components/admin/SupportTab';
 import OrderDetailsModal from '@/components/admin/OrderDetailsModal';
 import CustomerDetailsModal from '@/components/admin/CustomerDetailsModal';
 import ProductFormModal from '@/components/admin/ProductFormModal';
@@ -558,19 +559,46 @@ export default function AdminDashboard() {
     }, 100);
   };
 
-  const handleSystemReset = async () => {
+  const handleSystemReset = async (supportPassword?: string) => {
     if (!confirm('تحذير: هذا سيحذف كل شيء!')) return;
     try {
       const res = await fetch('/api/admin/system/reset', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'RESET_ALL_DATA' })
+        body: JSON.stringify({ 
+          action: 'RESET_ALL_DATA',
+          supportPassword 
+        })
       });
       if (res.ok) {
         toast.success('تم تصفير النظام بنجاح');
         window.location.reload();
+      } else {
+        const err = await res.json();
+        toast.error(err.error || 'فشل التصفير');
       }
     } catch { toast.error('خطأ'); }
+  };
+
+  const handleMenuReset = async (supportPassword?: string) => {
+    if (!confirm('تحذير: سيتم حذف جميع الأقسام والوجبات!')) return;
+    try {
+      const res = await fetch('/api/admin/system/reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          action: 'RESET_MENU',
+          supportPassword 
+        })
+      });
+      if (res.ok) {
+        toast.success('تم حذف المنيو بالكامل');
+        window.location.reload();
+      } else {
+        const err = await res.json();
+        toast.error(err.error || 'فشل الحذف');
+      }
+    } catch { toast.error('خطأ في الاتصال'); }
   };
 
   // --- Exports ---
@@ -594,14 +622,36 @@ export default function AdminDashboard() {
     exportToExcel(data, `${BRANDING.shortNameEn}_Orders_${new Date().toLocaleDateString()}`);
   };
 
+  const handleExportReport = () => {
+    if (!reportData) return;
+    
+    // 1. Summary Rows
+    const summary = [
+      { Category: 'Summary', Metric: 'Total Orders', Value: reportData.totalOrders },
+      { Category: 'Summary', Metric: 'Total Revenue', Value: reportData.totalRevenue.toFixed(2) },
+      { Category: '', Metric: '', Value: '' }, // Spacer
+    ];
+
+    // 2. Item Breakdown Rows
+    const breakdown = reportData.itemBreakdown.map(item => ({
+      Category: 'Item Breakdown',
+      Metric: item.name,
+      Value: `Qty: ${item.quantity} | Total: ${item.revenue.toFixed(2)}`
+    }));
+
+    const data = [...summary, ...breakdown];
+    exportToExcel(data, `${BRANDING.shortNameEn}_SalesReport_${reportType}_${new Date().toLocaleDateString()}`);
+  };
+
   const handleExportCustomers = () => {
     const data = customers.map(c => ({
       Name: c.name,
       Phone: c.phone,
-      OrdersCount: c.orderCount,
-      TotalSpent: c.totalSpent,
-      LastOrder: c.lastOrder,
-      Area: c.area
+      Email: c.email || 'N/A',
+      Area: c.area,
+      Orders: c.orderCount,
+      Spent: c.totalSpent,
+      Last: c.lastOrder
     }));
     exportToExcel(data, `${BRANDING.shortNameEn}_Customers_${new Date().toLocaleDateString()}`);
   };
@@ -697,7 +747,7 @@ export default function AdminDashboard() {
               )}
 
               {activeTab === 'REPORTS' && (
-                <ReportsTab reportData={reportData} reportType={reportType} setReportType={setReportType} fetchReports={fetchReports} loading={reportLoading} onExport={handleExportOrders} onPrint={handlePrintReport} />
+                <ReportsTab reportData={reportData} reportType={reportType} setReportType={setReportType} fetchReports={fetchReports} loading={reportLoading} onExport={handleExportReport} onPrint={handlePrintReport} />
               )}
 
               {activeTab === 'PRODUCTS' && (
@@ -720,7 +770,11 @@ export default function AdminDashboard() {
               )}
 
               {activeTab === 'SYSTEM' && (
-                <SystemTab onReset={handleSystemReset} onExportOrders={handleExportOrders} onExportCustomers={handleExportCustomers} />
+                <SystemTab onExportOrders={handleExportOrders} onExportCustomers={handleExportCustomers} />
+              )}
+
+              {activeTab === 'SUPPORT' && (
+                <SupportTab onResetData={handleSystemReset} onResetMenu={handleMenuReset} />
               )}
             </AnimatePresence>
           </div>
