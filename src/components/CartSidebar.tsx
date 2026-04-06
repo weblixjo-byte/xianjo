@@ -448,6 +448,7 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                                     alert(language === 'ar' ? 'يرجى تحديد وقت الوصول المتوقع' : 'Please provide estimated arrival time'); 
                                     return;
                                   }
+                                  setForm({ orderType }); // Ensure global state is updated
                                   onClose();
                                   router.push('/checkout/payment');
                                 }} 
