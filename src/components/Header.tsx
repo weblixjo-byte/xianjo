@@ -99,21 +99,32 @@ export default function Header({ onCartOpen }: { onCartOpen?: () => void }) {
          <div className="hidden md:flex">
           {session ? (
             <div className="flex items-center gap-3">
-              <Link href="/my-orders" className="flex items-center gap-1 text-brand-black/60 hover:text-brand-red transition-all font-bold text-xs" title={language === 'ar' ? 'طلباتي' : 'My Orders'}>
-                <ShoppingBag size={18} className="w-4 h-4" /> 
-                <span>{language === 'ar' ? 'طلباتي' : 'My Orders'}</span>
-              </Link>
-              <button 
-                onClick={() => signOut()} 
-                className="flex items-center gap-1 text-brand-black/40 hover:text-brand-red transition-all font-bold text-xs ml-2" 
-                title={language === 'ar' ? 'تسجيل الخروج' : 'Sign Out'}
-              >
-                <LogOut size={18} className="w-4 h-4" /> 
-                <span>{language === 'ar' ? 'تسجيل الخروج' : 'Sign Out'}</span>
-              </button>
-              <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-brand-gray/50 shadow-sm ml-2">
-                <Image src={session.user?.image || 'https://placehold.co/100x100/F9F7F2/1A1A1A.png?text=User'} alt="User" fill className="object-cover" />
-              </div>
+            <div className="flex items-center gap-4">
+               {/* Unified My Orders Button */}
+               <Link 
+                 href="/my-orders" 
+                 className="p-3 text-brand-black/60 hover:text-brand-red bg-brand-cream rounded-full border border-gray-200 shadow-sm transition-all active:scale-95 group relative" 
+                 title={language === 'ar' ? 'طلباتي' : 'My Orders'}
+               >
+                 <ShoppingBag size={20} />
+                 <span className="absolute -top-12 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] py-1 px-3 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                    {language === 'ar' ? 'طلباتي' : 'My Orders'}
+                 </span>
+               </Link>
+
+               <div className="flex items-center gap-3 bg-gray-50 p-1.5 rounded-full border border-gray-100">
+                  <div className="relative w-10 h-10 rounded-full overflow-hidden border border-brand-gray/50 shadow-sm">
+                    <Image src={session.user?.image || 'https://placehold.co/100x100/F9F7F2/1A1A1A.png?text=User'} alt="User" fill className="object-cover" />
+                  </div>
+                  <button 
+                    onClick={() => signOut()} 
+                    className="p-2 text-brand-black/40 hover:text-brand-red transition-all" 
+                    title={language === 'ar' ? 'تسجيل الخروج' : 'Sign Out'}
+                  >
+                    <LogOut size={18} className="w-4 h-4" /> 
+                  </button>
+               </div>
+            </div>
             </div>
           ) : (
             <button onClick={() => signIn('google')} className="flex items-center gap-2 px-6 py-3 bg-brand-cream border border-brand-gray text-brand-black rounded-full transition-all hover:bg-brand-red hover:text-white hover:border-brand-red shadow-sm active:scale-95 font-black text-sm">
