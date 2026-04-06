@@ -1,6 +1,7 @@
 'use client';
 import { LayoutDashboard, History, Users, BarChart3, Package, Ticket, MapPin, Settings2, LogOut, LucideIcon } from 'lucide-react';
 import { AdminTab } from '@/types/admin';
+import { BRANDING } from '@/constants/branding';
 
 interface AdminSidebarProps {
   activeTab: string;
@@ -34,8 +35,8 @@ export default function AdminSidebar({
             <LayoutDashboard size={28} />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-brand-black tracking-tighter">لوحة التحكم</h1>
-            <p className="text-[10px] font-black uppercase tracking-widest text-brand-black/20">Xian Admin v2.0</p>
+            <h1 className="text-2xl font-black text-brand-black tracking-tighter">{BRANDING.admin.titleAr}</h1>
+            <p className="text-[10px] font-black uppercase tracking-widest text-brand-black/20">{BRANDING.shortNameEn} Admin v{BRANDING.admin.version}</p>
           </div>
         </div>
 

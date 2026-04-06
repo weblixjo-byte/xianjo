@@ -30,6 +30,7 @@ import BulkMoveModal from '@/components/admin/BulkMoveModal';
 import AudioUnlockOverlay from '@/components/admin/AudioUnlockOverlay';
 import OrderInvoice from '@/components/admin/OrderInvoice';
 import SalesReport from '@/components/admin/SalesReport';
+import { BRANDING } from '@/constants/branding';
 
 export default function AdminDashboard() {
   const { language } = useLanguage();
@@ -590,7 +591,7 @@ export default function AdminDashboard() {
       Type: o.orderType,
       Status: o.status
     }));
-    exportToExcel(data, `Xian_Orders_${new Date().toLocaleDateString()}`);
+    exportToExcel(data, `${BRANDING.shortNameEn}_Orders_${new Date().toLocaleDateString()}`);
   };
 
   const handleExportCustomers = () => {
@@ -602,7 +603,7 @@ export default function AdminDashboard() {
       LastOrder: c.lastOrder,
       Area: c.area
     }));
-    exportToExcel(data, `Xian_Customers_${new Date().toLocaleDateString()}`);
+    exportToExcel(data, `${BRANDING.shortNameEn}_Customers_${new Date().toLocaleDateString()}`);
   };
 
   // --- Audio ------
@@ -655,9 +656,9 @@ export default function AdminDashboard() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
             <div>
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-brand-black font-serif tracking-tighter">
-                لوحة تحكم XIAN
+                {BRANDING.admin.titleAr}
               </h2>
-              <p className="text-brand-black/40 font-bold mt-2 text-sm lg:text-base">تتم الآن إدارة مطعم شيان بشكل آلي وآمن بالكامل.</p>
+              <p className="text-brand-black/40 font-bold mt-2 text-sm lg:text-base">تتم الآن إدارة مطعم {BRANDING.shortNameAr} بشكل آلي وآمن بالكامل.</p>
             </div>
 
             <div className="flex items-center gap-4 bg-white p-4 lg:p-5 xl:p-6 rounded-[2.5rem] border border-brand-gray shadow-sm">

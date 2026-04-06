@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Order } from '@/types/admin';
+import { BRANDING } from '@/constants/branding';
 
 interface OrderInvoiceProps {
   order: Order;
@@ -125,10 +126,10 @@ const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order }) => {
       <div className="invoice-body">
         {/* Header */}
         <div className="receipt-header">
-          <div className="receipt-logo">XIAN</div>
-          <div>Boutique Asian Cuisine</div>
-          <div>Amman, Jordan</div>
-          <div>Tel: +962 7 7999 0504</div>
+          <div className="receipt-logo">{BRANDING.shortNameEn.toUpperCase()}</div>
+          <div>{BRANDING.sloganEn}</div>
+          <div>{BRANDING.contact.addressEn}</div>
+          <div>Tel: {BRANDING.contact.phone}</div>
         </div>
 
         <div className="receipt-divider"></div>
@@ -226,7 +227,7 @@ const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order }) => {
 
         <div className="footer-note">
           <div>THANK YOU FOR YOUR ORDER!</div>
-          <div style={{ marginTop: '1mm' }}>Visit us: xianjo.com</div>
+          <div style={{ marginTop: '1mm' }}>Visit us: {BRANDING.shortNameEn.toLowerCase()}jo.com</div>
         </div>
       </div>
     </div>

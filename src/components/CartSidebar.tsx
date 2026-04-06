@@ -8,6 +8,7 @@ import { useSession, signIn } from 'next-auth/react';
 import { useLanguage } from '@/store/useLanguage';
 import { useCheckout } from '@/store/useCheckout';
 import { useRouter } from 'next/navigation';
+import { BRANDING } from '@/constants/branding';
 
 interface DeliveryZone {
   id: string;
@@ -224,7 +225,7 @@ export default function CartSidebar({ isOpen, onClose }: { isOpen: boolean, onCl
                         >
                           <div className="h-14 w-14 md:h-20 md:w-20 bg-brand-cream rounded-xl overflow-hidden flex-shrink-0 relative">
                             <Image 
-                              src={item.imageUrl || `https://placehold.co/200x200/F9F7F2/1A1A1A.png?text=Xian`} 
+                              src={item.imageUrl || `https://placehold.co/200x200/F9F7F2/1A1A1A.png?text=${BRANDING.shortNameEn}`} 
                               alt={item.name} 
                               fill 
                               sizes="80px"

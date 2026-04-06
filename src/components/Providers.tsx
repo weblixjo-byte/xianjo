@@ -2,6 +2,7 @@
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "react-hot-toast";
 import { useState, useEffect } from 'react';
+import { BRANDING } from '@/constants/branding';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [position, setPosition] = useState<'top-center' | 'bottom-center'>(
@@ -27,20 +28,20 @@ export function Providers({ children }: { children: React.ReactNode }) {
         toastOptions={{
           duration: 4000,
           style: {
-            background: '#1a1a1a', // Xian Black
-            color: '#f9f7f2', // Xian Cream
+            background: BRANDING.colors.secondary, // Dynamic Black
+            color: BRANDING.colors.accent, // Dynamic Cream
             borderRadius: '2rem',
             padding: '16px 28px',
             fontSize: '15px',
             fontWeight: '900',
-            border: '1px solid rgba(146, 39, 36, 0.2)', // Subtle Brand Red
-            boxShadow: '0 25px 50px -12px rgba(146, 39, 36, 0.25)',
+            border: `1px solid ${BRANDING.colors.primary}33`, // Subtle Brand Red (20% opacity)
+            boxShadow: `0 25px 50px -12px ${BRANDING.colors.primary}40`, // Brand Red Glow
             letterSpacing: '0.05em',
             textTransform: 'uppercase'
           },
           success: {
             iconTheme: {
-              primary: '#922724', // Xian Red
+              primary: BRANDING.colors.primary, // Dynamic Red
               secondary: '#fff',
             },
           },

@@ -1,6 +1,7 @@
 // store/useCart.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { BRANDING } from '@/constants/branding';
 
 export interface CartItem {
   id: number | string;
@@ -43,7 +44,7 @@ export const useCart = create<CartStore>()(
       getTotalPrice: () => get().getSubTotal(),
     }),
     {
-      name: 'xian-cart-storage', // Persist cart in local storage
+      name: `${BRANDING.shortNameEn.toLowerCase()}-cart-storage`, // Persist cart in local storage
     }
   )
 );

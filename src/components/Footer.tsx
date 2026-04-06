@@ -4,6 +4,7 @@ import { Instagram, Facebook, Phone, MapPin } from 'lucide-react';
 import { useCart } from '@/store/useCart';
 import { usePathname } from 'next/navigation';
 import { useLanguage } from '@/store/useLanguage';
+import { BRANDING } from '@/constants/branding';
 
 export default function Footer() {
   const pathname = usePathname();
@@ -17,14 +18,14 @@ export default function Footer() {
 
   const t = {
     story: language === 'ar' 
-      ? 'في شيان، نؤمن بأن المذاق لغة عالمية. نقدم لكم أرقى المأكولات الآسيوية بلمسة عصرية وشغف عميق بالتقاليد.' 
-      : 'At Xian, we believe taste is a universal language. We bring you the finest Asian cuisine with a modern touch and deep passion for tradition.',
+      ? `في ${BRANDING.shortNameAr}، نؤمن بأن المذاق لغة عالمية. نقدم لكم أرقى المأكولات الآسيوية بلمسة عصرية وشغف عميق بالتقاليد.` 
+      : `At ${BRANDING.shortNameEn}, we believe taste is a universal language. We bring you the finest Asian cuisine with a modern touch and deep passion for tradition.`,
     quickLinks: language === 'ar' ? 'روابط سريعة' : 'Quick Links',
     home: language === 'ar' ? 'الرئيسية' : 'Home',
     menu: language === 'ar' ? 'قائمة الطعام' : 'Menu',
     track: language === 'ar' ? 'تتبع الطلب' : 'Track Order',
     contact: language === 'ar' ? 'اتصل بنا' : 'Contact Us',
-    rights: language === 'ar' ? `جميع الحقوق محفوظة © ${currentYear} مطعم شيان` : `All Rights Reserved © ${currentYear} Xian Restaurant`,
+    rights: language === 'ar' ? `جميع الحقوق محفوظة © ${currentYear} ${BRANDING.nameAr}` : `All Rights Reserved © ${currentYear} ${BRANDING.nameEn}`,
     created: language === 'ar' ? 'تم التصميم والتطوير بواسطة' : 'Created by weblix-jo'
   };
 
@@ -62,9 +63,17 @@ export default function Footer() {
                 <MapPin size={20} className="text-brand-red" />
                 <span>{language === 'ar' ? 'عمان، الأردن' : 'Amman, Jordan'}</span>
               </div>
-              <div className="flex gap-6 pt-4">
-                <Link href="https://www.instagram.com/xianjordan" target="_blank" rel="noopener noreferrer" className="hover:text-brand-red transition-all"><Instagram size={24} /></Link>
-                <Link href="https://facebook.com/xianrestaura" target="_blank" rel="noopener noreferrer" className="hover:text-brand-red transition-all"><Facebook size={24} /></Link>
+              <div className="flex items-center gap-6 text-brand-black/20">
+                {BRANDING.socials.instagram && (
+                  <Link href={BRANDING.socials.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-brand-red transition-all">
+                    <Instagram size={24} />
+                  </Link>
+                )}
+                {BRANDING.socials.facebook && (
+                  <Link href={BRANDING.socials.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-brand-red transition-all">
+                    <Facebook size={24} />
+                  </Link>
+                )}
               </div>
             </div>
           </div>

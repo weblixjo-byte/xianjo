@@ -2,28 +2,29 @@ import { Metadata } from 'next';
 import HomeClient from '@/components/HomeClient';
 import { Product } from '@/components/MenuItemCard';
 import { prisma } from "@/db";
+import { BRANDING } from '@/constants/branding';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: "Xian Restaurant | Asian Cuisine & Chinese Food Amman",
-  description: "Order the best Asian Cuisine in Amman from Xian Restaurant. Fresh sushi, noodles & Chinese Food delivered fast. مطعم شيان للمأكولات الآسيوية.",
-  keywords: "Xian Restaurant, مطعم شيان, Asian Food Jordan, Xian Menu, Best Sushi Amman, Chinese Food Jordan, Asian Cuisine Amman",
+  title: `${BRANDING.nameEn} | Asian Cuisine & Chinese Food Amman`,
+  description: BRANDING.seo.descriptionEn,
+  keywords: `restaurant, food, sushi, asian, ${BRANDING.shortNameEn.toLowerCase()}, delivery, pickup`,
   openGraph: {
-    title: "مزيج يأسرك! اطلب الآن من مطعم شيان | Xian Restaurant",
-    description: "جرب المذاق الآسيوي الأصيل في عمّان. نودلز، سوشي، وأطباق صينية تُحضر بشغف وبأعلى جودة. اطلب الآن واكتشف النكهة الحقيقية!",
-    images: [{ url: '/hero-food.png', width: 1200, height: 630, alt: 'Xian Restaurant - Asian Cuisine Amman' }],
+    title: `مزيج يأسرك! اطلب الآن من ${BRANDING.nameAr} | ${BRANDING.nameEn}`,
+    description: BRANDING.seo.descriptionAr,
+    images: [{ url: '/hero-food.png', width: 1200, height: 630, alt: `${BRANDING.nameEn} - Asian Cuisine Amman` }],
     type: 'website',
-    url: 'https://xianrestaurant.com',
+    url: BRANDING.seo.url,
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Xian Restaurant | Asian Cuisine Amman",
-    description: "Order the best Asian Cuisine in Amman from Xian Restaurant. Fresh sushi & Chinese food.",
+    title: `${BRANDING.nameEn} | Asian Cuisine Amman`,
+    description: BRANDING.seo.descriptionEn,
     images: ['/hero-food.png'],
   },
   alternates: {
-    canonical: 'https://xianrestaurant.com',
+    canonical: BRANDING.seo.url,
   }
 };
 
@@ -44,10 +45,9 @@ export default async function Home() {
       "@type": "ListItem",
       "position": i + 1,
       "item": {
-        "@type": "MenuItem",
         "name": p.nameEn || p.nameAr,
-        "description": p.descriptionEn || p.descriptionAr || `Delicious ${p.nameEn || p.nameAr} at Xian Restaurant`,
-        "image": p.imageUrl || "https://xianrestaurant.com/logo.png",
+        "description": p.descriptionEn || p.descriptionAr || `Delicious ${p.nameEn || p.nameAr} at ${BRANDING.nameEn}`,
+        "image": p.imageUrl || `${BRANDING.seo.url}${BRANDING.logo.url}`,
         "offers": {
           "@type": "Offer",
           "price": p.price,

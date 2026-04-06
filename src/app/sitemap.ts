@@ -1,7 +1,8 @@
 import { MetadataRoute } from 'next';
+import { BRANDING } from '@/constants/branding';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://xianrestaurant.com';
+  const baseUrl = BRANDING.seo.url;
 
   const routes = [
     {

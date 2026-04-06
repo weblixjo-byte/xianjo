@@ -1,6 +1,7 @@
 'use client';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { BRANDING } from '@/constants/branding';
 
 type Language = 'ar' | 'en';
 
@@ -21,7 +22,7 @@ export const useLanguage = create<LanguageStore>()(
         })),
     }),
     {
-      name: 'xian-language-storage',
+      name: `${BRANDING.shortNameEn.toLowerCase()}-language-storage`,
     }
   )
 );

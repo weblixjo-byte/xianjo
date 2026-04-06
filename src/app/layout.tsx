@@ -2,20 +2,21 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Footer from "@/components/Footer";
 import { Providers } from "@/components/Providers";
+import { BRANDING } from "@/constants/branding";
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://xianrestaurant.com'),
+  metadataBase: new URL(BRANDING.seo.url),
   title: {
-    default: "Xian Restaurant | Asian Cuisine Amman",
-    template: "%s | Xian Restaurant"
+    default: `${BRANDING.nameEn} | Asian Cuisine Amman`,
+    template: `%s | ${BRANDING.shortNameEn}`
   },
-  description: "Experience authentic Asian cuisine at Xian Restaurant Amman. Order premium Chinese food & sushi online. مطعم شيان الأردن.",
+  description: BRANDING.seo.descriptionEn,
   robots: "index, follow",
   openGraph: {
-    title: "Xian Restaurant | Asian Cuisine Amman",
-    description: "Experience authentic Asian cuisine at Xian Restaurant Amman. Order premium Chinese food & sushi online. مطعم شيان الأردن.",
-    url: "https://xianrestaurant.com",
-    siteName: "Xian Restaurant",
+    title: `${BRANDING.nameEn} | Asian Cuisine Amman`,
+    description: BRANDING.seo.descriptionEn,
+    url: BRANDING.seo.url,
+    siteName: BRANDING.nameEn,
     images: [{ url: "/hero-food.png", width: 1200, height: 630 }],
     locale: "en_JO",
     type: "website",
@@ -38,11 +39,11 @@ export default function RootLayout({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Restaurant",
-    "name": "Xian Restaurant (مطعم شيان)",
-    "image": "https://xianrestaurant.com/hero-food.png",
-    "@id": "https://xianrestaurant.com",
-    "url": "https://xianrestaurant.com",
-    "telephone": "+962779990504",
+    "name": BRANDING.nameEn,
+    "image": `${BRANDING.seo.url}/hero-food.png`,
+    "@id": BRANDING.seo.url,
+    "url": BRANDING.seo.url,
+    "telephone": BRANDING.contact.phone,
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Amman",
@@ -70,7 +71,11 @@ export default function RootLayout({
       "opens": "11:00",
       "closes": "23:00"
     },
-    "menu": "https://xianrestaurant.com#menu-anchor",
+    "hasMenu": {
+      "@type": "Menu",
+      "name": "Our Menu",
+      "url": `${BRANDING.seo.url}#menu-anchor`
+    },
     "servesCuisine": ["Asian", "Chinese", "Sushi", "Noodles", "Dumplings"],
     "priceRange": "$$"
   };
@@ -82,7 +87,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                const storage = localStorage.getItem('xian-language-storage');
+                const storage = localStorage.getItem('${BRANDING.shortNameEn.toLowerCase()}-language-storage');
                 if (storage) {
                   const { state } = JSON.parse(storage);
                   if (state && state.language) {

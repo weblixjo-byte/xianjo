@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { ReportSummary } from '@/types/admin';
+import { BRANDING } from '@/constants/branding';
 
 interface SalesReportProps {
   reportData: ReportSummary;
@@ -113,7 +114,7 @@ const SalesReport: React.FC<SalesReportProps> = ({ reportData, reportType }) => 
 
       <div className="report-body">
         <div className="report-header">
-          <div className="report-logo">XIAN</div>
+          <div className="report-logo">{BRANDING.shortNameEn.toUpperCase()}</div>
           <div className="report-title">{getReportTitle()}</div>
           <div>Printed: {dateStr}</div>
         </div>
@@ -150,7 +151,7 @@ const SalesReport: React.FC<SalesReportProps> = ({ reportData, reportType }) => 
 
         <div className="report-footer">
           <div>*** END OF SALES REPORT ***</div>
-          <div style={{ marginTop: '1mm' }}>Xian Restaurant - Admin System</div>
+          <div style={{ marginTop: '1mm' }}>{BRANDING.nameEn} - Admin System</div>
         </div>
       </div>
     </div>

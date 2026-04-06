@@ -1,4 +1,5 @@
 // src/lib/pushover.ts
+import { BRANDING } from '@/constants/branding';
 
 /**
  * Sends a high-priority push notification to the Pushover app.
@@ -27,11 +28,11 @@ export async function sendPushoverNotification(orderId: string, total: number, c
       body: JSON.stringify({
         token: token,
         user: userKey,
-        title: 'Xian Restaurant 🚨',
+        title: `${BRANDING.nameEn} 🚨`,
         message: message,
         priority: 1, // High priority
         sound: 'siren', // You can change this to 'bike', 'bugle', 'intermission', etc.
-        url: `${process.env.NEXTAUTH_URL || 'https://xian-restaurant.vercel.app'}/admin`,
+        url: `${BRANDING.seo.url}/admin`,
         url_title: 'افتح لوحة التحكم'
       }),
     });

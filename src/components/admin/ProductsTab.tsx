@@ -6,6 +6,7 @@ import { Product } from '@/types/admin';
 import * as XLSX from 'xlsx';
 import { useRef } from 'react';
 import { toast } from 'react-hot-toast';
+import { BRANDING } from '@/constants/branding';
 
 interface ProductsTabProps {
   products: Product[];
@@ -63,7 +64,7 @@ export default function ProductsTab({
       const worksheet = XLSX.utils.json_to_sheet(dataToExport);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, 'Products');
-      XLSX.writeFile(workbook, 'Xian_Products.xlsx');
+      XLSX.writeFile(workbook, `${BRANDING.shortNameEn}_Products.xlsx`);
       toast.success('تم تصدير المنتجات بنجاح');
     } catch (error) {
       console.error(error);

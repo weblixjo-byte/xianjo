@@ -1,6 +1,7 @@
 // src/store/useCheckout.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { BRANDING } from '@/constants/branding';
 
 interface CheckoutForm {
   name: string;
@@ -42,7 +43,7 @@ export const useCheckout = create<CheckoutStore>()(
       resetForm: () => set({ form: initialForm }),
     }),
     {
-      name: 'xian-checkout-storage',
+      name: `${BRANDING.shortNameEn.toLowerCase()}-checkout-storage`,
     }
   )
 );

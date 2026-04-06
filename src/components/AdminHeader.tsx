@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { Volume2, VolumeX, ShieldCheck } from 'lucide-react';
+import { BRANDING } from '@/constants/branding';
 
 interface AdminHeaderProps {
   title: string;
@@ -13,7 +14,7 @@ export default function AdminHeader({ title, subtitle, icon, actions }: AdminHea
   const [isAudioEnabled, setIsAudioEnabled] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('xian_admin_audio_enabled');
+    const saved = localStorage.getItem(`${BRANDING.shortNameEn.toLowerCase()}_admin_audio_enabled`);
     if (saved === 'true') {
       // Use requestAnimationFrame to avoid synchronous state update during effect execution
       requestAnimationFrame(() => setIsAudioEnabled(true));
@@ -23,7 +24,7 @@ export default function AdminHeader({ title, subtitle, icon, actions }: AdminHea
   const toggleAudio = () => {
     const newState = !isAudioEnabled;
     setIsAudioEnabled(newState);
-    localStorage.setItem('xian_admin_audio_enabled', newState.toString());
+    localStorage.setItem(`${BRANDING.shortNameEn.toLowerCase()}_admin_audio_enabled`, newState.toString());
     
     // Play a test sound to confirm it's working and give browser permission
     if (newState) {
@@ -33,7 +34,7 @@ export default function AdminHeader({ title, subtitle, icon, actions }: AdminHea
     }
 
     // Dispatch custom event for the NotificationHandler to pick up
-    window.dispatchEvent(new Event('xian_notification_toggle'));
+    window.dispatchEvent(new Event(`${BRANDING.shortNameEn.toLowerCase()}_notification_toggle`));
   };
 
   return (

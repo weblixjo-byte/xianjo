@@ -1,11 +1,12 @@
 import * as webpush from 'web-push';
+import { BRANDING } from '@/constants/branding';
 
 const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
 const privateKey = process.env.VAPID_PRIVATE_KEY;
 
 if (publicKey && privateKey) {
   webpush.setVapidDetails(
-    'mailto:admin@xianjo.com',
+    `mailto:${BRANDING.contact.adminEmail}`,
     publicKey,
     privateKey
   );
@@ -28,8 +29,8 @@ export async function sendOrderNotification(
     const payload = JSON.stringify({
       title: '📦 طلب جديد وصل! 🚨',
       body: `الطلب #${orderId.slice(-4)} بقيمة ${total.toFixed(2)} د.أ`,
-      icon: '/logo.png',
-      badge: '/logo.png',
+      icon: BRANDING.logo.url,
+      badge: BRANDING.logo.url,
       url: '/admin'
     });
 

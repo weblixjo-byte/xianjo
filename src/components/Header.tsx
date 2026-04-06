@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { useLanguage } from '@/store/useLanguage';
+import { BRANDING } from '@/constants/branding';
 
 export default function Header({ onCartOpen }: { onCartOpen?: () => void }) {
   const { language, toggleLanguage } = useLanguage();
@@ -35,7 +36,7 @@ export default function Header({ onCartOpen }: { onCartOpen?: () => void }) {
       <div className="flex-1 flex justify-start items-center">
         {/* Desktop: Logo */}
         <Link href="/" className="hidden md:block relative w-56 h-20 transition-transform active:scale-95">
-          <Image src="/logo.png" alt="Xian Restaurant" fill className="object-contain object-left" priority sizes="224px" />
+          <Image src={BRANDING.logo.url} alt={BRANDING.nameEn} fill className="object-contain object-left" priority sizes="224px" />
         </Link>
         
         {/* Mobile: Auth */}
@@ -65,7 +66,7 @@ export default function Header({ onCartOpen }: { onCartOpen?: () => void }) {
       <div className="flex-1 flex justify-center items-center">
         {/* Mobile: Logo */}
         <Link href="/" className="md:hidden relative w-32 h-14 transition-transform active:scale-95">
-          <Image src="/logo.png" alt="Xian Restaurant" fill className="object-contain object-center" priority sizes="128px" />
+          <Image src={BRANDING.logo.url} alt={BRANDING.nameEn} fill className="object-contain object-center" priority sizes="128px" />
         </Link>
       </div>
 

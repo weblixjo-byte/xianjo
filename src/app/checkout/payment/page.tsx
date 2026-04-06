@@ -8,6 +8,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-hot-toast';
+import { BRANDING } from '@/constants/branding';
 
 interface DeliveryZone {
   id: string;
@@ -263,8 +264,8 @@ export default function PaymentPage() {
 
                <div className="bg-brand-cream/40 p-8 rounded-[2rem] border-2 border-dashed border-brand-gray/50 flex flex-col items-center gap-4 group relative">
                   <span className="text-[10px] font-black uppercase tracking-[4px] text-brand-black/30">CliQ Alias</span>
-                  <p className="text-5xl font-black text-brand-red tracking-tight">XIAN99</p>
-                  <button onClick={() => { navigator.clipboard.writeText('XIAN99'); toast.success(language === 'ar' ? 'تم النسخ!' : 'Copied!'); }} className="flex items-center gap-2 text-[10px] font-black text-brand-black/40 hover:text-brand-black transition-colors border-t border-brand-gray/20 pt-4 w-full justify-center">
+                  <p className="text-5xl font-black text-brand-red tracking-tight">{BRANDING.payment.cliqAlias}</p>
+                  <button onClick={() => { navigator.clipboard.writeText(BRANDING.payment.cliqAlias); toast.success(language === 'ar' ? 'تم النسخ!' : 'Copied!'); }} className="flex items-center gap-2 text-[10px] font-black text-brand-black/40 hover:text-brand-black transition-colors border-t border-brand-gray/20 pt-4 w-full justify-center">
                      <ClipboardCheck size={14} /> {language === 'ar' ? 'نسخ الاسم المستعار' : 'Copy Alias'}
                   </button>
                </div>
