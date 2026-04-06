@@ -123,8 +123,8 @@ export default function Header({ onCartOpen }: { onCartOpen?: () => void }) {
           )}
          </div>
 
-         {/* CART BUTTON (Always Right) */}
-         <button onClick={onCartOpen} className="relative p-2.5 md:p-3 bg-black text-white rounded-full transition-all hover:bg-[#C40012] shadow-sm active:scale-90 flex-shrink-0">
+         {/* CART BUTTON (Hidden on Mobile/Tablet due to redundancy with bottom bar) */}
+         <button onClick={onCartOpen} className="hidden lg:flex relative p-2.5 md:p-3 bg-black text-white rounded-full transition-all hover:bg-[#C40012] shadow-sm active:scale-90 flex-shrink-0">
            <ShoppingCart size={18} className="md:w-5 md:h-5" strokeWidth={2} />
            <AnimatePresence>
               {cartCount > 0 && (

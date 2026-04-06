@@ -26,7 +26,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
           top: position === 'top-center' ? 40 : 20,
         }}
         toastOptions={{
-          duration: 4000,
+          duration: 2000,
           style: {
             background: BRANDING.colors.secondary, // Dynamic Black
             color: BRANDING.colors.accent, // Dynamic Cream
