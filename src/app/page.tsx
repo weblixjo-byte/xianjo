@@ -61,7 +61,7 @@ export default async function Home() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(menuSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(menuSchema).replace(/</g, '\\u003c') }}
       />
       <HomeClient initialData={products as Product[]} initialSettings={settings as { categoryOrder?: string } | null} />
     </>
