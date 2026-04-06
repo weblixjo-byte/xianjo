@@ -1,7 +1,9 @@
 'use client';
 import { useEffect, useState, useCallback } from 'react';
 import Header from '@/components/Header';
-import { Clock, CheckCircle2, UtensilsCrossed, Bike, PackageSearch, ArrowLeft, XCircle, Zap } from 'lucide-react';
+import { Clock, CheckCircle2, UtensilsCrossed, Bike, PackageSearch, ArrowLeft, XCircle, Zap, Star } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { use } from 'react';
 import { supabase } from '@/utils/supabaseClient';
@@ -28,6 +30,11 @@ interface Order {
   serviceFee: number;
   discountAmount: number;
   couponCode?: string | null;
+  review?: {
+    id: string;
+    rating: number;
+    comment?: string | null;
+  } | null;
 }
 
 export default function OrderStatusPage({ params }: { params: Promise<{ id: string }> }) {
@@ -36,6 +43,10 @@ export default function OrderStatusPage({ params }: { params: Promise<{ id: stri
   const isAr = language === 'ar';
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState('');
+  const [reviewSent, setReviewSent] = useState(false);
 
   const fetchStatus = useCallback(async (showLoading = false) => {
     if (showLoading) setLoading(true);
@@ -92,6 +103,36 @@ export default function OrderStatusPage({ params }: { params: Promise<{ id: stri
       }
     };
   }, [id, fetchStatus]);
+
+  const handleSubmitReview = async () => {
+    if (!order) return;
+    setSubmittingReview(true);
+    try {
+      const res = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: order.id,
+          rating,
+          comment,
+          customerName: order.customerName
+        })
+      });
+
+      if (res.ok) {
+        toast.success(isAr ? 'شكراً لتقييمك! سيظهر بعد المراجعة.' : 'Thank you! Your review will appear after moderation.');
+        setReviewSent(true);
+        fetchStatus(false);
+      } else {
+        toast.error(isAr ? 'فشل إرسال التقييم' : 'Failed to send review');
+      }
+    } catch (err) {
+      console.error("Review Error:", err);
+      toast.error('Error');
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
 
   const t = {
     fetching: isAr ? 'جاري جلب حالة الطلب..' : 'Fetching order status..',
@@ -150,6 +191,8 @@ export default function OrderStatusPage({ params }: { params: Promise<{ id: stri
   }
 
   const isPickup = order.orderType === 'PICKUP';
+  const isTable = order.orderType === 'TABLE';
+  const isStoreVisit = isPickup || isTable;
 
   if (order.status === 'CANCELLED' || order.status === 'REJECTED') {
     return (
@@ -177,14 +220,19 @@ export default function OrderStatusPage({ params }: { params: Promise<{ id: stri
     );
   }
 
-  const statusSteps = [
+  // 🔄 Conditional Status Steps based on Order Type
+  const statusSteps = isStoreVisit ? [
+    { key: 'PENDING', label: statusLabels.PENDING, icon: Clock, percent: 33 },
+    { key: 'PREPARING', label: statusLabels.PREPARING, icon: UtensilsCrossed, percent: 66 },
+    { key: 'READY', label: isTable ? (isAr ? 'طلبك جاهز' : 'Served') : statusLabels.READY_PICKUP, icon: CheckCircle2, percent: 100 },
+  ] : [
     { key: 'PENDING', label: statusLabels.PENDING, icon: Clock, percent: 15 },
     { key: 'PREPARING', label: statusLabels.PREPARING, icon: UtensilsCrossed, percent: 45 },
-    { key: 'READY', label: isPickup ? statusLabels.READY_PICKUP : statusLabels.READY_DELIVERY, icon: isPickup ? PackageSearch : CheckCircle2, percent: 75 },
-    { key: 'SHIPPED', label: isPickup ? statusLabels.SHIPPED_PICKUP : statusLabels.SHIPPED_DELIVERY, icon: isPickup ? CheckCircle2 : Bike, percent: 100 },
+    { key: 'READY', label: statusLabels.READY_DELIVERY, icon: PackageSearch, percent: 75 },
+    { key: 'SHIPPED', label: statusLabels.SHIPPED_DELIVERY, icon: Bike, percent: 100 },
   ];
 
-  const currentStepIndex = statusSteps.findIndex(s => s.key === order.status);
+  const currentStepIndex = statusSteps.findIndex(s => s.key === order.status || (isStoreVisit && order.status === 'SHIPPED' && s.key === 'READY'));
   const currentStep = statusSteps[currentStepIndex] || statusSteps[0];
 
   return (
@@ -239,13 +287,13 @@ export default function OrderStatusPage({ params }: { params: Promise<{ id: stri
                   const isCurrent = idx === currentStepIndex;
                   const Icon = step.icon;
                   return (
-                    <div key={step.key} className="flex flex-col items-center gap-4 w-1/4">
+                    <div key={step.key} className="flex flex-col items-center gap-4 flex-1">
                       <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-700 
                         ${isPassed || isCurrent ? 'bg-brand-black text-white shadow-lg scale-110' : 
                           'bg-white border border-brand-gray text-brand-black/10'}`}>
                         <Icon size={20} strokeWidth={2} />
                       </div>
-                      <span className={`text-[9.5px] font-bold text-center transition-colors duration-500 leading-tight
+                      <span className={`text-[9.5px] font-bold text-center transition-colors duration-500 leading-tight px-1
                         ${isCurrent ? 'text-brand-red' : isPassed ? 'text-brand-black' : 'text-brand-black/20'}`}>
                         {step.label}
                       </span>
@@ -311,6 +359,85 @@ export default function OrderStatusPage({ params }: { params: Promise<{ id: stri
                 </Link>
               </div>
             </div>
+
+            {/* ⭐ Rating Section - Only if Completed & No Review Yet */}
+            {((order.status === (isStoreVisit ? 'READY' : 'SHIPPED'))) && !order.review && !reviewSent && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-12 bg-white rounded-[3rem] p-10 md:p-16 border-4 border-brand-red/10 shadow-2xl space-y-10 text-center"
+              >
+                <div className="space-y-4">
+                  <div className="w-20 h-20 bg-brand-red/5 rounded-full flex items-center justify-center mx-auto text-brand-red">
+                    <Star size={40} />
+                  </div>
+                  <h3 className="text-3xl font-black text-brand-black luxury-heading">
+                    {isAr ? 'كيف كانت تجربتك؟' : 'How was your experience?'}
+                  </h3>
+                  <p className="text-brand-black/40 font-bold max-w-xs mx-auto">
+                    {isAr ? 'رأيك يهمنا جداً لتحسين خدماتنا.' : 'Your feedback means the world to us.'}
+                  </p>
+                </div>
+
+                <div className="flex flex-col items-center gap-10">
+                  {/* Star Picker */}
+                  <div className="flex gap-4">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button 
+                        key={star} 
+                        onClick={() => setRating(star)}
+                        className={`transition-all duration-300 transform active:scale-90 ${rating >= star ? 'text-yellow-400 scale-125' : 'text-brand-gray'}`}
+                      >
+                        <Star size={48} fill={rating >= star ? 'currentColor' : 'none'} strokeWidth={1.5} />
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="w-full space-y-6">
+                    <textarea 
+                      placeholder={isAr ? 'اكتب رأيك هنا (اختياري)..' : 'Write your review here (optional)..'}
+                      className="w-full bg-brand-cream/40 border border-brand-gray/30 rounded-[2rem] p-8 text-lg font-bold focus:ring-4 focus:ring-brand-red/5 outline-none transition-all placeholder:text-brand-black/20 min-h-[160px] text-brand-black"
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
+                    />
+                    
+                    <button 
+                      onClick={handleSubmitReview}
+                      disabled={submittingReview}
+                      className="w-full py-6 bg-brand-red text-white rounded-3xl font-black text-xl hover:bg-red-700 transition-all shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group flex items-center justify-center gap-3"
+                    >
+                      {submittingReview ? (
+                        <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                      ) : (
+                        <>
+                          <span>{isAr ? 'إرسال التقييم 🥢' : 'Submit Review 🥢'}</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Thank you message if reviewSent */}
+            {(reviewSent || order.review) && (
+               <motion.div 
+                 initial={{ opacity: 0, scale: 0.95 }}
+                 animate={{ opacity: 1, scale: 1 }}
+                 className="mt-12 bg-green-50 rounded-[3rem] p-10 border-2 border-green-100 text-center"
+               >
+                 <div className="w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-4">
+                   <Star size={32} fill="currentColor" />
+                 </div>
+                 <h4 className="text-2xl font-black text-green-900 mb-2">
+                   {isAr ? 'شكراً لمشاركتنا رأيك!' : 'Thank you for your feedback!'}
+                 </h4>
+                 <p className="text-green-700 font-bold text-sm">
+                   {isAr ? 'تم استلام تقييمك بنجاح. نحن نقدر وقتك واهتمامك.' : 'Your review was received. We appreciate your time.'}
+                 </p>
+               </motion.div>
+            )}
+
           </div>
         </div>
       </main>

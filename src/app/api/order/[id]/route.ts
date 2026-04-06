@@ -31,7 +31,10 @@ export async function GET(
 
     const order = await prisma.order.findUnique({
       where: { id: cleanId },
-      include: { items: true }
+      include: { 
+        items: true,
+        review: true 
+      }
     });
 
     if (!order) {

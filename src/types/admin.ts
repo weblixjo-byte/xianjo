@@ -78,4 +78,4 @@ export interface ReportSummary {
   orders: Order[];
 }
 
-export type AdminTab = 'ORDERS' | 'HISTORY' | 'CUSTOMERS' | 'REPORTS' | 'PRODUCTS' | 'COUPONS' | 'ZONES' | 'SUPPORT';
+export type AdminTab = 'ORDERS' | 'HISTORY' | 'CUSTOMERS' | 'REPORTS' | 'PRODUCTS' | 'COUPONS' | 'ZONES' | 'SUPPORT' | 'REVIEWS';

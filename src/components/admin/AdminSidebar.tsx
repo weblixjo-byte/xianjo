@@ -1,5 +1,5 @@
 'use client';
-import { LayoutDashboard, History, Users, BarChart3, Package, Ticket, MapPin, LogOut, LucideIcon, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, History, Users, BarChart3, Package, Ticket, MapPin, LogOut, LucideIcon, ShieldCheck, MessageSquare } from 'lucide-react';
 import { AdminTab } from '@/types/admin';
 import { BRANDING } from '@/constants/branding';
 
@@ -25,6 +25,7 @@ export default function AdminSidebar({
     { id: 'COUPONS', label: 'الكوبونات', icon: Ticket },
     { id: 'ZONES', label: 'مناطق التوصيل', icon: MapPin },
     { id: 'SUPPORT', label: 'الدعم', icon: ShieldCheck },
+    { id: 'REVIEWS', label: 'التقييمات', icon: MessageSquare },
   ];
 
   return (

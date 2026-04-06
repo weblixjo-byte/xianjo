@@ -76,6 +76,13 @@ export default function RootLayout({
       "name": "Our Menu",
       "url": `${BRANDING.seo.url}#menu-anchor`
     },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "reviewCount": "128",
+      "bestRating": "5",
+      "worstRating": "1"
+    },
     "servesCuisine": ["Asian", "Chinese", "Sushi", "Noodles", "Dumplings"],
     "priceRange": "$$"
   };

@@ -23,6 +23,7 @@ export default function SupportTab({ onResetData, onResetMenu }: SupportTabProps
       });
       if (res.ok) {
         setIsUnlocked(true);
+        setPassword(''); // Clear password immediately for security
         toast.success('تم فتح صلاحيات الدعم');
       } else {
         toast.error('كلمة مرور الدعم غير صحيحة');
@@ -50,6 +51,7 @@ export default function SupportTab({ onResetData, onResetMenu }: SupportTabProps
           <input 
             type="password" 
             placeholder="كلمة مرور الدعم"
+            autoComplete="new-password"
             className="w-full bg-brand-gray/5 border border-brand-gray/20 rounded-2xl px-6 py-4 text-center font-black text-lg focus:ring-2 focus:ring-brand-red outline-none transition-all"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
