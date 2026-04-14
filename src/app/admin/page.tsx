@@ -503,42 +503,24 @@ export default function AdminDashboard() {
     }
   };
 
-  const handlePrintReport = () => {
+  const handlePassPrntReport = async () => {
+    if (!reportData) return;
     setIsPrintingReport(true);
-    setTimeout(() => {
-      const content = document.getElementById('printable-sales-report');
-      if (!content) return;
-
-      const iframe = document.createElement('iframe');
-      iframe.style.position = 'fixed';
-      iframe.style.right = '0';
-      iframe.style.bottom = '0';
-      iframe.style.width = '0';
-      iframe.style.height = '0';
-      iframe.style.border = 'none';
-      document.body.appendChild(iframe);
-
-      const doc = iframe.contentWindow?.document;
-      if (!doc) return;
-
-      doc.open();
-      doc.write('<html><head><title>Sales Report</title>');
-      const styles = document.querySelectorAll('style, link[rel="stylesheet"]');
-      styles.forEach(s => doc.write(s.outerHTML));
-      doc.write('</head><body>');
-      doc.write(content.innerHTML);
-      doc.write('</body></html>');
-      doc.close();
-
-      setTimeout(() => {
-        iframe.contentWindow?.focus();
-        iframe.contentWindow?.print();
-        setTimeout(() => {
-          document.body.removeChild(iframe);
-          setIsPrintingReport(false);
-        }, 1000);
-      }, 500);
-    }, 100);
+    const loadingToast = toast.loading('جاري تجهيز تقرير المبيعات للطباعة...');
+    
+    try {
+      // Delay to ensure SalesReport is rendered in the hidden div
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      const url = await generatePassPrntUrl('printable-sales-report');
+      window.location.href = url;
+      toast.success('تم إرسال التقرير للطابعة', { id: loadingToast });
+    } catch (error) {
+      console.error('PassPRNT Report Error:', error);
+      toast.error('فشل تجهيز التقرير للطباعة', { id: loadingToast });
+    } finally {
+      setIsPrintingReport(false);
+    }
   };
 
   const handleSystemReset = async (supportPassword?: string) => {
@@ -729,7 +711,7 @@ export default function AdminDashboard() {
               )}
 
               {activeTab === 'REPORTS' && (
-                <ReportsTab reportData={reportData} reportType={reportType} setReportType={setReportType} fetchReports={fetchReports} loading={reportLoading} onExport={handleExportReport} onPrint={handlePrintReport} />
+                <ReportsTab reportData={reportData} reportType={reportType} setReportType={setReportType} fetchReports={fetchReports} loading={reportLoading} onExport={handleExportReport} onPassPrnt={handlePassPrntReport} />
               )}
 
               {activeTab === 'PRODUCTS' && (

@@ -46,8 +46,10 @@ const SalesReport: React.FC<SalesReportProps> = ({ reportData, reportType }) => 
           width: 80mm;
           padding: 4mm;
           font-family: 'Courier New', Courier, monospace;
-          line-height: 1.2;
-          font-size: 12px;
+          line-height: 1.3;
+          font-size: 13px;
+          font-weight: 700;
+          color: #000;
         }
 
         .report-header {
@@ -56,59 +58,65 @@ const SalesReport: React.FC<SalesReportProps> = ({ reportData, reportType }) => 
         }
 
         .report-logo {
-          font-size: 20px;
+          font-size: 24px;
           font-weight: 900;
           letter-spacing: 2px;
           margin-bottom: 1mm;
+          border: 2px solid #000;
+          padding: 2mm;
         }
 
         .report-title {
-          font-size: 14px;
-          font-weight: bold;
+          font-size: 16px;
+          font-weight: 900;
           text-decoration: underline;
-          margin-bottom: 2mm;
+          margin-bottom: 3mm;
+          margin-top: 2mm;
         }
 
         .report-divider {
-          border-top: 1px dashed #000;
-          margin: 2mm 0;
+          border-top: 2px solid #000;
+          margin: 3mm 0;
         }
 
         .stats-section {
-          margin-bottom: 4mm;
+          margin-bottom: 5mm;
         }
 
         .stat-row {
           display: flex;
           justify-content: space-between;
-          margin-bottom: 1mm;
-          font-weight: bold;
+          margin-bottom: 2mm;
+          font-weight: 900;
         }
 
         .items-header {
           display: flex;
-          font-weight: bold;
-          border-bottom: 1px solid #000;
-          padding-bottom: 1mm;
-          margin-bottom: 2mm;
-          margin-top: 4mm;
+          font-weight: 900;
+          border-bottom: 2px solid #000;
+          padding-bottom: 2mm;
+          margin-bottom: 3mm;
+          margin-top: 5mm;
         }
 
         .item-row {
           display: flex;
-          margin-bottom: 1mm;
+          margin-bottom: 2mm;
+          border-bottom: 1px solid #000;
+          padding-bottom: 1mm;
         }
 
-        .col-qty { width: 15%; text-align: right; }
-        .col-name { width: 55%; padding-left: 2mm; }
-        .col-sub { width: 30%; text-align: right; }
+        .col-qty { width: 15%; text-align: right; font-weight: 900; }
+        .col-name { width: 55%; padding-left: 0; }
+        .col-sub { width: 30%; text-align: right; font-weight: 900; }
 
         .report-footer {
           text-align: center;
-          margin-top: 4mm;
-          font-size: 10px;
-          border-top: 1px solid #000;
-          padding-top: 2mm;
+          margin-top: 6mm;
+          font-size: 11px;
+          font-weight: 900;
+          border-top: 2px solid #000;
+          padding-top: 3mm;
         }
       `}</style>
 

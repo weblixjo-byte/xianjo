@@ -47,8 +47,10 @@ const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order }) => {
           width: 80mm;
           padding: 4mm;
           font-family: 'Courier New', Courier, monospace;
-          line-height: 1.2;
-          font-size: 12px;
+          line-height: 1.3;
+          font-size: 13px;
+          font-weight: 700;
+          color: #000;
         }
 
         .receipt-header {
@@ -57,69 +59,74 @@ const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order }) => {
         }
 
         .receipt-logo {
-          font-size: 24px;
+          font-size: 26px;
           font-weight: 900;
           letter-spacing: 2px;
           margin-bottom: 1mm;
+          border: 2px solid #000;
+          padding: 2mm;
         }
 
         .receipt-divider {
-          border-top: 1px dashed #000;
-          margin: 2mm 0;
+          border-top: 2px solid #000;
+          margin: 3mm 0;
         }
 
         .info-row {
           display: flex;
           justify-content: space-between;
-          margin-bottom: 1mm;
+          margin-bottom: 1.5mm;
         }
 
         .items-table {
           width: 100%;
-          margin-top: 3mm;
+          margin-top: 4mm;
         }
 
         .items-header {
           display: flex;
-          font-weight: bold;
-          border-bottom: 1px solid #000;
-          padding-bottom: 1mm;
-          margin-bottom: 1mm;
+          font-weight: 900;
+          border-bottom: 2px solid #000;
+          padding-bottom: 1.5mm;
+          margin-bottom: 2mm;
+          font-size: 14px;
         }
 
         .item-row {
           display: flex;
-          margin-bottom: 1mm;
+          margin-bottom: 2mm;
+          border-bottom: 1px solid #000;
         }
 
-        .col-qty { width: 10%; }
-        .col-desc { width: 60%; }
-        .col-total { width: 30%; text-align: right; }
+        .col-qty { width: 12%; font-weight: 900; }
+        .col-desc { width: 58%; }
+        .col-total { width: 30%; text-align: right; font-weight: 900; }
 
         .totals-section {
-          margin-top: 4mm;
-          border-top: 1px solid #000;
-          padding-top: 2mm;
+          margin-top: 5mm;
+          border-top: 2px solid #000;
+          padding-top: 3mm;
         }
 
         .total-row {
           display: flex;
           justify-content: space-between;
-          margin-bottom: 1mm;
+          margin-bottom: 1.5mm;
         }
 
         .grand-total {
-          font-size: 16px;
-          font-weight: bold;
-          margin-top: 2mm;
-          padding-top: 1mm;
-          border-top: 1px dashed #000;
+          font-size: 20px;
+          font-weight: 900;
+          margin-top: 3mm;
+          padding-top: 2mm;
+          border-top: 2px solid #000;
         }
 
         .footer-note {
           text-align: center;
-          margin-top: 6mm;
-          font-size: 10px;
+          margin-top: 8mm;
+          font-size: 11px;
+          font-weight: 900;
         }
       `}</style>
 
@@ -221,7 +228,7 @@ const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order }) => {
         </div>
 
         {/* Payment */}
-        <div style={{ marginTop: '3mm', fontStyle: 'italic', fontSize: '10px' }}>
+        <div style={{ marginTop: '4mm', fontStyle: 'italic', fontSize: '12px', fontWeight: '900', border: '1px solid #000', padding: '2mm' }}>
           Payment: {order.paymentMethod} / {order.paymentStatus}
         </div>
 

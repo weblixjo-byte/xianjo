@@ -35,7 +35,7 @@ export const BRANDING = {
   },
 
   contact: {
-    phone: "07XXXXXXXX",
+    phone: "0779990504",
     addressAr: "عمان، الأردن",
     addressEn: "Amman, Jordan",
     adminEmail: "admin@xianjo.com", // Used for Web Push VAPID contact
