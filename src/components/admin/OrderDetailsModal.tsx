@@ -1,6 +1,6 @@
 'use client';
 import { motion } from 'framer-motion';
-import { X, User, Phone, MapPin, ExternalLink, Copy, Clock, Store, CheckCircle, Zap, Trash2, Printer } from 'lucide-react';
+import { X, User, Phone, MapPin, ExternalLink, Copy, Clock, Store, CheckCircle, Zap, Trash2, Smartphone } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Order, OrderItem } from '@/types/admin';
 
@@ -10,7 +10,7 @@ interface OrderDetailsModalProps {
   onUpdateStatus: (id: string, status: string) => void;
   onArchive: (id: string) => void;
   onPaymentReceived: (id: string, e: React.MouseEvent) => void;
-  onPrint: (order: Order) => void;
+    onPassPrnt: (order: Order) => void;
   language: string;
 }
 
@@ -19,8 +19,8 @@ export default function OrderDetailsModal({
   onClose,
   onUpdateStatus,
   onArchive,
-  onPaymentReceived,
-  onPrint,
+    onPaymentReceived,
+  onPassPrnt,
   language
 }: OrderDetailsModalProps) {
   if (!order) return null;
@@ -34,11 +34,12 @@ export default function OrderDetailsModal({
             <h3 className="text-2xl font-black text-brand-black tracking-tight">تفاصيل الطلب</h3>
             <div className="flex items-center gap-3">
               <p className="text-brand-red font-bold">#{order.id.slice(-6).toUpperCase()}</p>
-              <button 
-                onClick={() => onPrint(order)}
-                className="flex items-center gap-2 bg-white px-3 py-1 rounded-lg border border-brand-gray/20 text-brand-black/60 hover:text-brand-red transition-all text-[10px] font-black"
+               <button 
+                onClick={() => onPassPrnt(order)}
+                className="flex items-center gap-3 bg-brand-red text-white px-6 py-2.5 rounded-2xl shadow-xl shadow-brand-red/20 hover:bg-brand-red/80 transition-all font-black"
               >
-                <Printer size={12} /> طباعة الفاتورة
+                <Smartphone size={20} />
+                <span className="text-sm">طباعة الفاتورة</span>
               </button>
             </div>
           </div>

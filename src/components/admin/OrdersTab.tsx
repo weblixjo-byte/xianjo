@@ -12,7 +12,7 @@ interface OrdersTabProps {
   handleUpdateStatus: (id: string, status: string) => void;
   handleArchive: (id: string) => void;
   handlePaymentReceived: (id: string, e: React.MouseEvent) => void;
-  handlePrint: (order: Order) => void;
+  onPassPrnt: (order: Order) => void;
   language: string;
 }
 
@@ -23,8 +23,8 @@ export default function OrdersTab({
   setOrderStatusFilter,
   handleUpdateStatus,
   handleArchive,
-  handlePaymentReceived,
-  handlePrint,
+   handlePaymentReceived,
+  onPassPrnt,
   language
 }: OrdersTabProps) {
   const filteredOrders = orders.filter(o => 
@@ -72,8 +72,8 @@ export default function OrdersTab({
               order={order}
               onUpdateStatus={handleUpdateStatus}
               onArchive={handleArchive}
-              onPaymentReceived={handlePaymentReceived}
-              onPrint={handlePrint}
+               onPaymentReceived={handlePaymentReceived}
+              onPassPrnt={onPassPrnt}
               language={language}
             />
           ))}

@@ -1,7 +1,7 @@
 'use client';
 import { 
   CheckCircle, User, Phone, MapPin, Trash2, Clock, 
-  ExternalLink, Copy, Zap, X, Printer, Users2 
+  ExternalLink, Copy, Zap, X, Users2, Smartphone 
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Order, OrderItem } from '@/types/admin';
@@ -11,11 +11,11 @@ interface OrderCardProps {
   onUpdateStatus: (id: string, status: string) => void;
   onArchive: (id: string) => void;
   onPaymentReceived: (id: string, e: React.MouseEvent) => void;
-  onPrint?: (order: Order) => void;
+    onPassPrnt?: (order: Order) => void;
   language: string;
 }
 
-export default function OrderCard({ order, onUpdateStatus, onArchive, onPaymentReceived, onPrint, language }: OrderCardProps) {
+export default function OrderCard({ order, onUpdateStatus, onArchive, onPaymentReceived, onPassPrnt, language }: OrderCardProps) {
   return (
     <div className={`bg-white rounded-[2.5rem] overflow-hidden shadow-sm border border-brand-gray flex flex-col group relative
       ${order.status === 'PENDING' ? 'ring-2 ring-brand-red ring-inset' : ''}`}>
@@ -24,13 +24,14 @@ export default function OrderCard({ order, onUpdateStatus, onArchive, onPaymentR
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
             <span className="text-[9px] font-black text-brand-black/20">المعرف: #{order.id.slice(-6).toUpperCase()}</span>
-            {onPrint && (
+              {onPassPrnt && (
               <button 
-                onClick={(e) => { e.stopPropagation(); onPrint(order); }}
-                className="p-1 bg-white hover:bg-brand-gray/10 text-brand-black/40 hover:text-brand-red rounded transition-all border border-brand-gray/20 shadow-sm"
-                title="طباعة الفاتورة"
+                onClick={(e) => { e.stopPropagation(); onPassPrnt(order); }}
+                className="w-full h-full p-2 bg-brand-red text-white rounded-xl transition-all shadow-lg shadow-brand-red/20 flex items-center justify-center gap-2 group/print"
+                title="طباعة (PassPRNT)"
               >
-                <Printer size={10} />
+                <Smartphone size={16} />
+                <span className="text-[10px] font-black uppercase tracking-wider">طباعة الفاتورة</span>
               </button>
             )}
           </div>

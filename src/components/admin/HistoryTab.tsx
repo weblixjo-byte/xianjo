@@ -1,6 +1,6 @@
 'use client';
 import { motion } from 'framer-motion';
-import { FileSpreadsheet, Trash2, Printer } from 'lucide-react';
+import { FileSpreadsheet, Trash2, Smartphone } from 'lucide-react';
 import { Order } from '@/types/admin';
 
 interface HistoryTabProps {
@@ -9,7 +9,7 @@ interface HistoryTabProps {
   onExport: () => void;
   onSelectOrder: (order: Order) => void;
   onDeletePermanent: (id: string) => void;
-  onPrint: (order: Order) => void;
+    onPassPrnt: (order: Order) => void;
 }
 
 export default function HistoryTab({
@@ -17,8 +17,8 @@ export default function HistoryTab({
   loading,
   onExport,
   onSelectOrder,
-  onDeletePermanent,
-  onPrint
+    onDeletePermanent,
+  onPassPrnt
 }: HistoryTabProps) {
   return (
     <motion.div key="history" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
@@ -61,11 +61,11 @@ export default function HistoryTab({
                   <td className="p-6">
                     <div className="flex gap-2">
                       <button 
-                        onClick={(e) => { e.stopPropagation(); onPrint(order); }} 
+                        onClick={(e) => { e.stopPropagation(); onPassPrnt(order); }}
                         className="p-2 text-gray-300 hover:text-brand-red transition-all"
-                        title="طباعة الفاتورة"
+                        title="طباعة PassPRNT"
                       >
-                        <Printer size={16} />
+                        <Smartphone size={16} />
                       </button>
                       <button 
                         onClick={(e) => { e.stopPropagation(); onDeletePermanent(order.id); }} 

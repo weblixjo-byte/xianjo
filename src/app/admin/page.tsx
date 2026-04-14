@@ -30,6 +30,7 @@ import BulkMoveModal from '@/components/admin/BulkMoveModal';
 import AudioUnlockOverlay from '@/components/admin/AudioUnlockOverlay';
 import OrderInvoice from '@/components/admin/OrderInvoice';
 import SalesReport from '@/components/admin/SalesReport';
+import { generatePassPrntUrl } from '@/lib/passprnt';
 import { BRANDING } from '@/constants/branding';
 
 export default function AdminDashboard() {
@@ -482,42 +483,24 @@ export default function AdminDashboard() {
     } catch (_error) { console.error(_error); }
   };
 
-  const handlePrint = (order: Order) => {
+
+  const handlePassPrnt = async (order: Order) => {
     setPrintingOrder(order);
-    setTimeout(() => {
-      const content = document.getElementById('global-printable-invoice');
-      if (!content) return;
-
-      const iframe = document.createElement('iframe');
-      iframe.style.position = 'fixed';
-      iframe.style.right = '0';
-      iframe.style.bottom = '0';
-      iframe.style.width = '0';
-      iframe.style.height = '0';
-      iframe.style.border = 'none';
-      document.body.appendChild(iframe);
-
-      const doc = iframe.contentWindow?.document;
-      if (!doc) return;
-
-      doc.open();
-      doc.write('<html><head><title>Order Invoice</title>');
-      const styles = document.querySelectorAll('style, link[rel="stylesheet"]');
-      styles.forEach(s => doc.write(s.outerHTML));
-      doc.write('</head><body>');
-      doc.write(content.innerHTML);
-      doc.write('</body></html>');
-      doc.close();
-
-      setTimeout(() => {
-        iframe.contentWindow?.focus();
-        iframe.contentWindow?.print();
-        setTimeout(() => {
-          document.body.removeChild(iframe);
-          setPrintingOrder(null);
-        }, 1000);
-      }, 500);
-    }, 100);
+    const loadingToast = toast.loading('جاري تجهيز الفاتورة للطباعة...');
+    
+    try {
+      // Delay slightly to ensure OrderInvoice is rendered in the hidden div
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      const url = await generatePassPrntUrl('global-printable-invoice');
+      window.location.href = url;
+      toast.success('تم إرسال الطلب للطابعة', { id: loadingToast });
+    } catch (error) {
+      console.error('PassPRNT Error:', error);
+      toast.error('فشل تجهيز الفاتورة للطباعة', { id: loadingToast });
+    } finally {
+      setPrintingOrder(null);
+    }
   };
 
   const handlePrintReport = () => {
@@ -733,12 +716,12 @@ export default function AdminDashboard() {
                 <OrdersTab
                   orders={orders} loading={loading} orderStatusFilter={orderStatusFilter} setOrderStatusFilter={setOrderStatusFilter}
                   handleUpdateStatus={handleUpdateStatus} handleArchive={handleArchive} handlePaymentReceived={handlePaymentReceived} 
-                  handlePrint={handlePrint} language={language}
+                  onPassPrnt={handlePassPrnt} language={language}
                 />
               )}
 
-              {activeTab === 'HISTORY' && (
-                <HistoryTab historyOrders={historyOrders} loading={historyLoading} onExport={handleExportOrders} onSelectOrder={setSelectedOrder} onDeletePermanent={handleDeletePermanent} onPrint={handlePrint} />
+               {activeTab === 'HISTORY' && (
+                <HistoryTab historyOrders={historyOrders} loading={historyLoading} onExport={handleExportOrders} onSelectOrder={setSelectedOrder} onDeletePermanent={handleDeletePermanent} onPassPrnt={handlePassPrnt} />
               )}
 
               {activeTab === 'CUSTOMERS' && (
@@ -777,7 +760,7 @@ export default function AdminDashboard() {
       </main>
 
       <AnimatePresence>
-        <OrderDetailsModal order={selectedOrder} onClose={() => setSelectedOrder(null)} onUpdateStatus={handleUpdateStatus} onArchive={handleArchive} onPaymentReceived={handlePaymentReceived} onPrint={handlePrint} language={language} />
+        <OrderDetailsModal order={selectedOrder} onClose={() => setSelectedOrder(null)} onUpdateStatus={handleUpdateStatus} onArchive={handleArchive} onPaymentReceived={handlePaymentReceived} onPassPrnt={handlePassPrnt} language={language} />
         <CustomerDetailsModal customer={selectedCustomer} onClose={() => setSelectedCustomer(null)} onSelectOrder={setSelectedOrder} orderHistory={historyOrders} />
         <ProductFormModal isOpen={isProductModalOpen} onClose={() => setIsProductModalOpen(false)} editingProduct={editingProduct} productFormData={productFormData} setProductFormData={(data: Partial<Record<string, string>>) => setProductFormData(prev => ({ ...prev, ...data }))} onSubmit={handleSaveProduct} products={products} />
         <CategoryReorderModal isOpen={isReorderModalOpen} onClose={() => setIsReorderModalOpen(false)} categoryOrder={sortedCategories} setCategoryOrder={setCategoryOrder} onSave={saveCategoryOrder} isSaving={isSavingOrder} />
