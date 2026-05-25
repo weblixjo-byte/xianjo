@@ -12,6 +12,11 @@ export const metadata: Metadata = {
   },
   description: BRANDING.seo.descriptionEn,
   robots: "index, follow",
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
   openGraph: {
     title: `${BRANDING.nameEn} | Asian Cuisine Amman`,
     description: BRANDING.seo.descriptionEn,
@@ -102,6 +107,8 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
         />
+        <link rel="icon" href="/logo.png" type="image/png" />
+        <link rel="shortcut icon" href="/logo.png" type="image/png" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/logo.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

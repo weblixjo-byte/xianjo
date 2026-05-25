@@ -44,6 +44,8 @@ export default function OrderStatusPage({ params }: { params: Promise<{ id: stri
       }
     };
     fetchOrder();
+    const interval = setInterval(fetchOrder, 4000); // Poll every 4 seconds for real-time tracking updates
+    return () => clearInterval(interval);
   }, [id]);
 
   const t = {

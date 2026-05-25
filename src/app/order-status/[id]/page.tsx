@@ -58,7 +58,7 @@ export default function OrderStatusPage({ params }: { params: Promise<{ id: stri
     // Defensive check: If Supabase keys are missing in .env, gracefully fallback to HTTP polling
     if (!supabase) {
       console.warn("Falling back to HTTP polling because Supabase client is null (missing keys).");
-      const interval = setInterval(() => fetchStatus(false), 8000);
+      const interval = setInterval(() => fetchStatus(false), 3000); // 3s fallback polling for real-time responsiveness
       return () => clearInterval(interval);
     }
 
@@ -82,8 +82,8 @@ export default function OrderStatusPage({ params }: { params: Promise<{ id: stri
       )
       .subscribe();
 
-    // Slow backup polling just in case socket drops quietly
-    const interval = setInterval(() => fetchStatus(false), 15000);
+    // Fast backup polling just in case socket drops quietly
+    const interval = setInterval(() => fetchStatus(false), 4000); // 4s backup polling for real-time responsiveness
 
     return () => {
       clearInterval(interval);

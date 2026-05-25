@@ -635,7 +635,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     fetchOrders();
     fetchStoreStatus();
-    const interval = setInterval(fetchOrders, 30000);
+    const interval = setInterval(fetchOrders, 5000); // Poll every 5 seconds for real-time order notifications
     return () => clearInterval(interval);
   }, [fetchOrders, fetchStoreStatus]);
 
