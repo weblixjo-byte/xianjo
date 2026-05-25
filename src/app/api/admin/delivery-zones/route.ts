@@ -16,8 +16,9 @@ export async function POST(req: Request) {
   if (!await isAdminAuthenticated()) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   try {
     const body = await req.json();
+    const parsedFee = parseFloat(body.fee);
     const zone = await prisma.deliveryZone.create({
-      data: { nameEn: body.nameEn, nameAr: body.nameAr, fee: parseFloat(body.fee) }
+      data: { nameEn: body.nameEn, nameAr: body.nameAr, fee: isNaN(parsedFee) ? 0 : parsedFee }
     });
     return NextResponse.json(zone);
   } catch { return NextResponse.json({ error: "Failed" }, { status: 500 }); }
@@ -28,9 +29,10 @@ export async function PATCH(req: Request) {
   try {
     const body = await req.json();
     const { id, ...data } = body;
+    const parsedFee = data.fee ? parseFloat(data.fee) : undefined;
     const zone = await prisma.deliveryZone.update({
       where: { id },
-      data: { ...data, fee: data.fee ? parseFloat(data.fee) : undefined }
+      data: { ...data, fee: parsedFee !== undefined ? (isNaN(parsedFee) ? 0 : parsedFee) : undefined }
     });
     return NextResponse.json(zone);
   } catch { return NextResponse.json({ error: "Failed" }, { status: 500 }); }

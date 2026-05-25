@@ -457,9 +457,20 @@ export default function AdminDashboard() {
   const fetchZones = useCallback(async () => {
     try {
       const res = await fetch('/api/delivery-zones');
-      const data = await res.json();
-      setZones(data);
-    } catch (_error) { console.error(_error); }
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setZones(data);
+        } else {
+          setZones([]);
+        }
+      } else {
+        setZones([]);
+      }
+    } catch (_error) {
+      console.error(_error);
+      setZones([]);
+    }
   }, []);
 
   const handleAddZone = async () => {

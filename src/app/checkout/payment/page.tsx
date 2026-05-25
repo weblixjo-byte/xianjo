@@ -33,12 +33,21 @@ export default function PaymentPage() {
   const [deliveryZones, setDeliveryZones] = useState<DeliveryZone[]>([]);
 
   useEffect(() => {
-    fetch('/api/delivery-zones').then(res => res.json()).then(data => setDeliveryZones(data)).catch(() => {});
+    fetch('/api/delivery-zones')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setDeliveryZones(data);
+        } else {
+          setDeliveryZones([]);
+        }
+      })
+      .catch(() => setDeliveryZones([]));
   }, []);
 
-  const selectedZone = deliveryZones.find(z => z.id === form.selectedZoneId);
+  const selectedZone = Array.isArray(deliveryZones) ? deliveryZones.find(z => z.id === form.selectedZoneId) : undefined;
   const subTotal = getSubTotal();
-  const deliveryFee = (form.orderType === 'DELIVERY' && selectedZone) ? selectedZone.fee : 0;
+  const deliveryFee = (form.orderType === 'DELIVERY' && selectedZone) ? (selectedZone.fee || 0) : 0;
   const serviceFee = 0.26; 
   const discountAmount = subTotal * form.discountPercent;
   const finalTotal = subTotal + deliveryFee + serviceFee - discountAmount;

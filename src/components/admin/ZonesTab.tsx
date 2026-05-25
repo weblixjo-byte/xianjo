@@ -44,13 +44,13 @@ export default function ZonesTab({
             </tr>
           </thead>
           <tbody className="divide-y divide-brand-gray/40">
-            {zones.length === 0 ? (
+            {!zones || zones.length === 0 ? (
               <tr><td colSpan={4} className="p-10 text-center text-gray-300 font-bold">لا توجد مناطق مضافة حالياً</td></tr>
             ) : zones.map(z => (
               <tr key={z.id} className="hover:bg-brand-cream/5 transition-colors">
                 <td className="px-10 py-8 font-black text-xl">{z.nameAr}</td>
                 <td className="px-10 py-8 font-bold text-brand-black/30">{z.nameEn}</td>
-                <td className="px-10 py-8 text-center font-black text-brand-red">{z.fee.toFixed(2)} د.أ</td>
+                <td className="px-10 py-8 text-center font-black text-brand-red">{(z.fee || 0).toFixed(2)} د.أ</td>
                 <td className="px-10 py-8 text-center">
                   <button onClick={() => onDelete(z.id)} className="p-4 bg-red-50 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all"><Trash2 size={20} /></button>
                 </td>
