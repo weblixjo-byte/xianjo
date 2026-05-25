@@ -32,6 +32,12 @@ export default function Header({ onCartOpen }: { onCartOpen?: () => void }) {
       className="fixed top-0 left-0 right-0 z-[100] bg-white/95 backdrop-blur-md h-20 md:h-24 flex items-center justify-between px-4 md:px-12 border-b border-gray-100"
       dir={language === 'ar' ? 'rtl' : 'ltr'}
     >
+      <h1 className="sr-only">
+        {language === 'ar' 
+          ? `${BRANDING.nameAr} | مطعم مأكولات آسيوية وصينية فاخرة في عمان`
+          : `${BRANDING.nameEn} | Premium Asian & Chinese Restaurant in Amman`
+        }
+      </h1>
       {/* LEFT SECTION */}
       <div className="flex-1 flex justify-start items-center">
         {/* Desktop: Logo */}

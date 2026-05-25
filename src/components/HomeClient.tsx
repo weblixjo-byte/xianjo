@@ -32,6 +32,7 @@ export default function HomeClient({
   
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [activeLanguage, setActiveLanguage] = useState<'en' | 'ar'>('en');
   const menuLoading = false; 
   
   // Calculate categories from CURRENT products and categoryOrder
@@ -58,9 +59,12 @@ export default function HomeClient({
   const activeCategory = selectedCategory || categories[0] || '';
 
   useEffect(() => {
-    const timer = setTimeout(() => setMounted(true), 0);
+    const timer = setTimeout(() => {
+      setMounted(true);
+      setActiveLanguage(language);
+    }, 0);
     return () => clearTimeout(timer);
-  }, []);
+  }, [language]);
 
   const filteredData = products.filter((item) => {
     return (item.category && activeCategory)
@@ -71,45 +75,42 @@ export default function HomeClient({
   const cartCount = items.reduce((acc, item) => acc + item.quantity, 0);
   const totalPrice = getTotalPrice();
 
-  // Effect to set initial category if we have data from server
-  if (!mounted) return null;
-
   return (
-    <div className="bg-white min-h-screen font-body" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="bg-white min-h-screen font-body" dir={activeLanguage === 'ar' ? 'rtl' : 'ltr'}>
       <Header onCartOpen={() => setIsSidebarOpen(true)} />
       
-      <main className="pt-24 pb-32">
+      <div className="pt-24 pb-32">
         <div className="sticky top-20 z-40 bg-white border-b border-gray-100 mb-8">
           <div className="max-w-7xl mx-auto px-6 flex items-center gap-6">
              <button className="flex-shrink-0 text-black p-2">
                 <Menu size={24} strokeWidth={2.5} />
              </button>
 
-             <div className="flex-1 overflow-x-auto no-scrollbar flex items-center gap-10 py-6">
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`text-sm font-bold uppercase whitespace-nowrap relative py-2 transition-all
-                      ${activeCategory === cat ? 'text-black' : 'text-gray-400 hover:text-black'}`}
-                  >
-                    {cat}
-                    {activeCategory === cat && (
-                      <motion.div 
-                        layoutId="activeUnderline"
-                        className="absolute -bottom-[2px] left-0 right-0 h-1 bg-black rounded-full"
-                      />
-                    )}
-                  </button>
-                ))}
-             </div>
+              <div className="flex-1 overflow-x-auto no-scrollbar flex items-center gap-10 py-6">
+                 {categories.map((cat) => (
+                   <button
+                     key={cat}
+                     onClick={() => setSelectedCategory(cat)}
+                     className={`text-sm font-bold uppercase whitespace-nowrap relative py-2 transition-all
+                       ${activeCategory === cat ? 'text-black' : 'text-gray-400 hover:text-black'}`}
+                   >
+                     {cat}
+                     {activeCategory === cat && (
+                       <motion.div 
+                         layoutId="activeUnderline"
+                         className="absolute -bottom-[2px] left-0 right-0 h-1 bg-black rounded-full"
+                       />
+                     )}
+                   </button>
+                 ))}
+              </div>
           </div>
         </div>
 
         <div className="max-w-7xl mx-auto px-6 mb-10 text-center">
            <h2 className="text-3xl font-bold text-black luxury-heading mb-2">{activeCategory}</h2>
            <p className="text-gray-500 text-sm font-medium">
-             {language === 'ar' ? 'أطباق مختارة بعناية خصيصاً لك' : 'Carefully selected premium dishes just for you'}
+             {activeLanguage === 'ar' ? 'أطباق مختارة بعناية خصيصاً لك' : 'Carefully selected premium dishes just for you'}
            </p>
         </div>
 
@@ -134,28 +135,28 @@ export default function HomeClient({
             </div>
           )}
         </section>
-      </main>
+      </div>
 
       <AnimatePresence>
-        {totalPrice > 0 && !isSidebarOpen ? (
+        {mounted && totalPrice > 0 && !isSidebarOpen ? (
           <motion.div 
             initial={{ y: 100 }}
             animate={{ y: 0 }}
             exit={{ y: 100 }}
             className="fixed bottom-0 left-0 right-0 z-[110] bg-white border-t border-gray-100 p-6 flex items-center justify-between"
           >
-            <div className={`flex-1 flex flex-col ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+            <div className={`flex-1 flex flex-col ${activeLanguage === 'ar' ? 'text-right' : 'text-left'}`}>
                <span className="text-xs font-bold text-gray-400">
-                 {language === 'ar' ? 'إجمالي الطلب' : 'Current Order Total'}
+                 {activeLanguage === 'ar' ? 'إجمالي الطلب' : 'Current Order Total'}
                </span>
-               <span className="text-xl font-bold text-black">{totalPrice.toFixed(2)} {language === 'ar' ? 'د.أ' : 'JOD'}</span>
+               <span className="text-xl font-bold text-black">{totalPrice.toFixed(2)} {activeLanguage === 'ar' ? 'د.أ' : 'JOD'}</span>
             </div>
             <button 
               onClick={() => setIsSidebarOpen(true)}
               className="bg-black text-white px-8 py-4 rounded-xl font-bold flex items-center gap-3 active:scale-95 transition-all shadow-lg"
             >
               <ShoppingCart size={20} />
-              <span>{language === 'ar' ? `عرض السلة (${cartCount})` : `View Cart (${cartCount})`}</span>
+              <span>{activeLanguage === 'ar' ? `عرض السلة (${cartCount})` : `View Cart (${cartCount})`}</span>
             </button>
           </motion.div>
         ) : null}
