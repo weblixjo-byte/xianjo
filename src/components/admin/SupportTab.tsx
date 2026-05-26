@@ -23,7 +23,6 @@ export default function SupportTab({ onResetData, onResetMenu }: SupportTabProps
       });
       if (res.ok) {
         setIsUnlocked(true);
-        setPassword(''); // Clear password immediately for security
         toast.success('تم فتح صلاحيات الدعم');
       } else {
         toast.error('كلمة مرور الدعم غير صحيحة');
@@ -78,7 +77,7 @@ export default function SupportTab({ onResetData, onResetMenu }: SupportTabProps
             <p className="text-xs text-emerald-700 font-bold">لديك الآن صلاحيات المسح العميق وتصفير النظام.</p>
           </div>
         </div>
-        <button onClick={() => setIsUnlocked(false)} className="text-[10px] font-black bg-white border border-emerald-200 text-emerald-700 px-4 py-2 rounded-xl hover:bg-emerald-100 transition-all">إغلاق الجلسة</button>
+        <button onClick={() => { setIsUnlocked(false); setPassword(''); }} className="text-[10px] font-black bg-white border border-emerald-200 text-emerald-700 px-4 py-2 rounded-xl hover:bg-emerald-100 transition-all">إغلاق الجلسة</button>
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
