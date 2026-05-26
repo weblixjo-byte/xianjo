@@ -21,7 +21,7 @@ export const BRANDING = {
   },
 
   seo: {
-    url: "https://xianrestaurant.com",
+    url: "https://xianjo-order.com",
     descriptionEn: "Experience the authentic taste of Asian fusion at Xian Restaurant. Order online now for delivery or pickup.",
     descriptionAr: "استمتع بالمذاق الأصيل للاندماج الآسيوي في مطعم شيان. اطلب عبر الإنترنت الآن للتوصيل أو الاستلام.",
     keywords: "restaurant, food, sushi, asian, xian, delivery, pickup",
@@ -38,7 +38,7 @@ export const BRANDING = {
     phone: "0779990504",
     addressAr: "عمان، الأردن",
     addressEn: "Amman, Jordan",
-    adminEmail: "admin@xianjo.com", // Used for Web Push VAPID contact
+    adminEmail: "info@xianjo.com", // Used for Web Push VAPID contact
   },
 
   socials: {
