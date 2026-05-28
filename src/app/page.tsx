@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: `مزيج يأسرك! اطلب الآن من ${BRANDING.nameAr} | ${BRANDING.nameEn}`,
     description: BRANDING.seo.descriptionAr,
-    images: [{ url: '/hero-food.png', width: 1200, height: 630, alt: `${BRANDING.nameEn} - Asian Cuisine Amman` }],
+    images: [{ url: '/OG-IMG.png', width: 1200, height: 630, alt: `${BRANDING.nameEn} - Asian Cuisine Amman` }],
     type: 'website',
     url: BRANDING.seo.url,
   },
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: `${BRANDING.nameEn} | Asian Cuisine Amman`,
     description: BRANDING.seo.descriptionEn,
-    images: ['/hero-food.png'],
+    images: ['/OG-IMG.png'],
   },
   alternates: {
     canonical: BRANDING.seo.url,

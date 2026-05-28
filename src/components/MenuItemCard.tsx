@@ -51,7 +51,7 @@ export default function MenuItemCard({ item, priority = false }: { item: Product
       {/* IMAGE CONTAINER */}
       <div className="relative w-full aspect-[4/3] rounded-[2rem] overflow-hidden bg-white border border-gray-100/50 shadow-sm transition-all duration-500 group-hover:shadow-xl group-hover:border-brand-red/10 flex items-center justify-center">
         <Image 
-          src={(item.imageUrl && item.imageUrl !== 'no') ? item.imageUrl : '/hero-food.png'} 
+          src={(item.imageUrl && item.imageUrl !== 'no') ? item.imageUrl : '/OG-IMG.png'} 
           alt={`${item.nameEn || ''} ${item.nameAr || ''} - ${BRANDING.nameEn}, Amman Chinese Food & Sushi`.trim()}
           fill 
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
