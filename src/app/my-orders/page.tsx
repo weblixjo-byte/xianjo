@@ -1,11 +1,13 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Header from '@/components/Header';
 import { PackageSearch, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useLanguage } from '@/store/useLanguage';
 import { useRouter } from 'next/navigation';
+import { supabase } from '@/utils/supabaseClient';
+import { RealtimeChannel } from '@supabase/supabase-js';
 
 interface OrderItem {
   id: string;
@@ -33,15 +35,7 @@ export default function MyOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (status === 'authenticated') {
-      fetchOrders();
-    } else if (status === 'unauthenticated') {
-      setLoading(false);
-    }
-  }, [status]);
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       const res = await fetch('/api/my-orders');
       if (res.ok) {
@@ -53,7 +47,41 @@ export default function MyOrdersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      fetchOrders();
+
+      let channel: RealtimeChannel | null = null;
+      if (supabase) {
+        channel = supabase.channel('my-orders-realtime')
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'Order'
+            },
+            () => {
+              fetchOrders();
+            }
+          )
+          .subscribe();
+      }
+
+      const interval = setInterval(fetchOrders, supabase ? 10000 : 5000);
+
+      return () => {
+        clearInterval(interval);
+        if (supabase && channel) {
+          supabase.removeChannel(channel);
+        }
+      };
+    } else if (status === 'unauthenticated') {
+      setLoading(false);
+    }
+  }, [status, fetchOrders]);
 
   const getStatusDisplay = (status: string, orderType: string) => {
     const isAr = language === 'ar';

@@ -5,6 +5,8 @@ import toast, { Toaster } from 'react-hot-toast';
 import * as XLSX from 'xlsx';
 import { useLanguage } from '@/store/useLanguage';
 import { AnimatePresence, motion } from 'framer-motion';
+import { supabase } from '@/utils/supabaseClient';
+import { RealtimeChannel } from '@supabase/supabase-js';
 
 // Types
 import {
@@ -670,12 +672,38 @@ export default function AdminDashboard() {
   };
 
 
-  // --- Effects ---
   useEffect(() => {
     fetchOrders();
     fetchStoreStatus();
-    const interval = setInterval(fetchOrders, 5000); // Poll every 5 seconds for real-time order notifications
-    return () => clearInterval(interval);
+
+    // If supabase client is successfully initialized, set up WebSockets Realtime subscriptions
+    let channel: RealtimeChannel | null = null;
+    if (supabase) {
+      channel = supabase.channel('admin-orders-realtime')
+        .on(
+          'postgres_changes',
+          {
+            event: '*', // Listen to INSERT, UPDATE, DELETE
+            schema: 'public',
+            table: 'Order'
+          },
+          () => {
+            // Trigger instant refresh of orders
+            fetchOrders();
+          }
+        )
+        .subscribe();
+    }
+
+    // Keep a slightly longer backup polling interval as a fallback
+    const interval = setInterval(fetchOrders, supabase ? 10000 : 5000);
+
+    return () => {
+      clearInterval(interval);
+      if (supabase && channel) {
+        supabase.removeChannel(channel);
+      }
+    };
   }, [fetchOrders, fetchStoreStatus]);
 
   useEffect(() => {
@@ -844,12 +872,12 @@ export default function AdminDashboard() {
       </AnimatePresence>
 
       {/* Hidden Invoice for Global Printing (Card level) */}
-      <div id="global-printable-invoice" className="hidden">
+      <div id="global-printable-invoice" style={{ position: 'fixed', left: '-9999px', top: '-9999px', opacity: 0, pointerEvents: 'none' }}>
         {printingOrder && <OrderInvoice order={printingOrder} products={products} />}
       </div>
 
       {/* Hidden Sales Report for Printing */}
-      <div id="printable-sales-report" className="hidden">
+      <div id="printable-sales-report" style={{ position: 'fixed', left: '-9999px', top: '-9999px', opacity: 0, pointerEvents: 'none' }}>
         {isPrintingReport && reportData && <SalesReport reportData={reportData} reportType={reportType} />}
       </div>
     </div>

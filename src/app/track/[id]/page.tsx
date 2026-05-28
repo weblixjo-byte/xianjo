@@ -1,9 +1,10 @@
 'use client';
-import { useEffect, useState, use } from 'react';
+import { useEffect, useState, use, useCallback } from 'react';
 import Header from '@/components/Header';
-import { Clock, PackageOpen } from 'lucide-react';
+import { Clock, PackageOpen, Bike, Phone } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguage } from '@/store/useLanguage';
+import { supabase } from '@/utils/supabaseClient';
 
 interface OrderItem {
   id: string;
@@ -18,6 +19,8 @@ interface Order {
   status: string;
   createdAt: string;
   items: OrderItem[];
+  captainPhone?: string | null;
+  paymentStatus?: string;
 }
 
 export default function OrderStatusPage({ params }: { params: Promise<{ id: string }> }) {
@@ -28,25 +31,64 @@ export default function OrderStatusPage({ params }: { params: Promise<{ id: stri
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchOrder = useCallback(async (showLoading = false) => {
+    if (showLoading) setLoading(true);
+    try {
+      const cleanId = id.replace('#', '');
+      const res = await fetch(`/api/order/${cleanId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setOrder(data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch order:", err);
+    } finally {
+      if (showLoading) setLoading(false);
+    }
+  }, [id]);
+
   useEffect(() => {
-    const fetchOrder = async () => {
-      try {
-        const cleanId = id.replace('#', '');
-        const res = await fetch(`/api/order/${cleanId}`);
-        if (res.ok) {
-          const data = await res.json();
-          setOrder(data);
+    const cleanId = id.replace('#', '');
+    fetchOrder(true);
+
+    // Defensive check: If Supabase keys are missing in .env, gracefully fallback to HTTP polling
+    if (!supabase) {
+      console.warn("Falling back to HTTP polling because Supabase client is null (missing keys).");
+      const interval = setInterval(() => fetchOrder(false), 3000); // 3s fallback polling for real-time responsiveness
+      return () => clearInterval(interval);
+    }
+
+    // Supabase Realtime Subscription for zero UI refresh drops
+    const channel = supabase.channel(`public:Order:id=eq.${cleanId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'Order',
+          filter: `id=eq.${cleanId}`
+        },
+        (payload) => {
+          setOrder((prev) => prev ? { 
+            ...prev, 
+            status: payload.new.status, 
+            paymentStatus: payload.new.paymentStatus,
+            captainPhone: payload.new.captainPhone
+          } : null);
         }
-      } catch (err) {
-        console.error("Failed to fetch order:", err);
-      } finally {
-        setLoading(false);
+      )
+      .subscribe();
+
+    // Fast backup polling just in case socket drops quietly
+    const interval = setInterval(() => fetchOrder(false), 4000);
+
+    return () => {
+      clearInterval(interval);
+      if (supabase && channel) {
+        supabase.removeChannel(channel);
       }
     };
-    fetchOrder();
-    const interval = setInterval(fetchOrder, 4000); // Poll every 4 seconds for real-time tracking updates
-    return () => clearInterval(interval);
-  }, [id]);
+  }, [id, fetchOrder]);
 
   const t = {
     notFound: isAr ? 'الطلب غير موجود' : 'Order Not Found',
@@ -112,6 +154,25 @@ export default function OrderStatusPage({ params }: { params: Promise<{ id: stri
           </div>
 
           <div className="space-y-8">
+            {order.captainPhone && (
+              <div className="p-6 bg-gradient-to-br from-blue-50 to-blue-100/30 border border-blue-100 rounded-3xl shadow-sm flex flex-col items-center gap-3">
+                <div className="flex items-center gap-2 text-blue-800">
+                  <Bike className="animate-bounce text-blue-600" size={20} strokeWidth={2.5} />
+                  <span className="font-black text-sm">{isAr ? 'طلبك مع كابتن التوصيل!' : 'Your order is with the delivery captain!'}</span>
+                </div>
+                <p className="text-xs text-brand-black/60 font-bold leading-relaxed text-center">
+                  {isAr ? 'بإمكانك التواصل مع الكابتن مباشرة لتنسيق وتتبع موقع طلبك:' : 'You can contact the captain directly to coordinate and track your order:'}
+                </p>
+                <a 
+                  href={`tel:${order.captainPhone}`} 
+                  className="inline-flex items-center gap-2 bg-brand-red text-white px-6 py-3 rounded-2xl font-black shadow-lg shadow-brand-red/10 hover:bg-brand-red/80 active:scale-95 transition-all text-sm cursor-pointer"
+                >
+                  <Phone size={16} />
+                  <span>{order.captainPhone}</span>
+                </a>
+              </div>
+            )}
+
             <div className="flex flex-col sm:flex-row gap-4">
                <div className="flex-1 flex items-center gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-100">
                  <div className="bg-white p-2 rounded-xl text-brand-red shadow-sm"><Clock size={20} /></div>
