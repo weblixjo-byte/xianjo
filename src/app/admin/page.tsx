@@ -753,7 +753,7 @@ export default function AdminDashboard() {
       </main>
 
       <AnimatePresence>
-        <OrderDetailsModal order={selectedOrder} onClose={() => setSelectedOrder(null)} onUpdateStatus={handleUpdateStatus} onArchive={handleArchive} onPaymentReceived={handlePaymentReceived} onPassPrnt={handlePassPrnt} language={language} />
+        <OrderDetailsModal order={selectedOrder} onClose={() => setSelectedOrder(null)} onUpdateStatus={handleUpdateStatus} onArchive={handleArchive} onPaymentReceived={handlePaymentReceived} onPassPrnt={handlePassPrnt} language={language} products={products} />
         <CustomerDetailsModal customer={selectedCustomer} onClose={() => setSelectedCustomer(null)} onSelectOrder={setSelectedOrder} orderHistory={historyOrders} />
         <ProductFormModal isOpen={isProductModalOpen} onClose={() => setIsProductModalOpen(false)} editingProduct={editingProduct} productFormData={productFormData} setProductFormData={(data: Partial<Record<string, string>>) => setProductFormData(prev => ({ ...prev, ...data }))} onSubmit={handleSaveProduct} products={products} />
         <CategoryReorderModal isOpen={isReorderModalOpen} onClose={() => setIsReorderModalOpen(false)} categoryOrder={sortedCategories} setCategoryOrder={setCategoryOrder} onSave={saveCategoryOrder} isSaving={isSavingOrder} />
@@ -763,7 +763,7 @@ export default function AdminDashboard() {
 
       {/* Hidden Invoice for Global Printing (Card level) */}
       <div id="global-printable-invoice" className="hidden">
-        {printingOrder && <OrderInvoice order={printingOrder} />}
+        {printingOrder && <OrderInvoice order={printingOrder} products={products} />}
       </div>
 
       {/* Hidden Sales Report for Printing */}

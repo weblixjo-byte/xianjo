@@ -26,6 +26,7 @@ export interface Coupon {
 
 export interface OrderItem {
   id: string;
+  productId?: string;
   name: string;
   price: number;
   quantity: number;

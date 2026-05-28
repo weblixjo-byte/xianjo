@@ -1,8 +1,10 @@
 'use client';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { X, User, Phone, MapPin, ExternalLink, Copy, Clock, Store, CheckCircle, Zap, Trash2, Smartphone } from 'lucide-react';
+import { X, User, Phone, MapPin, ExternalLink, Copy, Clock, Store, CheckCircle, Zap, Trash2, Smartphone, Eye } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { Order, OrderItem } from '@/types/admin';
+import { Order, OrderItem, Product } from '@/types/admin';
+import OrderInvoice from './OrderInvoice';
 
 interface OrderDetailsModalProps {
   order: Order | null;
@@ -10,8 +12,9 @@ interface OrderDetailsModalProps {
   onUpdateStatus: (id: string, status: string) => void;
   onArchive: (id: string) => void;
   onPaymentReceived: (id: string, e: React.MouseEvent) => void;
-    onPassPrnt: (order: Order) => void;
+  onPassPrnt: (order: Order) => void;
   language: string;
+  products?: Product[];
 }
 
 export default function OrderDetailsModal({
@@ -19,10 +22,13 @@ export default function OrderDetailsModal({
   onClose,
   onUpdateStatus,
   onArchive,
-    onPaymentReceived,
+  onPaymentReceived,
   onPassPrnt,
-  language
+  language,
+  products
 }: OrderDetailsModalProps) {
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
   if (!order) return null;
 
   return (
@@ -32,20 +38,58 @@ export default function OrderDetailsModal({
         <div className="p-8 border-b border-brand-gray/20 flex items-center justify-between bg-brand-cream/30">
           <div>
             <h3 className="text-2xl font-black text-brand-black tracking-tight">تفاصيل الطلب</h3>
-            <div className="flex items-center gap-3">
-              <p className="text-brand-red font-bold">#{order.id.slice(-6).toUpperCase()}</p>
-               <button 
-                onClick={() => onPassPrnt(order)}
-                className="flex items-center gap-3 bg-brand-red text-white px-6 py-2.5 rounded-2xl shadow-xl shadow-brand-red/20 hover:bg-brand-red/80 transition-all font-black"
-              >
-                <Smartphone size={20} />
-                <span className="text-sm">طباعة الفاتورة</span>
-              </button>
+            <div className="flex flex-wrap items-center gap-3 mt-1">
+              <p className="text-brand-red font-bold text-lg shrink-0">#{order.id.slice(-6).toUpperCase()}</p>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setIsPreviewOpen(!isPreviewOpen)}
+                  className="flex items-center gap-2 bg-white border border-brand-gray/60 text-brand-black px-4 py-2 rounded-2xl hover:bg-brand-gray/10 transition-all font-black text-xs cursor-pointer"
+                >
+                  <Eye size={16} className="text-brand-red" />
+                  <span>{isPreviewOpen ? 'إخفاء المعاينة' : 'معاينة الفاتورة'}</span>
+                </button>
+                <button 
+                  onClick={() => onPassPrnt(order)}
+                  className="flex items-center gap-2 bg-brand-red text-white px-5 py-2 rounded-2xl shadow-lg shadow-brand-red/10 hover:bg-brand-red/80 transition-all font-black text-xs cursor-pointer"
+                >
+                  <Smartphone size={16} />
+                  <span>طباعة الفاتورة</span>
+                </button>
+              </div>
             </div>
           </div>
-          <button onClick={onClose} className="p-3 bg-white rounded-2xl shadow-sm border border-brand-gray/20 text-brand-black/40 hover:text-brand-red transition-all"><X size={24} /></button>
+          <button onClick={onClose} className="p-3 bg-white rounded-2xl shadow-sm border border-brand-gray/20 text-brand-black/40 hover:text-brand-red transition-all cursor-pointer"><X size={24} /></button>
         </div>
         <div className="flex-1 overflow-y-auto p-8 space-y-8 no-scrollbar">
+          {/* Dynamic Thermal Invoice Live Preview */}
+          {isPreviewOpen && (
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="p-6 bg-brand-gray/5 border border-brand-gray/20 rounded-[32px] flex flex-col items-center"
+            >
+              <div className="text-[10px] font-black uppercase tracking-[3px] text-brand-black/30 mb-4 text-center">
+                معاينة الفاتورة الحرارية (80mm)
+              </div>
+              
+              {/* Simulated Paper Roll */}
+              <div 
+                className="bg-white p-4 shadow-xl border border-gray-100 rounded-2xl overflow-x-auto text-left" 
+                style={{ width: '80mm', maxWidth: '100%', boxSizing: 'border-box' }}
+              >
+                <OrderInvoice order={order} products={products} />
+              </div>
+              
+              <button
+                onClick={() => setIsPreviewOpen(false)}
+                className="mt-6 px-6 py-2.5 bg-brand-black text-white text-xs font-black rounded-xl hover:bg-brand-red active:scale-95 transition-all shadow-md cursor-pointer"
+              >
+                إغلاق شاشة المعاينة
+              </button>
+            </motion.div>
+          )}
+
           {/* Status Badge */}
           <div className="flex items-center gap-2">
             <div className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest ${order.status === 'SHIPPED' ? 'bg-green-100 text-green-700' : 'bg-brand-gray/10 text-brand-black'}`}>

@@ -5,16 +5,22 @@ import { useState, useEffect } from 'react';
 import { BRANDING } from '@/constants/branding';
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  const [position, setPosition] = useState<'top-center' | 'bottom-center'>(
-    typeof window !== 'undefined' && window.innerWidth < 768 ? 'top-center' : 'bottom-center'
-  );
+  const [position, setPosition] = useState<'top-center' | 'bottom-center'>('bottom-center');
 
   useEffect(() => {
+    // Set correct position on client-side mount safely on the next tick
+    const timer = setTimeout(() => {
+      setPosition(window.innerWidth < 768 ? 'top-center' : 'bottom-center');
+    }, 0);
+
     const handleResize = () => {
       setPosition(window.innerWidth < 768 ? 'top-center' : 'bottom-center');
     };
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   return (

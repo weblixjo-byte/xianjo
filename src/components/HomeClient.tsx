@@ -1,8 +1,8 @@
 'use client';
 import { useCart } from '@/store/useCart';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, ShoppingCart } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { ChevronLeft, ChevronRight, ShoppingCart } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 import Header from '@/components/Header';
 import MenuItemCard, { Product } from '@/components/MenuItemCard';
 import CartSidebar from '@/components/CartSidebar';
@@ -35,6 +35,8 @@ export default function HomeClient({
   const [activeLanguage, setActiveLanguage] = useState<'en' | 'ar'>('en');
   const menuLoading = false; 
   
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  
   // Calculate categories from CURRENT products and categoryOrder
   const allCategoriesSet = new Set<string>();
   products.forEach(p => {
@@ -66,6 +68,18 @@ export default function HomeClient({
     return () => clearTimeout(timer);
   }, [language]);
 
+  // Swipe hint effect is replaced with permanent side animation chevron arrow
+
+  // Scroll active category into view smoothly
+  useEffect(() => {
+    if (activeCategory) {
+      const el = document.getElementById(`cat-${activeCategory}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }
+  }, [activeCategory]);
+
   const filteredData = products.filter((item) => {
     return (item.category && activeCategory)
       ? item.category.split(',').map((c: string) => c.trim()).includes(activeCategory)
@@ -80,30 +94,55 @@ export default function HomeClient({
       <Header onCartOpen={() => setIsSidebarOpen(true)} />
       
       <div className="pt-24 pb-32">
-        <div className="sticky top-20 z-40 bg-white border-b border-gray-100 mb-8">
-          <div className="max-w-7xl mx-auto px-6 flex items-center gap-6">
-             <button className="flex-shrink-0 text-black p-2">
-                <Menu size={24} strokeWidth={2.5} />
-             </button>
+        <div className="sticky top-20 z-40 bg-white border-b border-gray-100 mb-8 pt-4">
+          {/* Categories bar stretching from edge to edge (Full Screen Width) */}
+          <div className="relative w-full overflow-hidden">
+             {/* Small animated red arrow next to categories scroll edge indicating movement without text */}
+             {mounted && (
+               <motion.div
+                 animate={{
+                   x: language === 'ar' ? [4, -2, 4] : [-4, 2, -4]
+                 }}
+                 transition={{
+                   duration: 1.5,
+                   repeat: Infinity,
+                   ease: "easeInOut"
+                 }}
+                 className={`absolute top-1/2 -translate-y-1/2 z-30 text-brand-red flex items-center justify-center pointer-events-none
+                   ${language === 'ar' ? 'right-2' : 'left-2'}`}
+               >
+                  {language === 'ar' ? (
+                    <ChevronLeft size={22} strokeWidth={4.5} />
+                  ) : (
+                    <ChevronRight size={22} strokeWidth={4.5} />
+                  )}
+               </motion.div>
+             )}
 
-              <div className="flex-1 overflow-x-auto no-scrollbar flex items-center gap-10 py-6">
-                 {categories.map((cat) => (
-                   <button
-                     key={cat}
-                     onClick={() => setSelectedCategory(cat)}
-                     className={`text-sm font-bold uppercase whitespace-nowrap relative py-2 transition-all
-                       ${activeCategory === cat ? 'text-black' : 'text-gray-400 hover:text-black'}`}
-                   >
-                     {cat}
-                     {activeCategory === cat && (
-                       <motion.div 
-                         layoutId="activeUnderline"
-                         className="absolute -bottom-[2px] left-0 right-0 h-1 bg-black rounded-full"
-                       />
-                     )}
-                   </button>
-                 ))}
-              </div>
+             <div 
+               ref={scrollContainerRef}
+               className="overflow-x-auto no-scrollbar flex items-center py-4 px-8 scroll-smooth"
+             >
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    id={`cat-${cat}`}
+                    onClick={() => {
+                      setSelectedCategory(cat);
+                    }}
+                    className={`text-sm font-bold uppercase whitespace-nowrap relative py-2 mx-6 flex-shrink-0 transition-all
+                      ${activeCategory === cat ? 'text-brand-red font-extrabold scale-105' : 'text-gray-800 hover:text-brand-red'}`}
+                  >
+                    {cat}
+                    {activeCategory === cat && (
+                      <motion.div 
+                        layoutId="activeUnderline"
+                        className="absolute -bottom-[2px] left-0 right-0 h-1 bg-brand-red rounded-full"
+                      />
+                    )}
+                  </button>
+                ))}
+             </div>
           </div>
         </div>
 

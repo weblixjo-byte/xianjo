@@ -1,14 +1,15 @@
 'use client';
 
 import React from 'react';
-import { Order } from '@/types/admin';
+import { Order, Product } from '@/types/admin';
 import { BRANDING } from '@/constants/branding';
 
 interface OrderInvoiceProps {
   order: Order;
+  products?: Product[];
 }
 
-const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order }) => {
+const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order, products }) => {
   // Format Date
   const dateStr = new Date(order.createdAt).toLocaleString('en-GB', {
     day: '2-digit',
@@ -47,7 +48,7 @@ const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order }) => {
           width: 80mm;
           padding: 4mm;
           font-family: 'Courier New', Courier, monospace;
-          line-height: 1.3;
+          line-height: 1.4;
           font-size: 13px;
           font-weight: 700;
           color: #000;
@@ -58,17 +59,21 @@ const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order }) => {
           margin-bottom: 5mm;
         }
 
-        .receipt-logo {
-          font-size: 26px;
-          font-weight: 900;
-          letter-spacing: 2px;
-          margin-bottom: 1mm;
-          border: 2px solid #000;
-          padding: 2mm;
+        .receipt-logo-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-bottom: 2mm;
+        }
+
+        .receipt-logo-img {
+          width: 50px;
+          height: 50px;
+          object-fit: contain;
         }
 
         .receipt-divider {
-          border-top: 2px solid #000;
+          border-top: 1px dashed #000;
           margin: 3mm 0;
         }
 
@@ -86,7 +91,7 @@ const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order }) => {
         .items-header {
           display: flex;
           font-weight: 900;
-          border-bottom: 2px solid #000;
+          border-bottom: 1px dashed #000;
           padding-bottom: 1.5mm;
           margin-bottom: 2mm;
           font-size: 14px;
@@ -95,16 +100,16 @@ const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order }) => {
         .item-row {
           display: flex;
           margin-bottom: 2mm;
-          border-bottom: 1px solid #000;
+          padding-bottom: 1mm;
         }
 
-        .col-qty { width: 12%; font-weight: 900; }
-        .col-desc { width: 58%; }
+        .col-qty { width: 15%; font-weight: 900; }
+        .col-desc { width: 55%; }
         .col-total { width: 30%; text-align: right; font-weight: 900; }
 
         .totals-section {
           margin-top: 5mm;
-          border-top: 2px solid #000;
+          border-top: 1px dashed #000;
           padding-top: 3mm;
         }
 
@@ -115,11 +120,21 @@ const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order }) => {
         }
 
         .grand-total {
-          font-size: 20px;
+          font-size: 18px;
           font-weight: 900;
           margin-top: 3mm;
           padding-top: 2mm;
-          border-top: 2px solid #000;
+          border-top: 1px dashed #000;
+        }
+
+        .payment-badge {
+          margin-top: 4mm;
+          font-size: 12px;
+          font-weight: 900;
+          border: 1px dashed #000;
+          padding: 2mm;
+          text-align: center;
+          text-transform: uppercase;
         }
 
         .footer-note {
@@ -133,7 +148,11 @@ const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order }) => {
       <div className="invoice-body">
         {/* Header */}
         <div className="receipt-header">
-          <div className="receipt-logo">{BRANDING.shortNameEn.toUpperCase()}</div>
+          <div className="receipt-logo-container">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="Xian Restaurant Logo" className="receipt-logo-img" />
+          </div>
+          <div style={{ fontSize: '16px', fontWeight: 900, marginBottom: '1mm' }}>{BRANDING.nameEn.toUpperCase()}</div>
           <div>{BRANDING.sloganEn}</div>
           <div>{BRANDING.contact.addressEn}</div>
           <div>Tel: {BRANDING.contact.phone}</div>
@@ -174,17 +193,22 @@ const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order }) => {
         {/* Items */}
         <div className="items-table">
           <div className="items-header">
-            <div className="col-qty">#</div>
+            <div className="col-qty">QTY</div>
             <div className="col-desc">ITEM</div>
             <div className="col-total">TOTAL</div>
           </div>
-          {order.items.map((item, idx) => (
-            <div key={idx} className="item-row">
-              <div className="col-qty">{item.quantity}</div>
-              <div className="col-desc">{item.name}</div>
-              <div className="col-total">{(item.price * item.quantity).toFixed(2)}</div>
-            </div>
-          ))}
+          {order.items.map((item, idx) => {
+            const dbProduct = products?.find(p => p.id === item.productId);
+            const itemNameEn = dbProduct ? dbProduct.nameEn : item.name;
+            
+            return (
+              <div key={idx} className="item-row">
+                <div className="col-qty">{item.quantity}x</div>
+                <div className="col-desc">{itemNameEn}</div>
+                <div className="col-total">{(item.price * item.quantity).toFixed(2)}</div>
+              </div>
+            );
+          })}
         </div>
 
         <div className="receipt-divider"></div>
@@ -205,36 +229,36 @@ const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order }) => {
           
           {serviceFee > 0 && (
             <div className="total-row">
-              <span>FEES/SERVICE CHARGE:</span>
+              <span>SERVICE CHARGE:</span>
               <span>+{serviceFee.toFixed(2)} JOD</span>
             </div>
           )}
           
           {discountAmount > 0 && (
-            <div className="total-row" style={{ color: '#000' }}>
+            <div className="total-row">
               <span>PROMO DISCOUNT ({order.couponCode}):</span>
               <span>-{discountAmount.toFixed(2)} JOD</span>
             </div>
           )}
 
-          <div className="receipt-divider" style={{ borderTopStyle: 'solid', marginTop: '2mm' }}></div>
+          <div className="receipt-divider" style={{ marginTop: '2mm' }}></div>
           
-          <div className="total-row grand-total" style={{ fontSize: '18px', borderTop: 'none', marginTop: '1mm' }}>
+          <div className="total-row grand-total" style={{ borderTop: 'none', marginTop: '1mm' }}>
             <span>GRAND TOTAL:</span>
             <span>{finalTotal.toFixed(2)} JOD</span>
           </div>
           
-          <div className="receipt-divider" style={{ borderTopStyle: 'solid', marginBottom: '2mm', marginTop: '1mm' }}></div>
+          <div className="receipt-divider" style={{ marginBottom: '2mm', marginTop: '1mm' }}></div>
         </div>
 
         {/* Payment */}
-        <div style={{ marginTop: '4mm', fontStyle: 'italic', fontSize: '12px', fontWeight: '900', border: '1px solid #000', padding: '2mm' }}>
+        <div className="payment-badge">
           Payment: {order.paymentMethod} / {order.paymentStatus}
         </div>
 
         <div className="footer-note">
           <div>THANK YOU FOR YOUR ORDER!</div>
-          <div style={{ marginTop: '1mm' }}>Visit us: {BRANDING.shortNameEn.toLowerCase()}jo.com</div>
+          <div style={{ marginTop: '1.5mm' }}>Visit us: xianjo-order.com</div>
         </div>
       </div>
     </div>
