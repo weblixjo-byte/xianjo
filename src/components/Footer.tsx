@@ -26,7 +26,7 @@ export default function Footer() {
     track: language === 'ar' ? 'تتبع الطلب' : 'Track Order',
     contact: language === 'ar' ? 'اتصل بنا' : 'Contact Us',
     rights: language === 'ar' ? `جميع الحقوق محفوظة © ${currentYear} ${BRANDING.nameAr}` : `All Rights Reserved © ${currentYear} ${BRANDING.nameEn}`,
-    created: language === 'ar' ? 'تم التصميم والتطوير بواسطة' : 'Created by weblix-jo'
+    created: language === 'ar' ? 'تم التصميم والتطوير بواسطة' : 'Created by'
   };
 
   return (

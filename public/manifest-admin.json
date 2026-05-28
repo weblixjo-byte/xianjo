@@ -1,11 +1,11 @@
 {
-  "name": "Xian Restaurant | Asian Cuisine Amman",
-  "short_name": "Xian Restaurant",
-  "description": "Premium Asian & Chinese cuisine in Amman. Dumplings, Noodles, Sushi and more.",
-  "start_url": "/",
-  "scope": "/",
+  "name": "Xian Restaurant Admin",
+  "short_name": "Xian Admin",
+  "description": "Admin dashboard for managing Xian Restaurant orders and settings.",
+  "start_url": "/admin",
+  "scope": "/admin",
   "display": "standalone",
-  "background_color": "#FCF8F5",
+  "background_color": "#0F0F0F",
   "theme_color": "#922724",
   "icons": [
     {
