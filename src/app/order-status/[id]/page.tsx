@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState, useCallback } from 'react';
 import Header from '@/components/Header';
-import { Clock, CheckCircle2, UtensilsCrossed, Bike, PackageSearch, ArrowLeft, XCircle, Zap } from 'lucide-react';
+import { Clock, CheckCircle2, UtensilsCrossed, Bike, PackageSearch, ArrowLeft, XCircle, Zap, Phone } from 'lucide-react';
 import Link from 'next/link';
 import { use } from 'react';
 import { supabase } from '@/utils/supabaseClient';
@@ -28,6 +28,7 @@ interface Order {
   serviceFee: number;
   discountAmount: number;
   couponCode?: string | null;
+  captainPhone?: string | null;
 }
 
 export default function OrderStatusPage({ params }: { params: Promise<{ id: string }> }) {
@@ -76,7 +77,8 @@ export default function OrderStatusPage({ params }: { params: Promise<{ id: stri
           setOrder((prev) => prev ? { 
             ...prev, 
             status: payload.new.status, 
-            paymentStatus: payload.new.paymentStatus 
+            paymentStatus: payload.new.paymentStatus,
+            captainPhone: payload.new.captainPhone
           } : null);
         }
       )
@@ -228,6 +230,25 @@ export default function OrderStatusPage({ params }: { params: Promise<{ id: stri
                  </div>
                )}
             </div>
+
+            {order.captainPhone && (
+               <div className="mt-4 p-6 bg-gradient-to-br from-blue-50 to-blue-100/30 border border-blue-100 rounded-3xl max-w-md mx-auto shadow-sm flex flex-col items-center gap-3">
+                 <div className="flex items-center gap-2 text-blue-800">
+                   <Bike className="animate-bounce text-blue-600" size={20} strokeWidth={2.5} />
+                   <span className="font-black text-sm">{isAr ? 'طلبك مع كابتن التوصيل!' : 'Your order is with the delivery captain!'}</span>
+                 </div>
+                 <p className="text-xs text-brand-black/60 font-bold leading-relaxed text-center">
+                   {isAr ? 'بإمكانك التواصل مع الكابتن مباشرة لتنسيق وتتبع موقع طلبك:' : 'You can contact the captain directly to coordinate and track your order:'}
+                 </p>
+                 <a 
+                   href={`tel:${order.captainPhone}`} 
+                   className="inline-flex items-center gap-2 bg-brand-red text-white px-6 py-3 rounded-2xl font-black shadow-lg shadow-brand-red/10 hover:bg-brand-red/80 active:scale-95 transition-all text-sm cursor-pointer"
+                 >
+                   <Phone size={16} />
+                   <span>{order.captainPhone}</span>
+                 </a>
+               </div>
+             )}
           </div>
 
           <div className="p-8 md:p-16 space-y-16">

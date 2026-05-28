@@ -50,6 +50,7 @@ export interface Order {
   paymentMethod?: string;
   paymentStatus?: string;
   isArchived: boolean;
+  captainPhone?: string | null;
   subtotal: number;
   deliveryFee: number;
   serviceFee: number;

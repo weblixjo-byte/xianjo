@@ -5,6 +5,7 @@ import { PackageSearch, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useLanguage } from '@/store/useLanguage';
+import { useRouter } from 'next/navigation';
 
 interface OrderItem {
   id: string;
@@ -22,11 +23,13 @@ interface Order {
   paymentMethod: string;
   paymentStatus: string;
   items: OrderItem[];
+  captainPhone?: string | null;
 }
 
 export default function MyOrdersPage() {
   const { language } = useLanguage();
   const { status } = useSession();
+  const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -127,10 +130,10 @@ export default function MyOrdersPage() {
                const display = getStatusDisplay(order.status, order.orderType);
                const isComplete = order.status === 'SHIPPED' || order.status === 'CANCELLED';
                return (
-                 <Link 
-                   href={`/order-status/${order.id}`} 
+                 <div 
+                   onClick={() => router.push(`/order-status/${order.id}`)} 
                    key={order.id}
-                   className="bg-white rounded-[2rem] p-8 border border-brand-gray/50 shadow-sm hover:shadow-xl hover:border-brand-red/30 transition-all group relative overflow-hidden"
+                   className="cursor-pointer bg-white rounded-[2rem] p-8 border border-brand-gray/50 shadow-sm hover:shadow-xl hover:border-brand-red/30 transition-all group relative overflow-hidden"
                  >
                    {!isComplete && (
                      <div className="absolute top-0 right-0 w-full h-1 bg-gradient-to-r from-brand-red to-orange-400 animate-pulse" />
@@ -149,20 +152,35 @@ export default function MyOrdersPage() {
                      </span>
                    </div>
 
-                   <div className="space-y-4 mb-6">
-                     {order.items.slice(0, 3).map(item => (
-                       <div key={item.id} className="flex justify-between items-center text-sm">
-                         <span className="font-bold text-brand-black flex items-center gap-2">
-                           <span className="text-brand-black/40 text-xs">{item.quantity}x</span> {item.name}
-                         </span>
-                       </div>
-                     ))}
-                     {order.items.length > 3 && (
-                       <p className="text-xs text-brand-black/40 font-bold">
-                         + {order.items.length - 3} {language === 'ar' ? 'أصناف أخرى' : 'more items'}
-                       </p>
-                     )}
-                   </div>
+                    <div className="space-y-4 mb-6">
+                      {order.items.slice(0, 3).map(item => (
+                        <div key={item.id} className="flex justify-between items-center text-sm">
+                          <span className="font-bold text-brand-black flex items-center gap-2">
+                            <span className="text-brand-black/40 text-xs">{item.quantity}x</span> {item.name}
+                          </span>
+                        </div>
+                      ))}
+                      {order.items.length > 3 && (
+                        <p className="text-xs text-brand-black/40 font-bold">
+                          + {order.items.length - 3} {language === 'ar' ? 'أصناف أخرى' : 'more items'}
+                        </p>
+                      )}
+                    </div>
+
+                    {order.captainPhone && (
+                      <div 
+                        className={`mb-6 p-4 bg-blue-50 text-blue-800 rounded-2xl border border-blue-100 flex items-center justify-between text-xs font-bold gap-2`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <span className="shrink-0">{language === 'ar' ? '🚚 هاتف كابتن التوصيل:' : '🚚 Captain Phone:'}</span>
+                        <a 
+                          href={`tel:${order.captainPhone}`} 
+                          className="bg-brand-red text-white px-3 py-1.5 rounded-xl font-black shadow-md hover:bg-brand-red/80 active:scale-95 transition-all text-[11px]"
+                        >
+                          {order.captainPhone}
+                        </a>
+                      </div>
+                    )}
 
                    <div className="pt-6 border-t border-brand-gray/30 flex justify-between items-center mt-auto">
                      <span className="font-black text-brand-red text-xl">
@@ -172,7 +190,7 @@ export default function MyOrdersPage() {
                        {language === 'ar' ? 'تتبع' : 'Track'} <ArrowUpRight size={14} className={language === 'ar' ? 'rotate-180' : ''} />
                      </div>
                    </div>
-                 </Link>
+                 </div>
                );
              })}
            </div>

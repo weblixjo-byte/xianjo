@@ -1,10 +1,10 @@
 'use client';
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
-import { Bell, Store } from 'lucide-react';
+import { Bell, Store, Bike, X, Phone, Check } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import * as XLSX from 'xlsx';
 import { useLanguage } from '@/store/useLanguage';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 
 // Types
 import {
@@ -74,6 +74,8 @@ export default function AdminDashboard() {
   const [isReorderModalOpen, setIsReorderModalOpen] = useState(false);
   const [categoryOrder, setCategoryOrder] = useState<string[]>([]);
   const [isSavingOrder, setIsSavingOrder] = useState(false);
+  const [captainPromptOrder, setCaptainPromptOrder] = useState<Order | null>(null);
+  const [captainPhoneInput, setCaptainPhoneInput] = useState('');
 
   // Derive sorted categories from products and the custom categoryOrder
   const sortedCategories = useMemo(() => {
@@ -212,20 +214,46 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleUpdateStatus = async (id: string, status: string) => {
+  const handleUpdateStatus = async (id: string, status: string, captainPhone?: string) => {
+    const orderToUpdate = orders.find(o => o.id === id) || historyOrders.find(o => o.id === id);
+    if (status === 'SHIPPED' && orderToUpdate?.orderType === 'DELIVERY' && captainPhone === undefined) {
+      setCaptainPromptOrder(orderToUpdate);
+      setCaptainPhoneInput('');
+      return;
+    }
+
     try {
+      const payload: { status: string; captainPhone?: string } = { status };
+      if (captainPhone) payload.captainPhone = captainPhone;
+
       const res = await fetch(`/api/admin/orders/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status })
+        body: JSON.stringify(payload)
       });
       if (res.ok) {
         toast.success('تم تحديث الحالة');
+        setCaptainPromptOrder(null);
         fetchOrders();
         stopAlarm();
       }
     } catch {
       toast.error('خطأ في التحديث');
+    }
+  };
+
+  const handleConfirmCaptainPhone = () => {
+    if (!captainPromptOrder) return;
+    const trimmed = captainPhoneInput.trim();
+    if (trimmed) {
+      if (trimmed.length < 7 || !/^\+?[0-9\s-]+$/.test(trimmed)) {
+        toast.error("يرجى إدخال رقم هاتف كابتن صحيح (7 أرقام على الأقل) أو تركه فارغاً للمتابعة");
+        return;
+      }
+      handleUpdateStatus(captainPromptOrder.id, 'SHIPPED', trimmed);
+    } else {
+      // Proceed without captain phone (optional)
+      handleUpdateStatus(captainPromptOrder.id, 'SHIPPED', '');
     }
   };
 
@@ -705,28 +733,30 @@ export default function AdminDashboard() {
 
           <div className="space-y-12">
             <AnimatePresence mode="wait">
-               {activeTab === 'ORDERS' && (
+              {activeTab === 'ORDERS' && (
                 <OrdersTab
+                  key="orders-tab"
                   orders={orders} loading={loading} orderStatusFilter={orderStatusFilter} setOrderStatusFilter={setOrderStatusFilter}
                   handleUpdateStatus={handleUpdateStatus} handleArchive={handleArchive} handlePaymentReceived={handlePaymentReceived} 
                   onPassPrnt={handlePassPrnt} language={language}
                 />
               )}
 
-               {activeTab === 'HISTORY' && (
-                <HistoryTab historyOrders={historyOrders} loading={historyLoading} onExport={handleExportOrders} onSelectOrder={setSelectedOrder} onDeletePermanent={handleDeletePermanent} onPassPrnt={handlePassPrnt} />
+              {activeTab === 'HISTORY' && (
+                <HistoryTab key="history-tab" historyOrders={historyOrders} loading={historyLoading} onExport={handleExportOrders} onSelectOrder={setSelectedOrder} onDeletePermanent={handleDeletePermanent} onPassPrnt={handlePassPrnt} />
               )}
 
               {activeTab === 'CUSTOMERS' && (
-                <CustomersTab customers={customers} loading={loading} onExport={handleExportCustomers} onSelectCustomer={setSelectedCustomer} language={language} />
+                <CustomersTab key="customers-tab" customers={customers} loading={loading} onExport={handleExportCustomers} onSelectCustomer={setSelectedCustomer} language={language} />
               )}
 
               {activeTab === 'REPORTS' && (
-                <ReportsTab reportData={reportData} reportType={reportType} setReportType={setReportType} fetchReports={fetchReports} loading={reportLoading} onExport={handleExportReport} onPassPrnt={handlePassPrntReport} />
+                <ReportsTab key="reports-tab" reportData={reportData} reportType={reportType} setReportType={setReportType} fetchReports={fetchReports} loading={reportLoading} onExport={handleExportReport} onPassPrnt={handlePassPrntReport} />
               )}
 
               {activeTab === 'PRODUCTS' && (
                 <ProductsTab
+                  key="products-tab"
                   products={products} loading={loading} selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory}
                   productSearchQuery={productSearchQuery} setProductSearchQuery={setProductSearchQuery} selectedIds={selectedIds} setSelectedIds={setSelectedIds}
                   onAddProduct={() => { setEditingProduct(null); setProductFormData({ nameEn: '', nameAr: '', price: '', category: products[0]?.category || '', imageUrl: '', descriptionAr: '', descriptionEn: '' }); setIsProductModalOpen(true); }}
@@ -737,15 +767,15 @@ export default function AdminDashboard() {
               )}
 
               {activeTab === 'COUPONS' && (
-                <CouponsTab coupons={coupons} loading={loading} couponCode={couponCode} setCouponCode={setCouponCode} couponDiscount={couponDiscount} setCouponDiscount={setCouponDiscount} onCreate={handleCreateCoupon} onToggle={handleToggleCoupon} onDelete={handleDeleteCoupon} />
+                <CouponsTab key="coupons-tab" coupons={coupons} loading={loading} couponCode={couponCode} setCouponCode={setCouponCode} couponDiscount={couponDiscount} setCouponDiscount={setCouponDiscount} onCreate={handleCreateCoupon} onToggle={handleToggleCoupon} onDelete={handleDeleteCoupon} />
               )}
 
               {activeTab === 'ZONES' && (
-                <ZonesTab zones={zones} zoneForm={zoneForm} setZoneForm={setZoneForm} onAdd={handleAddZone} onDelete={handleDeleteZone} />
+                <ZonesTab key="zones-tab" zones={zones} zoneForm={zoneForm} setZoneForm={setZoneForm} onAdd={handleAddZone} onDelete={handleDeleteZone} />
               )}
 
               {activeTab === 'SUPPORT' && (
-                <SupportTab onResetData={handleSystemReset} onResetMenu={handleMenuReset} />
+                <SupportTab key="support-tab" onResetData={handleSystemReset} onResetMenu={handleMenuReset} />
               )}
             </AnimatePresence>
           </div>
@@ -753,12 +783,64 @@ export default function AdminDashboard() {
       </main>
 
       <AnimatePresence>
-        <OrderDetailsModal order={selectedOrder} onClose={() => setSelectedOrder(null)} onUpdateStatus={handleUpdateStatus} onArchive={handleArchive} onPaymentReceived={handlePaymentReceived} onPassPrnt={handlePassPrnt} language={language} products={products} />
-        <CustomerDetailsModal customer={selectedCustomer} onClose={() => setSelectedCustomer(null)} onSelectOrder={setSelectedOrder} orderHistory={historyOrders} />
-        <ProductFormModal isOpen={isProductModalOpen} onClose={() => setIsProductModalOpen(false)} editingProduct={editingProduct} productFormData={productFormData} setProductFormData={(data: Partial<Record<string, string>>) => setProductFormData(prev => ({ ...prev, ...data }))} onSubmit={handleSaveProduct} products={products} />
-        <CategoryReorderModal isOpen={isReorderModalOpen} onClose={() => setIsReorderModalOpen(false)} categoryOrder={sortedCategories} setCategoryOrder={setCategoryOrder} onSave={saveCategoryOrder} isSaving={isSavingOrder} />
-        <BulkActionsBar selectedCount={selectedIds.length} onClear={() => setSelectedIds([])} onToggleAvailability={handleBulkToggle} onMoveToCategory={() => setIsBulkMoveOpen(true)} onDelete={handleBulkDelete} />
-        <BulkMoveModal isOpen={isBulkMoveOpen} onClose={() => setIsBulkMoveOpen(false)} categories={sortedCategories} onMove={handleBulkMove} />
+        <OrderDetailsModal key="order-details-modal" order={selectedOrder} onClose={() => setSelectedOrder(null)} onUpdateStatus={handleUpdateStatus} onArchive={handleArchive} onPaymentReceived={handlePaymentReceived} onPassPrnt={handlePassPrnt} language={language} products={products} />
+        <CustomerDetailsModal key="customer-details-modal" customer={selectedCustomer} onClose={() => setSelectedCustomer(null)} onSelectOrder={setSelectedOrder} orderHistory={historyOrders} />
+        <ProductFormModal key="product-form-modal" isOpen={isProductModalOpen} onClose={() => setIsProductModalOpen(false)} editingProduct={editingProduct} productFormData={productFormData} setProductFormData={(data: Partial<Record<string, string>>) => setProductFormData(prev => ({ ...prev, ...data }))} onSubmit={handleSaveProduct} products={products} />
+        <CategoryReorderModal key="category-reorder-modal" isOpen={isReorderModalOpen} onClose={() => setIsReorderModalOpen(false)} categoryOrder={sortedCategories} setCategoryOrder={setCategoryOrder} onSave={saveCategoryOrder} isSaving={isSavingOrder} />
+        <BulkActionsBar key="bulk-actions-bar" selectedCount={selectedIds.length} onClear={() => setSelectedIds([])} onToggleAvailability={handleBulkToggle} onMoveToCategory={() => setIsBulkMoveOpen(true)} onDelete={handleBulkDelete} />
+        <BulkMoveModal key="bulk-move-modal" isOpen={isBulkMoveOpen} onClose={() => setIsBulkMoveOpen(false)} categories={sortedCategories} onMove={handleBulkMove} />
+        {captainPromptOrder && (
+          <div key="captain-prompt-modal" className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setCaptainPromptOrder(null)} className="absolute inset-0 bg-brand-black/60 backdrop-blur-sm" />
+            <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} className="relative bg-white w-full max-w-md rounded-[3rem] shadow-2xl overflow-hidden flex flex-col p-8 md:p-10 space-y-8 z-10">
+              <div className="flex justify-between items-center">
+                <div className="bg-brand-red/5 p-4 rounded-2xl text-brand-red animate-pulse"><Bike size={28} strokeWidth={2.5} /></div>
+                <button onClick={() => setCaptainPromptOrder(null)} className="p-3 bg-brand-cream/30 hover:bg-brand-red/5 hover:text-brand-red rounded-2xl text-brand-black/30 transition-all cursor-pointer"><X size={20} /></button>
+              </div>
+
+              <div className="space-y-3 text-right">
+                <h3 className="text-2xl font-black text-brand-black">تسليم الطلب للكابتن</h3>
+                <p className="text-brand-black/50 font-bold text-xs leading-relaxed">
+                  يرجى إدخال رقم هاتف كابتن التوصيل لتزويد الزبون به، أو يمكنك تركه فارغاً للاستمرار بدون رقم.
+                </p>
+              </div>
+
+              <div className="relative">
+                <Phone size={18} className="absolute right-6 top-1/2 -translate-y-1/2 text-brand-black/20" />
+                <input
+                  type="text"
+                  placeholder="رقم الكابتن (اختياري - اضغط تأكيد للمتابعة)"
+                  value={captainPhoneInput}
+                  onChange={(e) => setCaptainPhoneInput(e.target.value.replace(/[^\d+-\s]/g, ''))}
+                  className="w-full bg-brand-cream/30 border-2 border-brand-gray/50 focus:border-brand-red/30 rounded-2xl p-5 pr-14 outline-none font-black text-lg transition-all text-right"
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleConfirmCaptainPhone();
+                  }}
+                />
+                <span className="text-[10px] text-brand-black/30 font-bold block mt-2 text-right">
+                  * اختياري: يمكنك المتابعة مباشرة دون إدخال رقم هاتف.
+                </span>
+              </div>
+
+              <div className="flex gap-3">
+                <button 
+                  onClick={handleConfirmCaptainPhone}
+                  className="flex-1 bg-green-600 text-white py-5 rounded-2xl font-black text-sm hover:bg-green-700 active:scale-95 transition-all shadow-lg shadow-green-100 flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Check size={18} />
+                  <span>تأكيد وتسليم الطلب</span>
+                </button>
+                <button 
+                  onClick={() => setCaptainPromptOrder(null)}
+                  className="px-6 bg-brand-gray/10 hover:bg-brand-gray/25 text-brand-black/40 py-5 rounded-2xl font-black text-xs transition-all cursor-pointer"
+                >
+                  إلغاء
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
       </AnimatePresence>
 
       {/* Hidden Invoice for Global Printing (Card level) */}

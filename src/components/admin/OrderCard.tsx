@@ -8,7 +8,7 @@ import { Order, OrderItem } from '@/types/admin';
 
 interface OrderCardProps {
   order: Order;
-  onUpdateStatus: (id: string, status: string) => void;
+  onUpdateStatus: (id: string, status: string, captainPhone?: string) => void;
   onArchive: (id: string) => void;
   onPaymentReceived: (id: string, e: React.MouseEvent) => void;
     onPassPrnt?: (order: Order) => void;
@@ -16,6 +16,10 @@ interface OrderCardProps {
 }
 
 export default function OrderCard({ order, onUpdateStatus, onArchive, onPaymentReceived, onPassPrnt, language }: OrderCardProps) {
+  const handleShippedClick = () => {
+    onUpdateStatus(order.id, 'SHIPPED');
+  };
+
   return (
     <div className={`bg-white rounded-[2.5rem] overflow-hidden shadow-sm border border-brand-gray flex flex-col group relative
       ${order.status === 'PENDING' ? 'ring-2 ring-brand-red ring-inset' : ''}`}>
@@ -183,8 +187,8 @@ export default function OrderCard({ order, onUpdateStatus, onArchive, onPaymentR
               </button>
             )}
             {order.status === 'READY' && (
-              <button onClick={() => onUpdateStatus(order.id, 'SHIPPED')} className="w-full bg-green-600 text-white py-4 rounded-xl font-black active:scale-95 transition-all">
-                تم الاستلام ✅
+              <button onClick={handleShippedClick} className="w-full bg-green-600 text-white py-4 rounded-xl font-black active:scale-95 transition-all">
+                {order.orderType === 'DELIVERY' ? 'تسليم لكابتن التوصيل 🚚' : 'تم الاستلام ✅'}
               </button>
             )}
 

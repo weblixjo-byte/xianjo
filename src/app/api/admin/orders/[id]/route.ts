@@ -10,16 +10,19 @@ export async function PATCH(
     return NextResponse.json({ error: "Unauthorized access" }, { status: 401 });
   }
   const { id } = await params;
-  const { status, paymentStatus, isArchived } = await request.json();
+  const { status, paymentStatus, isArchived, captainPhone } = await request.json();
 
   if (!id) {
     return NextResponse.json({ error: "معرف الطلب مفقود" }, { status: 400 });
   }
 
-  const updateData: { status?: string; paymentStatus?: string; isArchived?: boolean } = {};
+  const updateData: { status?: string; paymentStatus?: string; isArchived?: boolean; captainPhone?: string | null } = {};
   if (status) updateData.status = status;
   if (paymentStatus) updateData.paymentStatus = paymentStatus;
   if (typeof isArchived === 'boolean') updateData.isArchived = isArchived;
+  if (captainPhone !== undefined) {
+    updateData.captainPhone = captainPhone === "" ? null : captainPhone;
+  }
 
   try {
     const updatedOrder = await prisma.order.update({

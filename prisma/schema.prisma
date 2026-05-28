@@ -31,6 +31,7 @@ model Order {
   paymentMethod String     @default("CASH")    // CASH, CLIQ, APPLE_PAY, or CARD
   paymentStatus String     @default("PENDING") // PENDING, COMPLETED
   isArchived    Boolean    @default(false)
+  captainPhone  String?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 

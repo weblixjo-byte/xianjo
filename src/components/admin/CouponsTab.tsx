@@ -55,19 +55,25 @@ export default function CouponsTab({
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {coupons.map(coupon => (
-            <div key={coupon.id} className={`bg-white p-10 rounded-[3rem] border-2 transition-all relative overflow-hidden ${coupon.isActive ? 'border-brand-gray shadow-sm' : 'opacity-60 border-brand-gray/30 grayscale'}`}>
-              <div className="flex justify-between items-start mb-10">
-                <div>
-                  <h3 className="text-4xl font-black font-serif text-brand-black tracking-tight">{coupon.code}</h3>
-                  <p className={`text-[10px] font-black uppercase mt-2 ${coupon.isActive ? 'text-green-600' : 'text-gray-400'}`}>{coupon.isActive ? 'نشط' : 'معطل'}</p>
+            <div key={coupon.id} className={`bg-white p-6 rounded-[2rem] border-2 transition-all relative overflow-hidden flex flex-col justify-between ${coupon.isActive ? 'border-brand-gray shadow-sm hover:shadow-md' : 'opacity-65 border-brand-gray/30 grayscale'}`}>
+              <div>
+                <div className="flex justify-between items-center mb-4">
+                  <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${coupon.isActive ? 'bg-green-50 text-green-600 border border-green-200/50' : 'bg-gray-100 text-gray-500 border border-gray-200/50'}`}>
+                    {coupon.isActive ? 'نشط' : 'معطل'}
+                  </span>
+                  <div className="text-2xl md:text-3xl font-black text-brand-red font-heading shrink-0">%{coupon.discountPercent}</div>
                 </div>
-                <div className="text-4xl font-black text-brand-red font-serif">%{coupon.discountPercent}</div>
+                <div className="mb-6">
+                  <h3 className="text-base md:text-lg font-black text-brand-black tracking-tight uppercase break-words w-full" title={coupon.code}>
+                    {coupon.code}
+                  </h3>
+                </div>
               </div>
-              <div className="flex items-center justify-between pt-10 border-t border-brand-gray/10">
-                <button onClick={() => onToggle(coupon.id, coupon.isActive)} className={`flex items-center gap-3 px-6 py-3 rounded-2xl font-black text-xs transition-all ${coupon.isActive ? 'bg-orange-50 text-orange-600' : 'bg-green-50 text-green-600'}`}>
-                  <Power size={18} /> {coupon.isActive ? 'تعطيل' : 'تفعيل'}
+              <div className="flex items-center justify-between pt-5 border-t border-brand-gray/10">
+                <button onClick={() => onToggle(coupon.id, coupon.isActive)} className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-black text-xs transition-all ${coupon.isActive ? 'bg-orange-50 text-orange-600 hover:bg-orange-100' : 'bg-green-50 text-green-600 hover:bg-green-100'}`}>
+                  <Power size={14} /> <span>{coupon.isActive ? 'تعطيل' : 'تفعيل'}</span>
                 </button>
-                <button onClick={() => onDelete(coupon.id)} className="p-3 text-brand-black/20 hover:text-brand-red transition-all"><Trash2 size={22} /></button>
+                <button onClick={() => onDelete(coupon.id)} className="p-2.5 text-brand-black/20 hover:text-brand-red hover:bg-red-50 rounded-xl transition-all"><Trash2 size={18} /></button>
               </div>
             </div>
           ))}

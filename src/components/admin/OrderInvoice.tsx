@@ -256,6 +256,24 @@ const OrderInvoice: React.FC<OrderInvoiceProps> = ({ order, products }) => {
           Payment: {order.paymentMethod} / {order.paymentStatus}
         </div>
 
+        {/* GPS Location QR Code (Only if customer clicked 'determine my location' and coordinates link is present) */}
+        {order.address?.match(/https:\/\/www\.google\.com\/maps\?q=[-0-9.,]+/) && (
+          <div style={{ marginTop: '6mm', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+            <div style={{ fontSize: '11px', fontWeight: 900, marginBottom: '2mm', textTransform: 'uppercase' }}>
+              SCANNABLE GPS DELIVERY LOCATION
+            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img 
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=${encodeURIComponent(order.address.match(/https:\/\/www\.google\.com\/maps\?q=[-0-9.,]+/)?.[0] || '')}`} 
+              alt="Google Maps GPS Location QR Code" 
+              style={{ width: '130px', height: '130px', border: '1px solid #000', padding: '5px' }}
+            />
+            <div style={{ fontSize: '9px', marginTop: '1.5mm', opacity: 0.7 }}>
+              Scan with phone camera to navigate
+            </div>
+          </div>
+        )}
+
         <div className="footer-note">
           <div>THANK YOU FOR YOUR ORDER!</div>
           <div style={{ marginTop: '1.5mm' }}>Visit us: xianjo-order.com</div>

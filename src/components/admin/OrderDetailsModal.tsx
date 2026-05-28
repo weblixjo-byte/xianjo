@@ -9,7 +9,7 @@ import OrderInvoice from './OrderInvoice';
 interface OrderDetailsModalProps {
   order: Order | null;
   onClose: () => void;
-  onUpdateStatus: (id: string, status: string) => void;
+  onUpdateStatus: (id: string, status: string, captainPhone?: string) => void;
   onArchive: (id: string) => void;
   onPaymentReceived: (id: string, e: React.MouseEvent) => void;
   onPassPrnt: (order: Order) => void;
@@ -28,6 +28,12 @@ export default function OrderDetailsModal({
   products
 }: OrderDetailsModalProps) {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+  const handleShippedClick = () => {
+    if (!order) return;
+    onUpdateStatus(order.id, 'SHIPPED');
+  };
+
 
   if (!order) return null;
 
@@ -243,10 +249,10 @@ export default function OrderDetailsModal({
 
               {order.status === 'READY' && (
                 <button
-                  onClick={() => onUpdateStatus(order.id, 'SHIPPED')}
+                  onClick={handleShippedClick}
                   className="w-full bg-green-600 text-white py-5 rounded-2xl font-black active:scale-95 transition-all"
                 >
-                  تم التسليم النهائي ✅
+                  {order.orderType === 'DELIVERY' ? 'تسليم لكابتن التوصيل والتوصيل للزبون 🚚' : 'تم التسليم النهائي ✅'}
                 </button>
               )}
             </div>
