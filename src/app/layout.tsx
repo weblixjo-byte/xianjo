@@ -14,9 +14,9 @@ export const metadata: Metadata = {
   robots: "index, follow",
   manifest: "/manifest.json",
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: "/OG-IMG.png",
+    shortcut: "/OG-IMG.png",
+    apple: "/OG-IMG.png",
   },
   openGraph: {
     title: `${BRANDING.nameEn} | Asian Cuisine Amman`,
@@ -111,9 +111,9 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
         />
-        <link rel="icon" href="/logo.png" type="image/png" />
-        <link rel="shortcut icon" href="/logo.png" type="image/png" />
-        <link rel="apple-touch-icon" href="/logo.png" />
+        <link rel="icon" href="/OG-IMG.png" type="image/png" />
+        <link rel="shortcut icon" href="/OG-IMG.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/OG-IMG.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
