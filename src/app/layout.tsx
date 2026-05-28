@@ -14,8 +14,8 @@ export const metadata: Metadata = {
   robots: "index, follow",
   manifest: "/manifest.json",
   icons: {
-    icon: "/OG-IMG.png",
-    shortcut: "/OG-IMG.png",
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
     apple: "/OG-IMG.png",
   },
   openGraph: {
@@ -38,6 +38,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   interactiveWidget: 'resizes-content',
+  colorScheme: 'light',
 };
 
 export default function RootLayout({
@@ -111,8 +112,8 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
         />
-        <link rel="icon" href="/OG-IMG.png" type="image/png" />
-        <link rel="shortcut icon" href="/OG-IMG.png" type="image/png" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/OG-IMG.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />

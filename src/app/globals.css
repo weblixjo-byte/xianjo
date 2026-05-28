@@ -1,6 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&family=Cairo:wght@200..1000&display=swap');
 @import "tailwindcss";
 
+:root {
+  color-scheme: light !important;
+}
+
 @theme {
   --color-brand-red: #C40012;
   --color-brand-black: #000000;

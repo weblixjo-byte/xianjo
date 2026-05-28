@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   manifest: "/manifest-admin.json",
   icons: {
-    icon: "/OG-IMG.png",
-    shortcut: "/OG-IMG.png",
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
     apple: "/OG-IMG.png",
   },
 };
