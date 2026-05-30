@@ -872,12 +872,12 @@ export default function AdminDashboard() {
       </AnimatePresence>
 
       {/* Hidden Invoice for Global Printing (Card level) */}
-      <div id="global-printable-invoice" style={{ position: 'fixed', left: '-9999px', top: '-9999px', opacity: 0, pointerEvents: 'none' }}>
+      <div id="global-printable-invoice" style={{ position: 'fixed', left: '-9999px', top: '-9999px', pointerEvents: 'none' }}>
         {printingOrder && <OrderInvoice order={printingOrder} products={products} />}
       </div>
 
       {/* Hidden Sales Report for Printing */}
-      <div id="printable-sales-report" style={{ position: 'fixed', left: '-9999px', top: '-9999px', opacity: 0, pointerEvents: 'none' }}>
+      <div id="printable-sales-report" style={{ position: 'fixed', left: '-9999px', top: '-9999px', pointerEvents: 'none' }}>
         {isPrintingReport && reportData && <SalesReport reportData={reportData} reportType={reportType} />}
       </div>
     </div>

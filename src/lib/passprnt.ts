@@ -23,9 +23,14 @@ export async function generatePassPrntUrl(elementId: string): Promise<string> {
   const originalStyle = element.style.display;
   const originalPosition = element.style.position;
   const originalLeft = element.style.left;
+  const originalOpacity = element.style.opacity;
+  const originalVisibility = element.style.visibility;
   const hadHiddenClass = element.classList.contains('hidden');
   
-  // We need it to be visible but off-screen for html2canvas to work reliably if it's currently hidden
+  // We need it to be fully visible (opacity 1, visibility visible) but positioned off-screen for html2canvas
+  element.style.setProperty('opacity', '1', 'important');
+  element.style.setProperty('visibility', 'visible', 'important');
+
   if (originalStyle === 'none' || hadHiddenClass) {
     if (hadHiddenClass) {
       element.classList.remove('hidden');
@@ -47,6 +52,8 @@ export async function generatePassPrntUrl(elementId: string): Promise<string> {
     element.style.display = originalStyle;
     element.style.position = originalPosition;
     element.style.left = originalLeft;
+    element.style.opacity = originalOpacity;
+    element.style.visibility = originalVisibility;
     if (hadHiddenClass) {
       element.classList.add('hidden');
     }
@@ -85,6 +92,8 @@ export async function generatePassPrntUrl(elementId: string): Promise<string> {
     element.style.display = originalStyle;
     element.style.position = originalPosition;
     element.style.left = originalLeft;
+    element.style.opacity = originalOpacity;
+    element.style.visibility = originalVisibility;
     if (hadHiddenClass) {
       element.classList.add('hidden');
     }
