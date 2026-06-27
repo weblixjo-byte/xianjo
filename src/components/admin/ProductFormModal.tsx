@@ -78,8 +78,12 @@ export default function ProductFormModal({
             </div>
           )}
           <div className="space-y-4">
-            <label className="text-[10px] font-black uppercase tracking-widest text-brand-black/30 px-2">وصف المنتج (اختياري)</label>
-            <textarea value={productFormData.descriptionAr} onChange={e => setProductFormData({ ...productFormData, descriptionAr: e.target.value })} className="w-full bg-brand-gray/10 border-2 border-transparent focus:border-brand-red/20 focus:bg-white rounded-3xl p-5 outline-none font-bold text-[16px] min-h-[120px] resize-none transition-all" />
+            <label className="text-[10px] font-black uppercase tracking-widest text-brand-black/30 px-2">وصف المنتج (عربي)</label>
+            <textarea value={productFormData.descriptionAr} onChange={e => setProductFormData({ ...productFormData, descriptionAr: e.target.value })} className="w-full bg-brand-gray/10 border-2 border-transparent focus:border-brand-red/20 focus:bg-white rounded-3xl p-5 outline-none font-bold text-[16px] min-h-[100px] resize-none transition-all" />
+          </div>
+          <div className="space-y-4">
+            <label className="text-[10px] font-black uppercase tracking-widest text-brand-black/30 px-2">وصف المنتج (English)</label>
+            <textarea value={productFormData.descriptionEn} onChange={e => setProductFormData({ ...productFormData, descriptionEn: e.target.value })} className="w-full bg-brand-gray/10 border-2 border-transparent focus:border-brand-red/20 focus:bg-white rounded-3xl p-5 outline-none font-bold text-[16px] min-h-[100px] resize-none transition-all" dir="ltr" />
           </div>
           <div className="space-y-4">
             <label className="text-[10px] font-black uppercase tracking-widest text-brand-black/30 px-2">رابط الصورة (URL)</label>
