@@ -48,20 +48,17 @@ export default function HomeClient({
     }
   });
 
-  const categories = [
-    'ALL',
-    ...Array.from(allCategoriesSet).sort((a, b) => {
-      const indexA = categoryOrder.indexOf(a);
-      const indexB = categoryOrder.indexOf(b);
-      if (indexA === -1 && indexB === -1) return a.localeCompare(b);
-      if (indexA === -1) return 1;
-      if (indexB === -1) return -1;
-      return indexA - indexB;
-    })
-  ];
+  const categories = Array.from(allCategoriesSet).sort((a, b) => {
+    const indexA = categoryOrder.indexOf(a);
+    const indexB = categoryOrder.indexOf(b);
+    if (indexA === -1 && indexB === -1) return a.localeCompare(b);
+    if (indexA === -1) return 1;
+    if (indexB === -1) return -1;
+    return indexA - indexB;
+  });
 
-  const [selectedCategory, setSelectedCategory] = useState('ALL');
-  const activeCategory = selectedCategory || 'ALL';
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const activeCategory = selectedCategory || categories[0] || '';
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -84,7 +81,6 @@ export default function HomeClient({
   }, [activeCategory]);
 
   const filteredData = products.filter((item) => {
-    if (activeCategory === 'ALL') return true;
     return (item.category && activeCategory)
       ? item.category.split(',').map((c: string) => c.trim()).includes(activeCategory)
       : false;
@@ -132,12 +128,12 @@ export default function HomeClient({
                     key={cat}
                     id={`cat-${cat}`}
                     onClick={() => {
-                      setSelectedCategory(cat);
+                      setSelectedCategory(cat || '');
                     }}
                     className={`text-sm font-bold uppercase whitespace-nowrap relative py-2 mx-6 flex-shrink-0 transition-all
                       ${activeCategory === cat ? 'text-brand-red font-extrabold scale-105' : 'text-gray-800 hover:text-brand-red'}`}
                   >
-                    {cat === 'ALL' ? (activeLanguage === 'ar' ? 'جميع الأصناف' : 'All') : cat}
+                    {cat}
                     {activeCategory === cat && (
                       <motion.div 
                         layoutId="activeUnderline"
@@ -151,9 +147,7 @@ export default function HomeClient({
         </div>
 
         <div className="max-w-7xl mx-auto px-6 mb-10 text-center">
-           <h2 className="text-3xl font-bold text-black luxury-heading mb-2">
-             {activeCategory === 'ALL' ? (activeLanguage === 'ar' ? 'جميع الأصناف' : 'All') : activeCategory}
-           </h2>
+           <h2 className="text-3xl font-bold text-black luxury-heading mb-2">{activeCategory}</h2>
            <p className="text-gray-500 text-sm font-medium">
              {activeLanguage === 'ar' ? 'أطباق مختارة بعناية خصيصاً لك' : 'Carefully selected premium dishes just for you'}
            </p>
